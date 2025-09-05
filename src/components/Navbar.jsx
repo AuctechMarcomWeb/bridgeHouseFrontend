@@ -75,6 +75,12 @@ const Navbar = () => {
               >
                 Contact
               </Link>
+               <Link
+                to="/profile"
+                className="text-gray-700 hover:text-blue-600 transition-colors"
+              >
+                Profile
+              </Link>
               {/* <a href="#contact"><button className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-6 py-2 rounded-full hover:shadow-lg transform hover:scale-105 transition-all">
                 Contact Us
               </button>

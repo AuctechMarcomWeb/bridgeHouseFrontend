@@ -11,6 +11,7 @@ import PropertyListings from "./components/PropertyListings";
 import Login from "./pages/Login";
 import AboutUs from "./pages/AboutUs";
 import RealEstateGallery from "./components/RealEstateGallery";
+import RealEstateProfile from "./pages/RealEstateProfile";
 // import Signup from "./components/Signup";
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
         <Route path="/about" element={<AboutUs />} />
         <Route path="/gallery" element={<RealEstateGallery />} />
          <Route path="/contact" element={<Contact />} />
+          <Route path="/profile" element={<RealEstateProfile />} />
         <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
          <Route path="/property-detail" element={<PropertyDetailPage />} />

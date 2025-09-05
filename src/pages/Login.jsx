@@ -1,53 +1,142 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
 import React, { useState, useEffect } from "react";
-import { Eye, EyeOff, Home, Mail, Lock, User, Phone } from "lucide-react";
+import {
+  Eye,
+  EyeOff,
+  Home,
+  Mail,
+  Lock,
+  User,
+  Phone,
+  Loader2,
+  Luggage,
+} from "lucide-react";
 import logo from "../assets/bridge-house.png";
-import { Link, useNavigate ,} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { postRequest,patchRequest } from "../Helpers";
+import useCookie from "../Hooks/cookie";
+import AddressForm from "../components/Addressform";
 
 export default function Login() {
-  const [step, setStep] = useState(1); // 1=Phone, 2=OTP, 3=Signup/Login
+  const { setCookie } = useCookie();
+
+  const [step, setStep] = useState(1);
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [generatedOtp, setGeneratedOtp] = useState("");
-  const [isNewUser, setIsNewUser] = useState(true); // decide if signup or login
+  const [isNewUser, setIsNewUser] = useState(true);
   const [error, setError] = useState("");
-  //const [isLogin, setIsLogin] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-const navigate = useNavigate();
+  const navigate = useNavigate();
+  const [userId, setUserId] = useState("");
+  console.log("userid", userId);
 
   const [formData, setFormData] = useState({
     email: "",
-    password: "",
-    firstName: "",
-    lastName: "",
+    name: "",
     phone: "",
-    confirmPassword: "",
-  });
+    address: "",
+    location: { type: "Point", coordinates: [0, 0] },
+    gender: "",
+    occupation: "",
+    accountType: "",
+        dob: "1995-08-15",
+            profilepic: "https://example.com/profile.jpg",
 
+  });
+  console.log("formData", formData);
+
+  // Called whenever the user selects a location
+  const handleLocationSelect = (data) => {
+    console.log("Selected Location Data:", data);
+    setFormData({
+      ...formData,
+      ...data,
+    });
+    // setFormData(data);
+  };
   // --- Step 1: Phone Submit ---
-  const handlePhoneSubmit = (e) => {
+  const handlePhoneSubmit = async (e) => {
     e.preventDefault();
     if (!phone) return setError("Please enter your mobile number");
     if (!/^[0-9]{10}$/.test(phone))
       return setError("Enter a valid 10-digit number");
-
-    const otpValue = Math.floor(1000 + Math.random() * 9000).toString();
-    setGeneratedOtp(otpValue);
-    console.log("Generated OTP:", otpValue);
-
-    setError("");
-    setStep(2);
+    try {
+      setLoading(true);
+      const res = await postRequest({
+        url: `auth/registerOrLogin`,
+        cred: { phone },
+      });
+      console.log("phone number is:", res?.data);
+      if (res?.status) {
+        setFormData({ ...formData, phone });
+        setError("");
+        setIsNewUser(res?.data?.data?.isNew);
+        console.log("new", res?.data?.data?.isNew);
+        setStep(2);
+      } else {
+        setError(res?.message);
+      }
+    } catch (error) {
+      console.error("API Error:", error);
+    } finally {
+      setLoading(false);
+    }
   };
+
   // --- Step 2: OTP Verify ---
-  const handleOtpSubmit = (e) => {
+  const handleOtpSubmit = async (e) => {
     e.preventDefault();
     if (!otp) return setError("Enter OTP");
-    if (otp !== generatedOtp) return setError("Invalid OTP");
+    try {
+      setLoading(true);
+      const res = await postRequest({
+        url: `auth/verifyOtp`,
+        cred: { phone, otp },
+      });
+      console.log("OTP Verify Response:", res?.data?.data);
+      if (res?.data?.success && res?.data?.statusCode === 200) {
+        setError("");
+        // const authToken = res?.data?.data?.authToken;
+        //setCookie("token", authToken, 30);
+        const token = res?.data?.data?.authToken;
+        setUserId(res?.data?.data?._id); // save userId from OTP response
+        console.log("Token:", token, "UserId:", res?.data?.data?._id);
+        setStep(3);
+      } else {
+        setError(res?.data?.message);
+      }
+    } catch (error) {
+      console.error("OTP Verify API Error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    setError("");
-    setFormData({ ...formData, phone });
-    setStep(3);
+  // --- Resend OTP Function ---
+  const handleResendOtp = async () => {
+    try {
+      setLoading(true);
+      const res = await postRequest({
+        url: `auth/resendOtp`,
+        cred: { phone },
+      });
+      if (res?.status) {
+        if (res?.data?.data?.otp) {
+          setGeneratedOtp(res?.data?.data?.otp);
+          console.log("Resent OTP:", res?.data?.data?.otp);
+        }
+        setError("");
+      } else {
+        setError(res?.message);
+      }
+    } catch (err) {
+      console.error("Resend OTP API Error:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleInputChange = (e) => {
@@ -58,11 +147,36 @@ const navigate = useNavigate();
   };
 
   // --- Step 3: Signup/Login Submit ---
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form Submitted:", formData, "New user?", isNewUser);
-   navigate("/");
-    // Call your API here
+    setLoading(true);
+    console.log(
+      "Form Submitted:",
+      formData,
+      "New user",
+      isNewUser,
+      "User ID",
+      userId
+    );
+    try {
+      const res = await patchRequest({
+        url: `auth/update/${userId}`,
+        cred: { formData },
+      });
+      if (res?.data?.success && res?.data?.data?.authToken) {
+        setCookie("token", res?.data?.data?.authToken, 30);
+        navigate("/");
+      } else {
+        setError(res?.data?.message);
+      }
+    } catch (err) {
+      console.error("Update User API Error:", err);
+      setError("API Error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+
+    navigate("/");
   };
 
   return (
@@ -110,6 +224,12 @@ const navigate = useNavigate();
         {/* Right Side - Form */}
         <div className="p-8 lg:p-12 flex items-center">
           <div className="max-w-sm mx-auto">
+            {loading && (
+              <div className="absolute inset-0 flex items-center justify-center bg-white/70 z-50">
+                <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+              </div>
+            )}
+
             <div className="text-center mb-6">
               <h5 className="text-xl font-semibold text-gray-800">
                 {step === 1 && "Signup / Login"}
@@ -119,7 +239,7 @@ const navigate = useNavigate();
             </div>
             {/* Step 1: Phone Input */}
             {step === 1 && (
-              <form onSubmit={handlePhoneSubmit} className="space-y-6">
+              <form onSubmit={handlePhoneSubmit} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
                     Mobile Number <span className="text-red-500">*</span>
@@ -131,7 +251,7 @@ const navigate = useNavigate();
                       setPhone(e.target.value);
                       if (error) setError("");
                     }}
-                    className={`mt-2 block w-full rounded-lg border px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 ${
+                    className={`mt-1 block w-full rounded-lg border px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 ${
                       error
                         ? "border-red-500 focus:ring-red-500"
                         : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
@@ -144,27 +264,29 @@ const navigate = useNavigate();
                 {error && <p className="text-red-500 text-sm">{error}</p>}
                 <button
                   type="submit"
-                  className="w-full rounded-lg bg-blue-600 text-white py-2 font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full bg-[#005697] text-white py-2 rounded-xl font-semibold text-lg shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all"
                 >
                   Get OTP
                 </button>
 
-                <Link
-                  to="#"
-                  className="text-blue-600 hover:text-blue-700 text-sm font-medium transition-colors text-center"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setIsNewUser(false);
-                    setStep(3); 
-                  }}
-                >
-                  Login with password
-                </Link>
+                <div className="flex justify-end">
+                  <Link
+                    to="#"
+                    className="text-blue-600 hover:text-blue-700 text-sm font-medium transition-colors"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setIsNewUser(false);
+                      setStep(3);
+                    }}
+                  >
+                    Login with password
+                  </Link>
+                </div>
               </form>
             )}
             {/* Step 2: OTP Input */}
             {step === 2 && (
-              <form onSubmit={handleOtpSubmit} className="space-y-6">
+              <form onSubmit={handleOtpSubmit} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
                     Enter OTP <span className="text-red-500">*</span>
@@ -176,80 +298,62 @@ const navigate = useNavigate();
                       setOtp(e.target.value);
                       if (error) setError("");
                     }}
-                    className="mt-2 block w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Enter OTP"
-                    maxLength={6}
+                    maxLength={4}
                   />
                 </div>
                 {error && <p className="text-red-500 text-sm">{error}</p>}
                 <button
                   type="submit"
-                  className="w-full rounded-lg bg-blue-600 text-white py-2 font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full bg-[#005697] text-white py-2 rounded-xl font-semibold text-lg shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all"
                 >
                   Signup{" "}
                 </button>
                 <p className="text-sm text-gray-600">
                   Didn’t receive code?{" "}
-                  <a
-                    href="#"
-                    className="text-indigo-600 hover:underline font-medium"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      const otpValue = Math.floor(
-                        1000 + Math.random() * 9000
-                      ).toString();
-                      setGeneratedOtp(otpValue);
-                      console.log("Resent OTP:", otpValue);
-                    }}
+                  <button
+                    type="button"
+                    onClick={handleResendOtp}
+                    className="text-indigo-600 hover:underline font-medium bg-transparent border-none p-0 cursor-pointer"
                   >
                     Resend OTP
-                  </a>
+                  </button>
                 </p>
               </form>
             )}
 
             {/* Step 3: Signup/Login Form */}
             {step === 3 && (
-              <form onSubmit={handleFormSubmit} className="space-y-6">
+              <form onSubmit={handleFormSubmit} className="space-y-4">
                 {/* New User Signup Form */}
                 {isNewUser ? (
                   <>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 gap-4">
+                      {/* First Name */}
                       <div className="relative">
-                        <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                        <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                         <input
                           type="text"
-                          name="firstName"
-                          placeholder="First Name"
-                          value={formData.firstName}
+                          name="name"
+                          placeholder="Enter first name"
+                          value={formData?.name}
                           onChange={handleInputChange}
-                          className="w-full pl-12 pr-4 py-4 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
-                          required
-                        />
-                      </div>
-                      <div className="relative">
-                        <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                        <input
-                          type="text"
-                          name="lastName"
-                          placeholder="Last Name"
-                          value={formData.lastName}
-                          onChange={handleInputChange}
-                          className="w-full pl-12 pr-4 py-4 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                          className="block w-full rounded-md border border-gray-300 pl-10 pr-3 py-2 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500 focus:outline-none"
                           required
                         />
                       </div>
                     </div>
 
                     <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                       <input
                         type="email"
                         name="email"
-                        placeholder="Email"
-                        value={formData.email}
+                        placeholder="Enter email"
+                        value={formData?.email}
                         onChange={handleInputChange}
-                        className="w-full pl-12 pr-4 py-4 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                        className="block w-full rounded-md border border-gray-300 pl-10 pr-3 py-2 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500 focus:outline-none"
                         required
                       />
                     </div>
@@ -258,135 +362,176 @@ const navigate = useNavigate();
 
                 {/* Phone Input (common for both) */}
                 <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <input
                     type="tel"
                     name="phone"
-                    placeholder="Phone Number"
-                    value={formData.phone}
+                    placeholder="Enter phone number"
+                    value={formData?.phone}
                     onChange={handleInputChange}
-                    className="w-full pl-12 pr-4 py-4 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                    className="block w-full rounded-md border border-gray-300 pl-10 pr-3 py-2 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500 focus:outline-none"
+                    inputMode="numeric"
+                    maxLength={10}
                     required
                   />
                 </div>
 
-                {/* Password Input (both signup & login) */}
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    name="password"
-                    placeholder="Password"
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    className="w-full pl-12 pr-12 py-4 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                  >
-                    {showPassword ? (
-                      <EyeOff className="w-5 h-5" />
-                    ) : (
-                      <Eye className="w-5 h-5" />
-                    )}
-                  </button>
-                </div>
+                {/* Password Input (only for login) */}
+                {!isNewUser && (
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
 
-                {/* Confirm password + user type only for signup */}
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      name="password"
+                      placeholder="Enter password"
+                      value={formData?.password}
+                      onChange={handleInputChange}
+                      className="block w-full rounded-md border border-gray-300 pl-10 pr-10 py-2 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500 focus:outline-none"
+                      required
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                    >
+                      {showPassword ? (
+                        <EyeOff className="w-5 h-5" />
+                      ) : (
+                        <Eye className="w-5 h-5" />
+                      )}
+                    </button>
+                  </div>
+                )}
+
+                {/* user type only for signup */}
                 {isNewUser && (
                   <>
+                    {/* Occupation */}
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                      <Luggage className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                       <input
-                        type={showConfirmPassword ? "text" : "password"}
-                        name="confirmPassword"
-                        placeholder="Confirm Password"
-                        value={formData.confirmPassword}
+                        type="text"
+                        name="occupation"
+                        placeholder="Enter your service or occupation"
+                        value={formData?.occupation}
                         onChange={handleInputChange}
-                        className="w-full pl-12 pr-12 py-4 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                        className="block w-full rounded-md border border-gray-300 pl-10 pr-3 py-2 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500 focus:outline-none"
                         required
                       />
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setShowConfirmPassword(!showConfirmPassword)
-                        }
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                      >
-                        {showConfirmPassword ? (
-                          <EyeOff className="w-5 h-5" />
-                        ) : (
-                          <Eye className="w-5 h-5" />
-                        )}
-                      </button>
                     </div>
 
-                    {/* Buyer/Seller radio */}
-                    <div className="flex gap-6">
-                      {["buyer", "seller"].map((type) => (
-                        <label
-                          key={type}
-                          className="relative flex items-center cursor-pointer"
-                        >
-                          <input
-                            type="radio"
-                            name="userType"
-                            value={type}
-                            checked={formData.userType === type}
-                            onChange={handleInputChange}
-                            className="hidden"
-                          />
-                          <div className="w-5 h-5 border border-gray-300 rounded-full flex items-center justify-center peer-checked:bg-blue-500 relative">
-                            {formData.userType === type && (
-                              <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                            )}
-                          </div>
-                          <span className="ml-3 text-gray-700">
-                            {type.charAt(0).toUpperCase() + type.slice(1)}
-                          </span>
-                        </label>
-                      ))}
+                    {/* Gender */}
+                    <div className="mb-4">
+                      <label
+                        htmlFor="gender"
+                        className="block mb-2 text-gray-700 font-medium"
+                      >
+                        Gender
+                      </label>
+                      <select
+                        id="gender"
+                        name="gender"
+                        value={formData?.gender}
+                        onChange={handleInputChange}
+                        className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="">Select Gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                      </select>
                     </div>
-              {/* Terms & Conditions (Sign Up Only) */}
-                <div className="flex items-start space-x-3">
-                  <input
-                    type="checkbox"
-                    id="terms"
-                    className="mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                    required
-                  />
-                  <label
-                    htmlFor="terms"
-                    className="text-sm text-gray-600 leading-relaxed"
-                  >
-                    I agree to the{" "}
-                    <button
-                      type="button"
-                      className="text-blue-600 hover:text-blue-700 font-medium"
-                    >
-                      Terms of Service
-                    </button>{" "}
-                    and{" "}
-                    <button
-                      type="button"
-                      className="text-blue-600 hover:text-blue-700 font-medium"
-                    >
-                      Privacy Policy
-                    </button>
-                  </label>
-                </div>
+                    {/* Account Type */}
+                    <div className="mb-4">
+                      <p className="mb-2 text-gray-700 font-medium">
+                        Account Type
+                      </p>
+                      <div className="flex gap-6">
+                        {["buyer", "seller"].map((type) => (
+                          <label
+                            key={type}
+                            className="relative flex items-center cursor-pointer"
+                          >
+                            <input
+                              type="radio"
+                              name="accountType"
+                              value={type}
+                              checked={formData?.accountType === type}
+                              onChange={handleInputChange}
+                              className="hidden"
+                            />
+                            <div className="w-5 h-5 border border-gray-300 rounded-full flex items-center justify-center">
+                              {formData?.accountType === type && (
+                                <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                              )}
+                            </div>
+                            <span className="ml-3 text-gray-700">
+                              {type.charAt(0).toUpperCase() + type.slice(1)}
+                            </span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/*Address*/}
+                    <div className=" relative ">
+                      <AddressForm
+                        value={formData?.data?.address}
+                        onSelect={handleLocationSelect}
+                      />
+                    </div>
+                    {/* Terms & Conditions (Sign Up Only) */}
+                    <div className="flex items-start space-x-3">
+                      <input
+                        type="checkbox"
+                        id="terms"
+                        className="mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        required
+                      />
+                      <label
+                        htmlFor="terms"
+                        className="text-sm text-gray-600 leading-relaxed"
+                      >
+                        I agree to the{" "}
+                        <button
+                          type="button"
+                          className="text-blue-600 hover:text-blue-700 font-medium"
+                        >
+                          Terms of Service
+                        </button>{" "}
+                        and{" "}
+                        <button
+                          type="button"
+                          className="text-blue-600 hover:text-blue-700 font-medium"
+                        >
+                          Privacy Policy
+                        </button>
+                      </label>
+                    </div>
                   </>
                 )}
 
                 <button
                   type="submit"
                   className="w-full bg-[#005697] text-white py-4 rounded-xl font-semibold text-lg shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all"
+                  //onClick={() => setIsNewUser((prev) => !prev)}
                 >
-                  {isNewUser ? "Sign Up" : "Login"}
+                  {isNewUser ? "Create Account" : "Login"}
                 </button>
+
+                {/* Back button only for Login */}
+                {!isNewUser && (
+                  <div className="flex justify-start mt-1">
+                    <button
+                      type="button"
+                      onClick={() => setStep(1)}
+                      className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                    >
+                      Back
+                    </button>
+                  </div>
+                )}
               </form>
             )}
           </div>

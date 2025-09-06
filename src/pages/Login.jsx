@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   Eye,
   EyeOff,
@@ -14,9 +14,11 @@ import {
 } from "lucide-react";
 import logo from "../assets/bridge-house.png";
 import { Link, useNavigate } from "react-router-dom";
-import { postRequest,patchRequest } from "../Helpers";
+import { postRequest, patchRequest } from "../Helpers";
 import useCookie from "../Hooks/cookie";
 import AddressForm from "../components/Addressform";
+import toast from "react-hot-toast";
+import { ProfileContext } from "../context/ProfileContext";
 
 export default function Login() {
   const { setCookie } = useCookie();
@@ -30,32 +32,43 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-  const [userId, setUserId] = useState("");
-  console.log("userid", userId);
 
+  const { user, setUpdateStatus, logout } = useContext(ProfileContext);
+
+  const [userId, setUserId] = useState("");
+  const [token, setToken] = useState("");
   const [formData, setFormData] = useState({
     email: "",
     name: "",
     phone: "",
+    password: "",
     address: "",
     location: { type: "Point", coordinates: [0, 0] },
     gender: "",
     occupation: "",
     accountType: "",
-        dob: "1995-08-15",
-            profilepic: "https://example.com/profile.jpg",
-
+    dob: "1995-08-15",
+    profilepic: "https://example.com/profile.jpg",
   });
   console.log("formData", formData);
+  const [resendTimer, setResendTimer] = useState(0); // countdown in seconds
+  const RESEND_COOLDOWN = 60; // 60 seconds
+
+  // Countdown effect
+  useEffect(() => {
+    let timer;
+    if (resendTimer > 0) {
+      timer = setInterval(() => setResendTimer((prev) => prev - 1), 1000);
+    }
+    return () => clearInterval(timer);
+  }, [resendTimer]);
 
   // Called whenever the user selects a location
   const handleLocationSelect = (data) => {
-    console.log("Selected Location Data:", data);
     setFormData({
       ...formData,
       ...data,
     });
-    // setFormData(data);
   };
   // --- Step 1: Phone Submit ---
   const handlePhoneSubmit = async (e) => {
@@ -69,17 +82,19 @@ export default function Login() {
         url: `auth/registerOrLogin`,
         cred: { phone },
       });
-      console.log("phone number is:", res?.data);
+      console.log("phone number is:", res?.data?.data);
       if (res?.status) {
         setFormData({ ...formData, phone });
-        setError("");
         setIsNewUser(res?.data?.data?.isNew);
         console.log("new", res?.data?.data?.isNew);
         setStep(2);
+        toast.success(res?.data?.message);
       } else {
         setError(res?.message);
       }
     } catch (error) {
+      toast.error(error?.res?.data?.message);
+
       console.error("API Error:", error);
     } finally {
       setLoading(false);
@@ -90,6 +105,7 @@ export default function Login() {
   const handleOtpSubmit = async (e) => {
     e.preventDefault();
     if (!otp) return setError("Enter OTP");
+
     try {
       setLoading(true);
       const res = await postRequest({
@@ -99,17 +115,24 @@ export default function Login() {
       console.log("OTP Verify Response:", res?.data?.data);
       if (res?.data?.success && res?.data?.statusCode === 200) {
         setError("");
-        // const authToken = res?.data?.data?.authToken;
-        //setCookie("token", authToken, 30);
         const token = res?.data?.data?.authToken;
-        setUserId(res?.data?.data?._id); // save userId from OTP response
-        console.log("Token:", token, "UserId:", res?.data?.data?._id);
-        setStep(3);
+        const userId = res?.data?.data?._id;
+        if (isNewUser) {
+          setToken(token);
+          setUserId(userId);
+          console.log("New User -> Token:", token, "UserId:", userId);
+          setStep(3);
+        } else {
+          setCookie("token-bridge-house", token, 30);
+          console.log("Token saved in cookie");
+          navigate("/");
+        }
+        toast.success(res?.data?.message);
       } else {
         setError(res?.data?.message);
       }
     } catch (error) {
-      console.error("OTP Verify API Error:", error);
+      toast.error(error?.res?.data?.message);
     } finally {
       setLoading(false);
     }
@@ -129,11 +152,14 @@ export default function Login() {
           console.log("Resent OTP:", res?.data?.data?.otp);
         }
         setError("");
+        toast.success(res?.data?.message);
+        setResendTimer(RESEND_COOLDOWN);
       } else {
         setError(res?.message);
       }
     } catch (err) {
       console.error("Resend OTP API Error:", err);
+      toast.error(err?.res?.data?.message);
     } finally {
       setLoading(false);
     }
@@ -150,33 +176,52 @@ export default function Login() {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    console.log(
-      "Form Submitted:",
-      formData,
-      "New user",
-      isNewUser,
-      "User ID",
-      userId
-    );
     try {
       const res = await patchRequest({
         url: `auth/update/${userId}`,
         cred: { formData },
       });
-      if (res?.data?.success && res?.data?.data?.authToken) {
-        setCookie("token", res?.data?.data?.authToken, 30);
-        navigate("/");
-      } else {
-        setError(res?.data?.message);
-      }
+      console.log("Update response:", res);
+      setCookie("token-bridge-house", token, 30);
+      console.log("Token saved for new user:=====================>", token);
+      toast.success(res?.data?.message);
+      navigate("/");
     } catch (err) {
+      toast.error(err?.res?.data?.message);
       console.error("Update User API Error:", err);
       setError("API Error. Please try again.");
     } finally {
       setLoading(false);
     }
+  };
 
-    navigate("/");
+  const handleLoginSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const res = await postRequest({
+        url: `auth/loginWithPassword`,
+        cred: {
+          phone: formData?.phone,
+          password: formData?.password,
+        },
+      });
+      console.log("Login Response:", res?.data?.data);
+      setUpdateStatus((prev) => !prev);
+      if (res?.data?.success && res?.data?.statusCode === 200) {
+        const token = res?.data?.data?.authToken;
+        toast.success(res?.data?.message);
+        setCookie("token-bridge-house", token, 30);
+        navigate("/");
+      } else {
+        toast.error(res?.data?.message);
+      }
+    } catch (err) {
+      toast.error(err?.response?.data?.message);
+      console.error("Login API Error:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -315,9 +360,16 @@ export default function Login() {
                   <button
                     type="button"
                     onClick={handleResendOtp}
-                    className="text-indigo-600 hover:underline font-medium bg-transparent border-none p-0 cursor-pointer"
+                    disabled={resendTimer > 0}
+                    className={`text-indigo-600 hover:underline font-medium bg-transparent border-none p-0 cursor-pointer ${
+                      resendTimer > 0 ? "cursor-not-allowed opacity-50" : ""
+                    }`}
                   >
-                    Resend OTP
+                    {resendTimer > 0
+                      ? `Resend OTP in 00:${resendTimer
+                          .toString()
+                          .padStart(2, "0")}`
+                      : "Resend OTP"}
                   </button>
                 </p>
               </form>
@@ -325,7 +377,10 @@ export default function Login() {
 
             {/* Step 3: Signup/Login Form */}
             {step === 3 && (
-              <form onSubmit={handleFormSubmit} className="space-y-4">
+              <form
+                onSubmit={isNewUser ? handleFormSubmit : handleLoginSubmit}
+                className="space-y-4"
+              >
                 {/* New User Signup Form */}
                 {isNewUser ? (
                   <>

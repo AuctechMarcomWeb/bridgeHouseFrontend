@@ -48,7 +48,7 @@ useEffect(() => {
   }, []);
   return (
     <>
-      <nav className=" w-full z-50 bg-white/90 backdrop-blur-md shadow-lg">
+      <nav className=" w-full z-50 bg-white/90  shadow-lg">
         <div className="sm:w-full lg:w-[80%]  xl:w-[80%] 2xl:w-[70%] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-2">
@@ -99,59 +99,62 @@ useEffect(() => {
               </Link>
             </div>
             {/* Desktop Right Section */}
-            <div className="hidden md:flex items-center space-x-4">
-              {isLoggedIn ? (
-                <div ref={dropdownRef} className="relative">
- <div
-  className="flex items-center gap-2 cursor-pointer"
-  onClick={(e) => {
-    e.stopPropagation(); // <--- Prevent outside click logic
-    setDropdownOpen(!dropdownOpen);
-  }}
->
-
-    <img
-      src="https://images.unsplash.com/photo-1502685104226-ee32379fefbe?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=3&w=256&h=256&q=80"
-      alt="User Avatar"
-      className="w-8 h-8 rounded-full object-cover"
-    />
-    <span className="text-sm font-semibold text-gray-800">
-      {user?.name || user?.phone || "User"}
-    </span>
-    <span className="text-gray-500">▾</span>
-  </div>
-
-  {dropdownOpen && (
-    <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md z-50">
-      <Link
-        to="/profile"
-        className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-        
-        onClick={() =>  setDropdownOpen(false)}
-      >
-        Profile
-      </Link>
-      <button
-        className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
-        onClick={() => {
-          logout();
-          setDropdownOpen(false);
-        }}
-      >
-        Logout
-      </button>
+         
+  {isLoggedIn ? (
+  <div ref={dropdownRef} className="relative">
+    {/* Avatar + Name + Arrow */}
+    <div
+      className="flex items-center gap-2 cursor-pointer p-2 rounded-md hover:bg-gray-50 transition"
+      onClick={() => {
+        console.log("clicked");
+        setDropdownOpen((prev) => !prev);
+      }}
+    >
+      <img
+        src="https://images.unsplash.com/photo-1502685104226-ee32379fefbe?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=3&w=256&h=256&q=80"
+        alt="User Avatar"
+        className="w-8 h-8 rounded-full object-cover border border-gray-300"
+      />
+      <span className="text-sm font-medium text-gray-800">
+        {user?.name || user?.phone || "User"}
+      </span>
+      <span className="text-gray-500 text-xs">▼</span>
     </div>
-  )}
+
+    {/* Dropdown Menu */}
+    {dropdownOpen && (
+<div className="absolute right-0 mt-2 bg-white shadow-xl rounded-md z-50 border border-gray-200 overflow-hidden w-auto min-w-max">
+  <Link
+    to="/profile"
+    className="block px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100 transition"
+    onClick={() => setDropdownOpen(false)}
+  >
+    Profile
+  </Link>
+  <button
+    className="w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100 transition"
+    onClick={() => {
+      logout();
+      setDropdownOpen(false);
+    }}
+  >
+    Logout
+  </button>
 </div>
 
-              ) : (
-                <Link to="/login">
-                  <button className="bg-[#004f8a] text-white px-6 py-2 rounded-full hover:shadow-lg transform hover:scale-105 transition-all">
-                    Login / SignUp
-                  </button>
-                </Link>
-              )}
-            </div>
+
+    )}
+  </div>
+) 
+ : (
+    <Link to="/login">
+      <button className="bg-[#004f8a] text-white px-6 py-2 rounded-full hover:shadow-lg transform hover:scale-105 transition-all">
+        Login / SignUp
+      </button>
+    </Link>
+  )}
+
+
 
             <button
               className="md:hidden"
@@ -167,67 +170,87 @@ useEffect(() => {
         </div>
 
         {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="md:hidden bg-white border-t">
-            <div className="px-2 pt-2 pb-3 space-y-1">
-              <Link
-                to="/"
-                className="block px-3 py-2 text-gray-700 hover:text-blue-600"
-              >
-                Home
-              </Link>
-              <Link
-                to="/"
-                className="block px-3 py-2 text-gray-700 hover:text-blue-600"
-              >
-                Services
-              </Link>
-              {/* <Link
-                to="#doctors"
-                className="block px-3 py-2 text-gray-700 hover:text-blue-600"
-              >
-                Doctors
-              </Link> */}
+{isMenuOpen && (
+  <div className="md:hidden bg-white border-t">
+    <div className="px-2 pt-2 pb-3 space-y-1">
+      <Link
+        to="/"
+        className="block px-3 py-2 text-gray-700 hover:text-blue-600"
+      >
+        Home
+      </Link>
+      <Link
+        to="/gallery"
+        className="block px-3 py-2 text-gray-700 hover:text-blue-600"
+      >
+        Gallery
+      </Link>
+      <Link
+        to="/about"
+        className="block px-3 py-2 text-gray-700 hover:text-blue-600"
+      >
+        About
+      </Link>
+      <Link
+        to="/contact"
+        className="block px-3 py-2 text-gray-700 hover:text-blue-600"
+      >
+        Contact
+      </Link>
 
-              <Link
-                to="/"
-                className="block px-3 py-2 text-gray-700 hover:text-blue-600"
-              >
-                About
-              </Link>
-
-              <a href="#contact">
-                {" "}
-                <button className="w-full mt-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-6 py-2 rounded-full">
-                  Contact Us
-                </button>
-              </a>
-              {isLoggedIn ? (
-                <>
-                  <p className="block px-3 py-2 text-gray-700">
-                    Hello, {user?.name || user?.phone}
-                  </p>
-                  <Link to="/profile" className="block px-3 py-2 text-gray-700">
-                    Profile
-                  </Link>
-                  <button
-                    onClick={() => {
-                      logout();
-                      setIsMenuOpen(false);
-                    }}
-                    className="w-full text-left px-3 py-2 text-gray-700"
-                  >
-                    Logout
-                  </button>
-                </>
-              ) : (
-                <Link to="/login" className="block px-3 py-2 text-gray-700">
-                  Login / SignUp
-                </Link>
-              )}
-            </div>
+      {/* Mobile User Section */}
+      {isLoggedIn ? (
+        <div className="relative mt-2 border-t pt-2" ref={dropdownRef}>
+          <div
+            className="flex items-center gap-2 cursor-pointer px-3 py-2 rounded-md hover:bg-gray-50 transition"
+            onClick={() => setDropdownOpen((prev) => !prev)}
+          >
+            <img
+              src="https://images.unsplash.com/photo-1502685104226-ee32379fefbe?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=3&w=256&h=256&q=80"
+              alt="User Avatar"
+              className="w-8 h-8 rounded-full object-cover border border-gray-300"
+            />
+            <span className="text-sm font-medium text-gray-800">
+              {user?.name || user?.phone || "User"}
+            </span>
+            <span className="text-gray-500 text-xs">▼</span>
           </div>
-        )}
+
+          {/* Dropdown in Mobile */}
+          {dropdownOpen && (
+            <div className="mt-1 bg-white shadow-lg rounded-md border border-gray-200 overflow-hidden w-auto min-w-max">
+              <Link
+                to="/profile"
+                className="block px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100 transition"
+                onClick={() => {
+                  setDropdownOpen(false);
+                  setIsMenuOpen(false);
+                }}
+              >
+                Profile
+              </Link>
+              <button
+                className="w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100 transition"
+                onClick={() => {
+                  logout();
+                  setDropdownOpen(false);
+                  setIsMenuOpen(false);
+                }}
+              >
+                Logout
+              </button>
+            </div>
+          )}
+        </div>
+      ) : (
+        <Link to="/login" className="block px-3 py-2 text-gray-700">
+          Login / SignUp
+        </Link>
+      )}
+    </div>
+  </div>
+)}
+
       </nav>
     </>
   );

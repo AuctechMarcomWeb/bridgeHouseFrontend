@@ -1,5 +1,7 @@
 import React, { createContext, useEffect, useState } from "react";
 import { getRequest } from "../Helpers";
+import { nav } from "framer-motion/client";
+import { deleteCookie } from "../Hooks/cookie";
 
 export const ProfileContext = createContext();
 
@@ -32,7 +34,9 @@ export const ProfileProvider = ({ children }) => {
   const logout = () => {
     setUser(null);
     setIsLoggedIn(false);
+     deleteCookie("token-bridge-house"); 
     console.log("user Loggout");
+    
   };
   return (
     <ProfileContext.Provider

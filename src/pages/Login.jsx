@@ -22,19 +22,18 @@ import { ProfileContext } from "../context/ProfileContext";
 
 export default function Login() {
   const { setCookie } = useCookie();
-
   const [step, setStep] = useState(1);
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [generatedOtp, setGeneratedOtp] = useState("");
+  console.log("generatedOtp", generatedOtp);
+  
   const [isNewUser, setIsNewUser] = useState(true);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-
   const { user, setUpdateStatus, logout } = useContext(ProfileContext);
-
   const [userId, setUserId] = useState("");
   const [token, setToken] = useState("");
   const [formData, setFormData] = useState({
@@ -51,10 +50,9 @@ export default function Login() {
     profilepic: "https://example.com/profile.jpg",
   });
   console.log("formData", formData);
-  const [resendTimer, setResendTimer] = useState(0); // countdown in seconds
-  const RESEND_COOLDOWN = 60; // 60 seconds
+  const [resendTimer, setResendTimer] = useState(0); 
+  const RESEND_COOLDOWN = 60; 
 
-  // Countdown effect
   useEffect(() => {
     let timer;
     if (resendTimer > 0) {
@@ -87,8 +85,15 @@ export default function Login() {
         setFormData({ ...formData, phone });
         setIsNewUser(res?.data?.data?.isNew);
         console.log("new", res?.data?.data?.isNew);
+        setResendTimer(RESEND_COOLDOWN);
         setStep(2);
         toast.success(res?.data?.message);
+
+         if (res?.data?.data?.otp) {
+        setGeneratedOtp(res?.data?.data?.otp);
+        console.log("Generated OTP:", res?.data?.data?.otp);
+      }
+
       } else {
         setError(res?.message);
       }
@@ -348,6 +353,11 @@ export default function Login() {
                     maxLength={4}
                   />
                 </div>
+                 {generatedOtp && (
+      <p className="text-green-600 text-sm text-center">
+        OTP: <strong>{generatedOtp}</strong>
+      </p>
+    )}
                 {error && <p className="text-red-500 text-sm">{error}</p>}
                 <button
                   type="submit"
@@ -355,23 +365,22 @@ export default function Login() {
                 >
                   Signup{" "}
                 </button>
-                <p className="text-sm text-gray-600">
-                  Didn’t receive code?{" "}
-                  <button
-                    type="button"
-                    onClick={handleResendOtp}
-                    disabled={resendTimer > 0}
-                    className={`text-indigo-600 hover:underline font-medium bg-transparent border-none p-0 cursor-pointer ${
-                      resendTimer > 0 ? "cursor-not-allowed opacity-50" : ""
-                    }`}
-                  >
-                    {resendTimer > 0
-                      ? `Resend OTP in 00:${resendTimer
-                          .toString()
-                          .padStart(2, "0")}`
-                      : "Resend OTP"}
-                  </button>
-                </p>
+                  <p className="text-sm text-gray-600 text-center">
+      {resendTimer > 0 ? (
+        <>Resend OTP in : 00:{resendTimer.toString().padStart(2, "0")}</>
+      ) : (
+        <>
+          Didn’t receive code?{" "}
+          <button
+            type="button"
+            onClick={handleResendOtp}
+            className="text-indigo-600 hover:underline font-medium"
+          >
+            Resend OTP
+          </button>
+        </>
+      )}
+    </p>
               </form>
             )}
 
@@ -503,7 +512,7 @@ export default function Login() {
                         Account Type
                       </p>
                       <div className="flex gap-6">
-                        {["buyer", "seller"].map((type) => (
+                        {["Buyer", "Seller"].map((type) => (
                           <label
                             key={type}
                             className="relative flex items-center cursor-pointer"

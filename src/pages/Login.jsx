@@ -26,8 +26,6 @@ export default function Login() {
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [generatedOtp, setGeneratedOtp] = useState("");
-  console.log("generatedOtp", generatedOtp);
-  
   const [isNewUser, setIsNewUser] = useState(true);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -49,9 +47,11 @@ export default function Login() {
     dob: "1995-08-15",
     profilepic: "https://example.com/profile.jpg",
   });
+
   console.log("formData", formData);
-  const [resendTimer, setResendTimer] = useState(0); 
-  const RESEND_COOLDOWN = 60; 
+
+  const [resendTimer, setResendTimer] = useState(0);
+  const RESEND_COOLDOWN = 60;
 
   useEffect(() => {
     let timer;
@@ -89,11 +89,10 @@ export default function Login() {
         setStep(2);
         toast.success(res?.data?.message);
 
-         if (res?.data?.data?.otp) {
-        setGeneratedOtp(res?.data?.data?.otp);
-        console.log("Generated OTP:", res?.data?.data?.otp);
-      }
-
+        if (res?.data?.data?.otp) {
+          setGeneratedOtp(res?.data?.data?.otp);
+          console.log("Generated OTP:", res?.data?.data?.otp);
+        }
       } else {
         setError(res?.message);
       }
@@ -353,11 +352,11 @@ export default function Login() {
                     maxLength={4}
                   />
                 </div>
-                 {generatedOtp && (
-      <p className="text-green-600 text-sm text-center">
-        OTP: <strong>{generatedOtp}</strong>
-      </p>
-    )}
+                {generatedOtp && (
+                  <p className="text-green-600 text-sm text-center">
+                    OTP: <strong>{generatedOtp}</strong>
+                  </p>
+                )}
                 {error && <p className="text-red-500 text-sm">{error}</p>}
                 <button
                   type="submit"
@@ -365,22 +364,25 @@ export default function Login() {
                 >
                   Signup{" "}
                 </button>
-                  <p className="text-sm text-gray-600 text-center">
-      {resendTimer > 0 ? (
-        <>Resend OTP in : 00:{resendTimer.toString().padStart(2, "0")}</>
-      ) : (
-        <>
-          Didn’t receive code?{" "}
-          <button
-            type="button"
-            onClick={handleResendOtp}
-            className="text-indigo-600 hover:underline font-medium"
-          >
-            Resend OTP
-          </button>
-        </>
-      )}
-    </p>
+                <p className="text-sm text-gray-600 text-center">
+                  {resendTimer > 0 ? (
+                    <>
+                      Resend OTP in : 00:
+                      {resendTimer.toString().padStart(2, "0")}
+                    </>
+                  ) : (
+                    <>
+                      Didn’t receive code?{" "}
+                      <button
+                        type="button"
+                        onClick={handleResendOtp}
+                        className="text-indigo-600 hover:underline font-medium"
+                      >
+                        Resend OTP
+                      </button>
+                    </>
+                  )}
+                </p>
               </form>
             )}
 

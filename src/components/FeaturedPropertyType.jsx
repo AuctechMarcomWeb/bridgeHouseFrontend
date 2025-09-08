@@ -10,49 +10,86 @@ import {
   Building2,
   Copy,
 } from "lucide-react";
+import { getRequest } from "../Helpers";
 
-const propertyTypes = [
-  {
-    id: 1,
-    icon: Building,
-    name: "Buy",
-    count: "288 Property",
-    img: "https://i.pinimg.com/736x/cf/b0/b7/cfb0b750bb44819aba2f11b28e5ff08e.jpg",
-  },
-  {
-    id: 2,
-    icon: Home,
-    name: "Rent",
-    count: "300 Property",
-    img: "https://i.pinimg.com/736x/2a/f6/a4/2af6a4fff643de299760095e2ed4f47f.jpg",
-  },
-  {
-    id: 3,
-    icon: TreePine,
-    name: "Plot",
-    count: "250 Property",
-    img: "https://i.pinimg.com/736x/f8/e8/0f/f8e80ffde554c1ff3aade2eadb7f88b0.jpg",
-  },
-  {
-    id: 4,
-    icon: Building2,
-    name: "Apartments",
-    count: "230 Property",
-    img: "https://i.pinimg.com/1200x/40/ce/f2/40cef26967e2bf8263a2694331efb168.jpg",
-  },
-  {
-    id: 5,
-    icon: Copy,
-    name: "Duplexes",
-    count: "320 Property",
-    img: "https://i.pinimg.com/1200x/ec/97/34/ec9734d469899a77d5b000cb2be75498.jpg",
-  },
-];
+// const propertyTypes = [
+//   {
+//     id: 1,
+//     icon: Building,
+//     name: "Buy",
+//     count: "288 Property",
+//     img: "https://i.pinimg.com/736x/cf/b0/b7/cfb0b750bb44819aba2f11b28e5ff08e.jpg",
+//   },
+//   {
+//     id: 2,
+//     icon: Home,
+//     name: "Rent",
+//     count: "300 Property",
+//     img: "https://i.pinimg.com/736x/2a/f6/a4/2af6a4fff643de299760095e2ed4f47f.jpg",
+//   },
+//   {
+//     id: 3,
+//     icon: TreePine,
+//     name: "Plot",
+//     count: "250 Property",
+//     img: "https://i.pinimg.com/736x/f8/e8/0f/f8e80ffde554c1ff3aade2eadb7f88b0.jpg",
+//   },
+//   {
+//     id: 4,
+//     icon: Building2,
+//     name: "Apartments",
+//     count: "230 Property",
+//     img: "https://i.pinimg.com/1200x/40/ce/f2/40cef26967e2bf8263a2694331efb168.jpg",
+//   },
+//   {
+//     id: 5,
+//     icon: Copy,
+//     name: "Duplexes",
+//     count: "320 Property",
+//     img: "https://i.pinimg.com/1200x/ec/97/34/ec9734d469899a77d5b000cb2be75498.jpg",
+//   },
+// ];
 
 export default function FeaturedPropertyType() {
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(false);
+  // 🔹 Filters ka state
+  const [filters, setFilters] = useState({
+    isPagination: true,
+    page: 1,
+    limit: 10,
+    search: "Residential",
+    isActive: true,
+    sortBy: "recent",
+  });
+
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
+  useEffect(() => {
+    setLoading(true);
+    const queryString = `isPagination=${filters.isPagination}&page=${filters.page}&limit=${filters.limit}&search=${filters.search}&isActive=${filters.isActive}&sortBy=${filters.sortBy}`;
+    getRequest(`category?${queryString}`)
+      .then((res) => {
+        console.log("Category response:", res);
+        setCategories(res?.data?.data?.categories || []);
+      })
+      .catch((err) => {
+        console.error("API error:", err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [filters]);
+
+  // Icon map
+  const iconMap = {
+    Building: Building,
+    Home: Home,
+    TreePine: TreePine,
+    Building2: Building2,
+    Copy: Copy,
+  };
 
   const navigate = useNavigate();
   function handleClick() {
@@ -77,19 +114,19 @@ export default function FeaturedPropertyType() {
 
       {/* Property Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 w-full lg:w-[80%] xl:w-[75%] 2xl:w-[70%] mx-auto">
-        {propertyTypes.map((property, index) => {
-          const IconComponent = property?.icon; 
+        {categories.map((category) => {
+          const IconComponent = iconMap[category?.icon] || Home;
           return (
             <div
               onClick={handleClick}
-              key={property?.id}
+              key={category?.id}
               className="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden cursor-pointer"
             >
               {/* Image with overlay */}
               <div className="relative h-40">
                 <img
-                  src={property?.img}
-                  alt={property?.name}
+                  src={category?.image}
+                  alt={category?.name}
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-black/40"></div>
@@ -104,9 +141,9 @@ export default function FeaturedPropertyType() {
               <div className="p-4 flex justify-between items-center">
                 <div>
                   <h3 className="font-semibold text-lg text-gray-800">
-                    {property?.name}
+                    {category?.name}
                   </h3>
-                  <p className="text-gray-500 text-sm">{property?.count}</p>
+                  <p className="text-gray-500 text-sm">{category?.count}</p>
                 </div>
                 <ArrowUpRight className="w-5 h-5 text-gray-600" />
               </div>
@@ -116,8 +153,5 @@ export default function FeaturedPropertyType() {
       </div>
       <RealEstatePopups />
     </div>
-    
   );
 }
-
-

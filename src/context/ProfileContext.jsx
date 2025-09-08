@@ -1,27 +1,21 @@
 import React, { createContext, useEffect, useState } from "react";
 import { getRequest } from "../Helpers";
-import { nav } from "framer-motion/client";
 import { deleteCookie } from "../Hooks/cookie";
 
 export const ProfileContext = createContext();
 
 export const ProfileProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  console.log("user==============>", 547546546546546);
-
   const [updateStatus,setUpdateStatus] = useState(false)
-
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  
   console.log("isLoggedIn", isLoggedIn);
-
-  const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     getRequest(`auth/profile`)
       .then((res) => {
         setIsLoggedIn(true);
-        setUser(res?.data);
-        console.log("dfg res", res?.data);
+        setUser(res?.data?.data);
+        console.log("dfg res", res?.data?.data);
       })
       .catch((error) => {
         if (error?.response.status == 401) {
@@ -31,6 +25,7 @@ export const ProfileProvider = ({ children }) => {
       });
 
       }, [updateStatus]);
+
   const logout = () => {
     setUser(null);
     setIsLoggedIn(false);
@@ -40,7 +35,7 @@ export const ProfileProvider = ({ children }) => {
   };
   return (
     <ProfileContext.Provider
-      value={{ user, setUser, isLoggedIn,setUpdateStatus, setIsLoggedIn, loading, logout }}
+      value={{ user, setUser, isLoggedIn,setUpdateStatus, setIsLoggedIn, logout }}
     >
       {children}
     </ProfileContext.Provider>

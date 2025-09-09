@@ -1,15 +1,24 @@
 /* eslint-disable no-unused-vars */
-import { X } from "lucide-react";
-import Addressform from "./Addressform";
+import { Modal } from "antd";
 import { useContext, useState, useEffect } from "react";
-import { Select } from "antd";
+import toast from "react-hot-toast";
 import { ProfileContext } from "../context/ProfileContext";
 import { fileUpload, postRequest, putRequest } from "../Helpers";
+import Addressform from "./Addressform";
+import { X } from "lucide-react";
+import { Select } from "antd";
 
-const AddPropertyModal = ({ show, onClose, modalData, setUpdateStatus }) => {
+const AddPropertyModal = ({
+  isModalOpen,
+  setIsModalOpen,
+  modalData,
+  setUpdateStatus,
+  show,
+  onClose,
+}) => {
   const { user } = useContext(ProfileContext);
 
-  const [newProperty, setNewProperty] = useState({
+  const [formData, setFormData] = useState({
     addedBy: user?._id,
     name: "",
     propertyType: "",
@@ -21,94 +30,87 @@ const AddPropertyModal = ({ show, onClose, modalData, setUpdateStatus }) => {
     address: "",
     location: { type: "Point", coordinates: [0, 0] },
     nearby: [{ name: "", distance: "" }],
-    documents: [
-      {
-        name: "",
-        number: "",
-        image: "",
-      },
-    ],
+    documents: [{ name: "", number: "", image: "" }],
     gallery: [],
   });
-  console.log("newProperty", newProperty);
 
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
   const [selectedFacilities, setSelectedFacilities] = useState([]);
   const [selectedServices, setSelectedServices] = useState([]);
-  const [newGalleryUrl, setNewGalleryUrl] = useState("");
-
   const facilitiesOptions = ["Parking", "Lift", "Power Backup"];
   const servicesOptions = ["Water Supply", "Maintenance"];
-
-  // ✅ modalData aayega to form ko prefill karo
+  // ✅ Prefill when editing
   useEffect(() => {
     if (modalData) {
-      setNewProperty({ ...modalData });
-      setSelectedFacilities(modalData.facilities || []);
-      setSelectedServices(modalData.services || []);
+      setFormData({ ...modalData });
     }
   }, [modalData]);
 
-  if (!show) return null;
+  // ✅ Reset + Close
+  const handleCancel = () => {
+    setFormData({
+      addedBy: user?._id,
+      name: "",
+      propertyType: "",
+      actualPrice: "",
+      sellingPrice: "",
+      description: "",
+      facilities: [],
+      services: [],
+      address: "",
+      location: { type: "Point", coordinates: [0, 0] },
+      nearby: [{ name: "", distance: "" }],
+      documents: [{ name: "", number: "", image: "" }],
+      gallery: [],
+    });
+    setErrors({});
+    setIsModalOpen(false);
+  };
+  //Location
+  const handleLocationSelect = (data) => {
+    setFormData((prev) => ({ ...prev, ...data }));
+  };
 
+  // ✅ Input Change
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setNewProperty((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleLocationSelect = (data) => {
-    setNewProperty((prev) => ({ ...prev, ...data }));
-  };
-
+  // ✅ Add Nearby
   const addNearby = () => {
-    setNewProperty((prev) => ({
+    setFormData((prev) => ({
       ...prev,
       nearby: [...prev.nearby, { name: "", distance: "" }],
     }));
   };
 
   const removeNearby = (index) => {
-    const updatedNearby = [...newProperty.nearby];
+    const updatedNearby = [...formData.nearby];
     updatedNearby.splice(index, 1);
-    setNewProperty((prev) => ({ ...prev, nearby: updatedNearby }));
+    setFormData((prev) => ({ ...prev, nearby: updatedNearby }));
   };
 
   const handleNearbyChange = (index, field, value) => {
-    const updatedNearby = [...newProperty.nearby];
+    const updatedNearby = [...formData.nearby];
     updatedNearby[index][field] = value;
-    setNewProperty((prev) => ({ ...prev, nearby: updatedNearby }));
+    setFormData((prev) => ({ ...prev, nearby: updatedNearby }));
   };
 
   const handleFacilitiesChange = (values) => {
     setSelectedFacilities(values);
-    setNewProperty((prev) => ({ ...prev, facilities: values }));
+    setFormData((prev) => ({ ...prev, facilities: values }));
   };
 
   const handleServicesChange = (values) => {
     setSelectedServices(values);
-    setNewProperty((prev) => ({ ...prev, services: values }));
+    setFormData((prev) => ({ ...prev, services: values }));
   };
 
-  const handleFormSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await postRequest({ url: `properties`, cred: newProperty });
-      console.log("Property added:", res?.data);
-
-      if (res?.data?._id) {
-        // property added successfully
-        setUpdateStatus((prev) => !prev); // trigger GET
-        onClose();
-      } else {
-        console.error("POST API did not return a valid property.");
-      }
-    } catch (err) {
-      console.error("Error adding property:", err);
-    }
-  };
-
+  // ✅ Image Upload for Gallery
   const handleChangeImage = (e) => {
-    const files = Array.from(e.target.files); // multiple files ko array me liya
-
+    const files = Array.from(e.target.files);
     Promise.all(
       files.map((file) =>
         fileUpload({
@@ -118,9 +120,9 @@ const AddPropertyModal = ({ show, onClose, modalData, setUpdateStatus }) => {
       )
     )
       .then((uploadedUrls) => {
-        setNewProperty((prev) => ({
+        setFormData((prev) => ({
           ...prev,
-          gallery: [...(prev.gallery || []), ...uploadedUrls], // purane + naye images
+          gallery: [...(prev.gallery || []), ...uploadedUrls],
         }));
         console.log("Uploaded images: ", uploadedUrls);
       })
@@ -128,7 +130,8 @@ const AddPropertyModal = ({ show, onClose, modalData, setUpdateStatus }) => {
         console.error("Image upload failed:", error);
       });
   };
-  // Change image
+
+  // ✅ Document Upload
   const handleDocumentImage = (e, index) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -139,7 +142,7 @@ const AddPropertyModal = ({ show, onClose, modalData, setUpdateStatus }) => {
     })
       .then((res) => {
         const imageUrl = res.data?.data?.imageUrl;
-        setNewProperty((prev) => {
+        setFormData((prev) => {
           const updatedDocs = [...prev.documents];
           updatedDocs[index].image = imageUrl;
           return { ...prev, documents: updatedDocs };
@@ -150,124 +153,152 @@ const AddPropertyModal = ({ show, onClose, modalData, setUpdateStatus }) => {
       });
   };
 
-  // Change name/number
   const handleDocumentChange = (index, field, value) => {
-    setNewProperty((prev) => {
+    setFormData((prev) => {
       const updatedDocs = [...prev.documents];
       updatedDocs[index][field] = value;
       return { ...prev, documents: updatedDocs };
     });
   };
 
+  // ✅ Validation
+  const validateForm = () => {
+    let newErrors = {};
+    if (!formData.name.trim()) newErrors.name = "Property name is required";
+    if (!formData.propertyType.trim())
+      newErrors.propertyType = "Property type is required";
+    if (!formData.address.trim()) newErrors.address = "Address is required";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  // ✅ Submit - Add
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+
+    postRequest({ url: `properties`, cred: formData })
+      .then((res) => {
+        console.log(res?.data?.data);
+        toast.success(res?.data?.message);
+        setUpdateStatus((prev) => !prev);
+        handleCancel();
+      })
+      .catch((err) => {
+        console.error(err);
+        toast.error(err?.response?.data?.message);
+      });
+  };
+
+  // ✅ Submit - Edit
+  const handleEdit = (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+
+    putRequest({ url: `properties/${modalData?._id}`, cred: formData })
+      .then((res) => {
+        toast.success(res?.data?.message);
+        setUpdateStatus((prev) => !prev);
+        handleCancel();
+      })
+      .catch((err) => {
+        console.error(err);
+        toast.error(err?.response?.data?.message);
+      });
+  };
+
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50 backdrop-blur-lg">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg">
-        {/* Header */}
-        <div className="flex justify-between items-center p-6 border-b">
-          <h3 className="text-2xl font-bold text-gray-900">
-            {modalData ? "Edit Property" : "Add New Property"}
-          </h3>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-full"
-          >
-            <X size={20} className="text-gray-500" />
-          </button>
-        </div>
+    <Modal
+  title={modalData ? "Edit Property" : "Add Property"}
+  open={isModalOpen}
+  onCancel={handleCancel}
+  footer={null}
+  width={800}
+>
+  <hr className="my-2 py-2" />
+            <form
+          onSubmit={modalData ? handleEdit : handleSubmit}
+          className="space-y-6"
+          noValidate
+        >
+          {/* Property Title */}
+          <div>
+            <input
+              type="text"
+              name="name"
+              value={formData?.name}
+              onChange={handleInputChange}
+              placeholder="Enter property title"
+              className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+              required
+            />
+            {errors.name && (
+              <div className="text-red-500 mt-1">{errors.name}</div>
+            )}
+          </div>
 
-        {/* Body */}
-        <div className="p-6 space-y-5">
-          <div className="flex gap-4 items-center">
-            <div className="flex-1">
-              <label className="block text-sm font-semibold">
-                Property Title
-              </label>
-              <input
-                type="text"
-                name="name"
-                value={newProperty?.name}
-                onChange={handleInputChange}
-                placeholder="Enter property title"
-                className="w-full p-2 border rounded-xl"
-                required
-              />
-            </div>
-
-            <div className="flex-1">
-              <label className="block text-sm font-semibold">
-                Property Type
-              </label>
-              <select
-                name="propertyType"
-                value={newProperty?.propertyType}
-                onChange={handleInputChange}
-                className="w-full border p-2 rounded-md"
-                required
-              >
-                <option value="">Select Property Type</option>
-                {["Villa", "Commercial", "Residential", "Plot"].map((type) => (
-                  <option key={type} value={type}>
-                    {type}
-                  </option>
-                ))}
-              </select>
-            </div>
+          {/* Property Type */}
+          <div>
+            <select
+              name="propertyType"
+              value={formData?.propertyType}
+              onChange={handleInputChange}
+              className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+              required
+            >
+              <option value="">Select Property Type</option>
+              {["Villa", "Commercial", "Residential", "Plot"].map((type) => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
+              ))}
+            </select>
+            {errors.propertyType && (
+              <div className="text-red-500 mt-1">{errors.propertyType}</div>
+            )}
           </div>
 
           {/* Prices */}
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-semibold">
-                Actual Price
-              </label>
-              <input
-                type="text"
-                name="actualPrice"
-                value={newProperty?.actualPrice}
-                onChange={handleInputChange}
-                className="w-full p-2 border rounded-xl"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-semibold">
-                Selling Price
-              </label>
-              <input
-                type="text"
-                name="sellingPrice"
-                value={newProperty?.sellingPrice}
-                onChange={handleInputChange}
-                className="w-full p-2 border rounded-xl"
-              />
-            </div>
+            <input
+              type="text"
+              name="actualPrice"
+              value={formData?.actualPrice}
+              onChange={handleInputChange}
+              placeholder="Actual Price"
+              className="w-full p-4 border border-gray-300 rounded-xl outline-none"
+            />
+            <input
+              type="text"
+              name="sellingPrice"
+              value={formData?.sellingPrice}
+              onChange={handleInputChange}
+              placeholder="Selling Price"
+              className="w-full p-4 border border-gray-300 rounded-xl outline-none"
+            />
           </div>
 
-          {/* Address + Description */}
+          {/* Address & Description */}
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-semibold">Location</label>
-              <Addressform
-                value={newProperty?.address}
-                onSelect={handleLocationSelect}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-semibold">Description</label>
-              <textarea
-                name="description"
-                value={newProperty?.description}
-                onChange={handleInputChange}
-                className="w-full p-2 border rounded-xl"
-              />
-            </div>
+            <Addressform
+              value={formData?.address}
+              onSelect={handleLocationSelect}
+            />
+            <textarea
+              name="description"
+              value={formData?.description}
+              onChange={handleInputChange}
+              placeholder="Description"
+              rows="1"
+              className="w-full p-4 border border-gray-300 rounded-xl outline-none"
+            />
           </div>
 
-          {/* Nearby */}
+          {/* Nearby Places */}
           <div>
             <div className="flex justify-between items-center mb-2">
-              <label className="block text-sm font-semibold">
-                Nearby Places
-              </label>
+              <label className="text-sm font-semibold">Nearby Places</label>
               <button
                 type="button"
                 onClick={addNearby}
@@ -276,7 +307,7 @@ const AddPropertyModal = ({ show, onClose, modalData, setUpdateStatus }) => {
                 + Add
               </button>
             </div>
-            {newProperty.nearby.map((item, index) => (
+            {formData.nearby.map((item, index) => (
               <div
                 key={index}
                 className="grid grid-cols-[1fr_1fr_auto] gap-2 mb-2"
@@ -288,7 +319,7 @@ const AddPropertyModal = ({ show, onClose, modalData, setUpdateStatus }) => {
                   onChange={(e) =>
                     handleNearbyChange(index, "name", e.target.value)
                   }
-                  className="p-2 border rounded-xl"
+                  className="w-full p-4 border border-gray-300 rounded-xl outline-none"
                 />
                 <input
                   type="text"
@@ -297,7 +328,7 @@ const AddPropertyModal = ({ show, onClose, modalData, setUpdateStatus }) => {
                   onChange={(e) =>
                     handleNearbyChange(index, "distance", e.target.value)
                   }
-                  className="p-2 border rounded-xl"
+                  className="w-full p-4 border border-gray-300 rounded-xl outline-none"
                 />
                 <button
                   type="button"
@@ -310,7 +341,7 @@ const AddPropertyModal = ({ show, onClose, modalData, setUpdateStatus }) => {
             ))}
           </div>
 
-          {/* Facilities + Services */}
+          {/* Facilities & Services */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block mb-2 font-semibold">Facilities</label>
@@ -319,7 +350,7 @@ const AddPropertyModal = ({ show, onClose, modalData, setUpdateStatus }) => {
                 allowClear
                 style={{ width: "100%" }}
                 placeholder="Select Facilities"
-                value={newProperty.facilities}
+                value={formData?.facilities}
                 onChange={handleFacilitiesChange}
               >
                 {facilitiesOptions.map((f) => (
@@ -329,7 +360,6 @@ const AddPropertyModal = ({ show, onClose, modalData, setUpdateStatus }) => {
                 ))}
               </Select>
             </div>
-
             <div>
               <label className="block mb-2 font-semibold">Services</label>
               <Select
@@ -337,7 +367,7 @@ const AddPropertyModal = ({ show, onClose, modalData, setUpdateStatus }) => {
                 allowClear
                 style={{ width: "100%" }}
                 placeholder="Select Services"
-                value={newProperty.services}
+                value={formData?.services}
                 onChange={handleServicesChange}
               >
                 {servicesOptions.map((s) => (
@@ -349,131 +379,94 @@ const AddPropertyModal = ({ show, onClose, modalData, setUpdateStatus }) => {
             </div>
           </div>
 
-          <div className="mb-3">
-            <label className="form-label fw-bold">Gallery Images</label>
+          {/* Gallery */}
+          <div>
+            <label className="block font-semibold mb-2">Images</label>
             <input
               type="file"
-              className="form-control"
               name="gallery"
               multiple
               onChange={handleChangeImage}
+              className="mb-2"
             />
+            <div className="flex gap-2 overflow-auto">
+              {formData?.gallery?.map((imgUrl, index) => (
+                <img
+                  key={index}
+                  src={imgUrl}
+                  alt={`uploaded-${index}`}
+                  className="w-16 h-16 object-cover rounded"
+                />
+              ))}
+            </div>
           </div>
 
-          <div
-            className="d-flex flex-nowrap gap-2  mt-2 overflow-auto mt-2"
-            style={{ whiteSpace: "nowrap" }}
-          >
-            {newProperty.gallery?.map((imgUrl, index) => (
-              <img
-                key={index}
-                src={imgUrl}
-                alt={`uploaded-${index}`}
-                className="img-thumbnail"
-                style={{
-                  width: "50px",
-                  height: "50px",
-                  objectFit: "cover",
-                  display: "inline-block",
-                }}
-              />
-            ))}
-          </div>
-
-          <div className="mb-3">
-            <label className="form-label fw-bold">Documents</label>
-            <button
-              type="button"
-              className="btn btn-sm btn-primary mb-2"
-              onClick={() =>
-                setNewProperty((prev) => ({
-                  ...prev,
-                  documents: [
-                    ...(prev.documents || []),
-                    { name: "", number: "", image: "" }, // empty object add
-                  ],
-                }))
-              }
-            >
-              + Add Document
-            </button>
-
-            <div
-              className="d-flex flex-nowrap gap-3 overflow-auto"
-              style={{ whiteSpace: "nowrap" }}
-            >
-              {newProperty.documents?.map((doc, index) => (
+          {/* Documents - single line for image, name, number */}
+          <div>
+            <label className="block font-semibold mb-2">Documents</label>
+            <div className="flex flex-col gap-4">
+              {formData?.documents?.map((doc, index) => (
                 <div
                   key={index}
-                  className="border rounded p-2 text-center"
-                  style={{ minWidth: "200px" }}
+                  className=" p-3 rounded-xl flex flex-col gap-2"
                 >
-                  {/* Image Upload */}
-                  <input
-                    type="file"
-                    className="form-control mb-2"
-                    onChange={(e) => handleDocumentImage(e, index)}
-                  />
-
-                  {doc.image && (
-                    <img
-                      src={doc.image}
-                      alt={doc.name || `doc-${index}`}
-                      className="img-thumbnail mb-2"
-                      style={{
-                        width: "80px",
-                        height: "80px",
-                        objectFit: "cover",
-                      }}
+                  {/* First Line: Name + Number */}
+                  <div className="flex items-center gap-4">
+                    <input
+                      type="file"
+                      className="w-32"
+                      onChange={(e) => handleDocumentImage(e, index)}
                     />
-                  )}
+                    {doc.image && (
+                      <img
+                        src={doc.image}
+                        alt={`doc-${index}`}
+                        className="w-16 h-16 object-cover rounded"
+                      />
+                    )}
+                  </div>
 
-                  {/* Name input */}
-                  <input
-                    type="text"
-                    className="form-control mb-2"
-                    placeholder="Document Name"
-                    value={doc.name}
-                    onChange={(e) =>
-                      handleDocumentChange(index, "name", e.target.value)
-                    }
-                  />
-
-                  {/* Number input */}
-                  <input
-                    type="text"
-                    className="form-control mb-2"
-                    placeholder="Document Number"
-                    value={doc.number}
-                    onChange={(e) =>
-                      handleDocumentChange(index, "number", e.target.value)
-                    }
-                  />
+                  {/* Second Line: File Upload + Preview */}
+                  <div className="flex gap-4">
+                    <input
+                      type="text"
+                      placeholder="Document Name"
+                      value={doc.name}
+                      onChange={(e) =>
+                        handleDocumentChange(index, "name", e.target.value)
+                      }
+                      className="w-full p-4 border border-gray-300 rounded-xl outline-none"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Document Number"
+                      value={doc.number}
+                      onChange={(e) =>
+                        handleDocumentChange(index, "number", e.target.value)
+                      }
+                      className="w-full p-4 border border-gray-300 rounded-xl outline-none"
+                    />
+                  </div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Footer Buttons */}
-          <div className="flex gap-4 pt-4">
+          {/* Actions */}
+          <div className="flex justify-end gap-2">
             <button
               type="button"
-              onClick={onClose}
-              className="flex-1 py-3 px-4 border-2 border-gray-300 rounded-xl"
+              className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100"
+              onClick={handleCancel}
             >
               Cancel
             </button>
-            <button
-              type="button"
-              onClick={handleFormSubmit}
-              className="flex-1 py-3 px-4 bg-blue-600 text-white rounded-xl"
-            >
-              {modalData ? "Update Property" : "Add Property"}
+            <button type="submit"               className="px-6 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition">
+              {modalData ? "Update Property" : "Save Property"}
             </button>
           </div>
-        </div>
-      </div>
-    </div>
+        </form>
+        </Modal>
   );
 };
 

@@ -80,8 +80,8 @@ const Addressform = ({ value, onSelect }) => {
         type="text"
         value={searchTerm}
         onChange={handleSearch}
-        placeholder="Search for a location"
-        className="w-full px-4 py-2 border rounded-md"
+        placeholder="Search location or address"
+          className="w-full p-4 border border-gray-300 rounded-xl outline-none"
       />
 
       {/* Suggestions Dropdown */}

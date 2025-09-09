@@ -4,3 +4,15 @@ body {
     Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue',
     sans-serif;
 }
+/* styles.css */
+.custom-select .ant-select-selector {
+  background-color: #f0f0f0;   /* background color */
+  border: 1px solid #1890ff;   /* border color */
+  border-radius: 8px;           /* rounded corners */
+  height: 40px;                 /* height */
+  font-size: 14px;              /* font size */
+}
+
+.custom-select .ant-select-selection-item {
+  color: #000;                  /* selected item color */
+}

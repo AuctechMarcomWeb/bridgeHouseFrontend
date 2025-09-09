@@ -23,15 +23,12 @@ const AddPropertyModal = ({ show, onClose, modalData, setUpdateStatus }) => {
     nearby: [{ name: "", distance: "" }],
     documents: [
       {
-        name: "Registry",
-        number: "DOC-1234",
-        image: "https://example.com/docs/registry.jpg",
+        name: "",
+        number: "",
+        image: "",
       },
     ],
-    gallery: [
-      "https://example.com/images/villa1.jpg",
-      "https://example.com/images/villa2.jpg",
-    ],
+    gallery: [],
   });
   console.log("newProperty", newProperty);
 
@@ -116,24 +113,58 @@ const AddPropertyModal = ({ show, onClose, modalData, setUpdateStatus }) => {
     }
   };
   const handleChangeImage = (e) => {
-    const file = e.target.files[0];
-    fileUpload({
-      url: `upload/uploadImage`,
-      cred: {
-        file,
-      },
-    })
-      .then((res) => {
+    const files = Array.from(e.target.files); // multiple files ko array me liya
+
+    Promise.all(
+      files.map((file) =>
+        fileUpload({
+          url: `upload/uploadImage`,
+          cred: { file },
+        }).then((res) => res.data?.data?.imageUrl)
+      )
+    )
+      .then((uploadedUrls) => {
         setNewProperty((prev) => ({
           ...prev,
-          image: res.data?.data?.imageUrl,
+          gallery: [...(prev.gallery || []), ...uploadedUrls], // purane + naye images
         }));
-        console.log("res data pic ", res?.data);
+        console.log("Uploaded images: ", uploadedUrls);
       })
       .catch((error) => {
         console.error("Image upload failed:", error);
       });
   };
+  // Change image
+  const handleDocumentImage = (e, index) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    fileUpload({
+      url: `upload/uploadImage`,
+      cred: { file },
+    })
+      .then((res) => {
+        const imageUrl = res.data?.data?.imageUrl;
+        setNewProperty((prev) => {
+          const updatedDocs = [...prev.documents];
+          updatedDocs[index].image = imageUrl;
+          return { ...prev, documents: updatedDocs };
+        });
+      })
+      .catch((error) => {
+        console.error("Document image upload failed:", error);
+      });
+  };
+
+  // Change name/number
+  const handleDocumentChange = (index, field, value) => {
+    setNewProperty((prev) => {
+      const updatedDocs = [...prev.documents];
+      updatedDocs[index][field] = value;
+      return { ...prev, documents: updatedDocs };
+    });
+  };
+
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50 backdrop-blur-lg">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg">
@@ -180,7 +211,7 @@ const AddPropertyModal = ({ show, onClose, modalData, setUpdateStatus }) => {
                 required
               >
                 <option value="">Select Property Type</option>
-                {["Villa", "Apartment", "House", "Plot"].map((type) => (
+                {["Villa", "Commercial", "Residential", "Plot"].map((type) => (
                   <option key={type} value={type}>
                     {type}
                   </option>
@@ -325,13 +356,108 @@ const AddPropertyModal = ({ show, onClose, modalData, setUpdateStatus }) => {
           </div>
 
           <div className="mb-3">
-            <label className="form-label fw-bold">Image URL</label>
+            <label className="form-label fw-bold">Gallery Images</label>
             <input
               type="file"
-              className={"form-control"}
-              name="image"
+              className="form-control"
+              name="gallery"
+              multiple
               onChange={handleChangeImage}
             />
+          </div>
+
+          <div
+            className="d-flex flex-nowrap gap-2  mt-2 overflow-auto mt-2"
+            style={{ whiteSpace: "nowrap" }}
+          >
+            {newProperty.gallery?.map((imgUrl, index) => (
+              <img
+                key={index}
+                src={imgUrl}
+                alt={`uploaded-${index}`}
+                className="img-thumbnail"
+                style={{
+                  width: "50px",
+                  height: "50px",
+                  objectFit: "cover",
+                  display: "inline-block",
+                }}
+              />
+            ))}
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label fw-bold">Documents</label>
+            <button
+              type="button"
+              className="btn btn-sm btn-primary mb-2"
+              onClick={() =>
+                setNewProperty((prev) => ({
+                  ...prev,
+                  documents: [
+                    ...(prev.documents || []),
+                    { name: "", number: "", image: "" }, // empty object add
+                  ],
+                }))
+              }
+            >
+              + Add Document
+            </button>
+
+            <div
+              className="d-flex flex-nowrap gap-3 overflow-auto"
+              style={{ whiteSpace: "nowrap" }}
+            >
+              {newProperty.documents?.map((doc, index) => (
+                <div
+                  key={index}
+                  className="border rounded p-2 text-center"
+                  style={{ minWidth: "200px" }}
+                >
+                  {/* Image Upload */}
+                  <input
+                    type="file"
+                    className="form-control mb-2"
+                    onChange={(e) => handleDocumentImage(e, index)}
+                  />
+
+                  {doc.image && (
+                    <img
+                      src={doc.image}
+                      alt={doc.name || `doc-${index}`}
+                      className="img-thumbnail mb-2"
+                      style={{
+                        width: "80px",
+                        height: "80px",
+                        objectFit: "cover",
+                      }}
+                    />
+                  )}
+
+                  {/* Name input */}
+                  <input
+                    type="text"
+                    className="form-control mb-2"
+                    placeholder="Document Name"
+                    value={doc.name}
+                    onChange={(e) =>
+                      handleDocumentChange(index, "name", e.target.value)
+                    }
+                  />
+
+                  {/* Number input */}
+                  <input
+                    type="text"
+                    className="form-control mb-2"
+                    placeholder="Document Number"
+                    value={doc.number}
+                    onChange={(e) =>
+                      handleDocumentChange(index, "number", e.target.value)
+                    }
+                  />
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* Footer Buttons */}

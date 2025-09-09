@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -11,15 +12,29 @@ import {
   MapPin,
   Filter,
   SlidersHorizontal,
+  Car,
+  Building2,
+  Zap,
+  Droplet,
+  Wrench,
 } from "lucide-react";
+import { getRequest } from "../Helpers";
 
 export default function RentalListingApp() {
-
-   const navigate = useNavigate();
+  const navigate = useNavigate();
   function handleClick() {
     navigate("/property-detail");
-
   }
+  const iconMap = {
+    // Facilities
+    Parking: Car,
+    Lift: Building2,
+    "Power Backup": Zap,
+
+    // Services
+    "Water Supply": Droplet,
+    Maintenance: Wrench,
+  };
 
   const [filters, setFilters] = useState({
     location: "Chicago",
@@ -55,111 +70,37 @@ export default function RentalListingApp() {
 
   const [openDropdowns, setOpenDropdowns] = useState({});
   const [favorites, setFavorites] = useState(new Set());
+  const [loading, setLoading] = useState(false);
+  const [listings, setListing] = useState([]);
+  const [showAll, setShowAll] = useState(false);
+  const [fiters, setFiters] = useState({
+    page: 1,
+    limit: 10,
+    search: "",
+    sortBy: "recent",
+    isPagination: true,
+  });
 
-  const listings = [
-    {
-      id: 1,
-      title: "Serenity Condo Suite",
-      location: "125 Grace Hawkins Ave, Elgin, USA",
-      price: "₹3,100",
-      rating: 5.0,
-      reviews: 20,
-      bedrooms: 4,
-      bathrooms: 4,
-      sqft: 350,
-      category: "Apartment",
-      listedDate: "16 Jun 2023",
-      image:
-        "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop",
-      featured: true,
-      tag: "Featured",
-    },
-    {
-      id: 2,
-      title: "Loyal Apartment",
-      location: "123 Shirley Court Baltimore, USA",
-      price: "₹1,940",
-      rating: 4.0,
-      reviews: 28,
-      bedrooms: 2,
-      bathrooms: 3,
-      sqft: 350,
-      category: "Apartment",
-      listedDate: "22 May 2023",
-      image:
-        "https://images.unsplash.com/photo-1484154218962-a197022b5858?w=400&h=300&fit=crop",
-      featured: false,
-      tag: "Approved",
-    },
-    {
-      id: 3,
-      title: "Grand Villa House",
-      location: "123 Oak Ridge Villa, USA",
-      price: "₹1,370",
-      rating: 4.1,
-      reviews: 25,
-      bedrooms: 4,
-      bathrooms: 3,
-      sqft: 520,
-      category: "Villa",
-      listedDate: "28 Apr 2023",
-      image:
-        "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=400&h=300&fit=crop",
-      featured: true,
-      tag: "Featured",
-    },
-    {
-      id: 4,
-      title: "Palm Cove Bungalows",
-      location: "145 Pine Boulevard Beach, USA",
-      price: "₹1,370",
-      rating: 4.8,
-      reviews: 25,
-      bedrooms: 5,
-      bathrooms: 3,
-      sqft: 700,
-      category: "Bungalow",
-      listedDate: "16 Mar 2023",
-      image:
-        "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=400&h=300&fit=crop",
-      featured: false,
-      tag: "",
-    },
-    {
-      id: 5,
-      title: "Blue Horizon Villa",
-      location: "The Golden Oaks Online, USA",
-      price: "₹2,000",
-      rating: 4.5,
-      reviews: 27,
-      bedrooms: 3,
-      bathrooms: 1,
-      sqft: 400,
-      category: "Villa",
-      listedDate: "08 Mar 2023",
-      image:
-        "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400&h=300&fit=crop",
-      featured: false,
-      tag: "",
-    },
-    {
-      id: 6,
-      title: "Wanderlust Lodge",
-      location: "Via Brera Boulevard, Boston, USA",
-      price: "₹1,950",
-      rating: 4.7,
-      reviews: 46,
-      bedrooms: 3,
-      bathrooms: 2,
-      sqft: 550,
-      category: "Lodge",
-      listedDate: "25 Feb 2023",
-      image:
-        "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=400&h=300&fit=crop",
-      featured: false,
-      tag: "",
-    },
-  ];
+  useEffect(() => {
+    const { page, limit, search, sortBy, isPagination } = fiters;
+
+    const queryParams = new URLSearchParams({
+      page,
+      limit,
+      search,
+      sortBy,
+      isPagination,
+    }).toString();
+
+    setLoading(true);
+    getRequest(`properties?${queryParams}`)
+      .then((res) => {
+        setListing(res?.data?.data?.properties || []);
+        console.log("listing res", res?.data?.data || []);
+      })
+      .catch((err) => console.log("Api Error", err))
+      .finally(() => setLoading(false));
+  }, [fiters]);
 
   const toggleDropdown = (dropdown) => {
     setOpenDropdowns((prev) => ({
@@ -180,24 +121,24 @@ export default function RentalListingApp() {
     });
   };
 
-  const renderStars = (rating, reviews) => {
-    return (
-      <div className="flex items-center gap-1 text-sm mb-2">
-        {[...Array(5)].map((_, i) => (
-          <Star
-            key={i}
-            className={`w-4 h-4 ${
-              i < Math.floor(rating)
-                ? "fill-amber-400 text-amber-400"
-                : "text-gray-300"
-            }`}
-          />
-        ))}
-        <span className="text-gray-700 ml-2 font-medium">{rating}</span>
-        <span className="text-gray-500 text-xs">({reviews} reviews)</span>
-      </div>
-    );
-  };
+  // const renderStars = (rating, reviews) => {
+  //   return (
+  //     <div className="flex items-center gap-1 text-sm mb-2">
+  //       {[...Array(5)].map((_, i) => (
+  //         <Star
+  //           key={i}
+  //           className={`w-4 h-4 ${
+  //             i < Math.floor(rating)
+  //               ? "fill-amber-400 text-amber-400"
+  //               : "text-gray-300"
+  //           }`}
+  //         />
+  //       ))}
+  //       <span className="text-gray-700 ml-2 font-medium">{rating}</span>
+  //       <span className="text-gray-500 text-xs">({reviews} reviews)</span>
+  //     </div>
+  //   );
+  // };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
@@ -301,27 +242,27 @@ export default function RentalListingApp() {
                 <div className="space-y-3">
                   <button
                     className="flex items-center justify-between w-full text-left group"
-                    onClick={() => toggleDropdown("categories")}
+                    onClick={() => toggleDropdown("propertyType")}
                   >
                     <span className="text-sm font-semibold text-gray-700 group-hover:text-blue-600 transition-colors">
                       Property Types
                     </span>
                     <ChevronDown
                       className={`w-4 h-4 text-gray-400 transition-transform group-hover:text-blue-600 ${
-                        openDropdowns.categories ? "rotate-180" : ""
+                        openDropdowns?.propertyType ? "rotate-180" : ""
                       }`}
                     />
                   </button>
-                  {openDropdowns.categories && (
+                  {openDropdowns?.propertyType && (
                     <div className="space-y-3 pl-4 border-l-2 border-blue-100">
                       {[
                         { name: "Apartment", count: 45 },
                         { name: "Villa", count: 12 },
-                        { name: "House", count: 18 },
+                        { name: "Residential", count: 18 },
                         { name: "Plot", count: 32 },
-                      ].map((category) => (
+                      ].map((propertyType) => (
                         <label
-                          key={category.name}
+                          key={propertyType?.name}
                           className="flex items-center justify-between group cursor-pointer"
                         >
                           <div className="flex items-center">
@@ -331,11 +272,11 @@ export default function RentalListingApp() {
                               defaultChecked
                             />
                             <span className="text-sm  text-gray-700 group-hover:text-blue-600 transition-colors">
-                              {category.name}
+                              {propertyType?.name}
                             </span>
                           </div>
                           <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
-                            {category.count}
+                            {propertyType?.count}
                           </span>
                         </label>
                       ))}
@@ -441,60 +382,41 @@ export default function RentalListingApp() {
 
           {/* Enhanced Main Content */}
           <div className="flex-1 min-w-0">
-            {/* Results Header */}
-            {/* <div className="flex items-center justify-between mb-8 bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-              <div>
-                <h3 className="text-xl font-semibold text-gray-900">
-                  {listings.length} Premium Properties
-                </h3>
-                <p className="text-gray-600 mt-1">Showing all available rentals</p>
-              </div>
-              <div className="flex items-center gap-4">
-                <select className="px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                  <option>Sort by: Featured</option>
-                  <option>Price: Low to High</option>
-                  <option>Price: High to Low</option>
-                  <option>Newest First</option>
-                </select>
-              </div>
-            </div> */}
-
             {/* Enhanced Listing Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {listings.map((listing) => (
-                <div onClick={handleClick}
-                  key={listing.id}
+              {(showAll ? listings : listings.slice(0, 4)).map((listing) => (
+                <div
+                  onClick={handleClick}
+                  key={listing?.id}
                   className="group bg-white rounded-2xl shadow-lg  overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 cursor-pointer"
-                    >
+                >
                   <div className="relative overflow-hidden">
                     <img
-                      src={listing.image}
-                      alt={listing.title}
+                      src={listing?.gallery}
+                      alt={listing?.name}
                       className=" w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300"
                     />
-                     <div className="absolute inset-0 bg-black/30 opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                      </div>
-                   
+                    <div className="absolute inset-0 bg-black/30 opacity-100 transition-opacity duration-300 flex items-center justify-center"></div>
 
-                    {listing.tag && (
+                    {listing?.status && (
                       <div
                         className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs  backdrop-blur-sm ${
-                          listing.tag === "Featured"
+                          listing?.status === "Featured"
                             ? "bg-amber-500/90 text-white shadow-lg"
                             : "bg-blue-500/90 text-white shadow-lg"
                         }`}
                       >
-                        {listing.tag}
+                        {listing?.status}
                       </div>
                     )}
 
                     <button
-                      onClick={() => toggleFavorite(listing.id)}
+                      onClick={() => toggleFavorite(listing?.id)}
                       className="absolute top-4 right-4 p-1 bg-white/90 backdrop-blur-sm rounded-full shadow-md hover:shadow-lg transition-all duration-200 group"
                     >
                       <Heart
                         className={`w-4 h-4 transition-colors ${
-                          favorites.has(listing.id)
+                          favorites.has(listing?.id)
                             ? "fill-red-500 text-red-500"
                             : "text-gray-600 hover:text-red-500"
                         }`}
@@ -503,40 +425,60 @@ export default function RentalListingApp() {
 
                     <div className="absolute bottom-4 left-4">
                       <div className="bg-black/70 backdrop-blur-sm text-white px-4 py-2 rounded-xl font-bold text-base shadow-lg">
-                        {listing.price}
+                        {listing?.actualPrice}
                         <span className="text-sm font-normal opacity-80"></span>
                       </div>
                     </div>
                   </div>
 
                   <div className="p-6 space-y-4">
-                    {renderStars(listing.rating, listing.reviews)}
+                    {/* {renderStars(listing.rating, listing.reviews)} */}
 
                     <div>
                       <h3 className="font-bold text-base text-gray-800 mb-2 group-hover:text-blue-600 transition-colors">
-                        {listing.title}
+                        {listing?.name}
                       </h3>
 
                       <div className="flex items-start text-gray-600 text-sm">
                         <MapPin className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0 text-gray-400" />
-                        <span>{listing.location}</span>
+                        <span>{listing?.address}</span>
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between bg-gray-50 rounded-xl p-4 mb-0">
-                      <div className="flex items-center gap-1 text-sm text-gray-600">
-                        <Bed className="w-4 h-4 text-blue-500" />
-                        <span className="font-medium">{listing.bedrooms}</span>
+                    <div className="space-y-2">
+                      {/* Facilities + Services */}
+                      <div className="flex flex-wrap items-center bg-gray-50 rounded-xl p-4 gap-x-6 gap-y-2">
+                        {[
+                          ...(listing.facilities || []),
+                          ...(listing.services || []),
+                        ].map((item, index) => {
+                          const Icon = iconMap[item] || Star;
+                          return (
+                            <div
+                              key={index}
+                              className="flex items-center gap-2 text-sm text-gray-600"
+                            >
+                              <Icon className="w-4 h-4 text-blue-500" />
+                              <span className="font-medium">{item}</span>
+                            </div>
+                          );
+                        })}
                       </div>
-                      <div className="flex items-center gap-1 text-sm text-gray-600">
-                        <Bath className="w-4 h-4 text-blue-500" />
-                        <span className="font-medium">{listing.bathrooms}</span>
-                      </div>
-                      <div className="flex items-center gap-1 text-sm text-gray-600">
-                        <Square className="w-4 h-4 text-blue-500" />
-                        <span className="font-medium">
-                          {listing.sqft} sq ft
-                        </span>
+
+                      {/* Nearby */}
+                      <div className="flex flex-wrap items-center bg-gray-50 rounded-xl p-4 gap-x-6 gap-y-2">
+                        {listing.nearby?.map((place, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center gap-2 text-sm text-gray-600"
+                          >
+                            <MapPin className="w-4 h-4 text-red-500" />
+                            <span className="font-medium capitalize">
+                              {place.name}
+                            </span>{" "}
+                            - <span>{place.distance}</span>
+                          </div>
+                        ))}
                       </div>
                     </div>
 
@@ -545,7 +487,7 @@ export default function RentalListingApp() {
                         Listed: {listing.listedDate}
                       </span>
                       <span className="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-medium">
-                        {listing.category}
+                        {listing?.propertyType}
                       </span>
                     </div>
                   </div>
@@ -554,11 +496,16 @@ export default function RentalListingApp() {
             </div>
 
             {/* Enhanced View All Button */}
-            <div className="text-center mt-8 md:mt-12">
-              <button className="bg-teal-500 text-white px-4 py-2 md:px-10 md:py-4 rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
-                View All
-              </button>
-            </div>
+            {!showAll && listings.length > 4 && (
+              <div className="text-center mt-8 md:mt-12">
+                <button
+                  onClick={() => setShowAll(true)}
+                  className="bg-teal-500 text-white px-4 py-2 md:px-10 md:py-4 rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                >
+                  View All
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

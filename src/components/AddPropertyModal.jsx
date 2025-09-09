@@ -90,28 +90,22 @@ const AddPropertyModal = ({ show, onClose, modalData, setUpdateStatus }) => {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-
     try {
-      let res;
-      if (modalData?._id) {
-        // ✅ Edit Mode → PUT API
-        res = await putRequest({
-          url: `properties/${modalData._id}`,
-          cred: newProperty,
-        });
-        console.log("Property updated:", res?.data);
-      } else {
-        // ✅ Add Mode → POST API
-        res = await postRequest({ url: `properties`, cred: newProperty });
-        console.log("Property added:", res?.data);
-      }
+      const res = await postRequest({ url: `properties`, cred: newProperty });
+      console.log("Property added:", res?.data);
 
-      setUpdateStatus((prev) => !prev);
-      onClose();
+      if (res?.data?._id) {
+        // property added successfully
+        setUpdateStatus((prev) => !prev); // trigger GET
+        onClose();
+      } else {
+        console.error("POST API did not return a valid property.");
+      }
     } catch (err) {
-      console.error("Error saving property:", err);
+      console.error("Error adding property:", err);
     }
   };
+
   const handleChangeImage = (e) => {
     const files = Array.from(e.target.files); // multiple files ko array me liya
 

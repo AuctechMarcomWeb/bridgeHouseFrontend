@@ -58,9 +58,9 @@ export default function FeaturedPropertyType() {
     isPagination: true,
     page: 1,
     limit: 10,
-    search: "Residential",
+    search: "",
     isActive: true,
-    sortBy: "recent",
+    sortBy: "",
   });
 
   useEffect(() => {
@@ -71,7 +71,7 @@ export default function FeaturedPropertyType() {
     const queryString = `isPagination=${filters.isPagination}&page=${filters.page}&limit=${filters.limit}&search=${filters.search}&isActive=${filters.isActive}&sortBy=${filters.sortBy}`;
     getRequest(`category?${queryString}`)
       .then((res) => {
-        console.log("Category response:", res);
+        console.log("Category response:", res?.data?.data?.categories || []);
         setCategories(res?.data?.data?.categories || []);
       })
       .catch((err) => {

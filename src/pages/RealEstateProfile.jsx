@@ -18,7 +18,7 @@ import Swal from "sweetalert2";
 import AddPropertyModal from "../components/AddPropertyModal";
 import EditPropertyModal from "../components/EditPropertyModal";
 import EditProfileModal from "../components/EditProfileModal";
-import { deleteRequest, postRequest } from "../Helpers";
+import { deleteRequest, getRequest, postRequest } from "../Helpers";
 import { ProfileContext } from "../context/ProfileContext";
 
 import React from "react";
@@ -38,37 +38,58 @@ const RealEstateProfile = () => {
     avatar: "/api/placeholder/150/150",
   });
 
-  const [properties, setProperties] = useState([
-    {
-      id: 1,
-      title: "Modern  Apartment",
-      location: "Manhattan, NY",
-      price: "₹850,000",
-      bedrooms: 2,
-      bathrooms: 2,
-      area: "1,200 sq ft",
-      type: "Apartment",
-      status: "For Sale",
-      featured: true,
-      image:
-        "https://i.pinimg.com/736x/cf/b0/b7/cfb0b750bb44819aba2f11b28e5ff08e.jpg",
-    },
-    {
-      id: 2,
-      title: "Suburban Family Home",
-      location: "Brooklyn, NY",
-      price: "₹1,200,000",
-      bedrooms: 4,
-      bathrooms: 3,
-      area: "2,500 sq ft",
-      type: "House",
-      status: "For Sale",
-      featured: false,
-      image: "api",
-    },
-  ]);
+  // const [properties, setProperties] = useState([
+  //   {
+  //     id: 1,
+  //     title: "Modern  Apartment",
+  //     location: "Manhattan, NY",
+  //     price: "₹850,000",
+  //     bedrooms: 2,
+  //     bathrooms: 2,
+  //     area: "1,200 sq ft",
+  //     type: "Apartment",
+  //     status: "For Sale",
+  //     featured: true,
+  //     image:
+  //       "https://i.pinimg.com/736x/cf/b0/b7/cfb0b750bb44819aba2f11b28e5ff08e.jpg",
+  //   },
+  //   {
+  //     id: 2,
+  //     title: "Suburban Family Home",
+  //     location: "Brooklyn, NY",
+  //     price: "₹1,200,000",
+  //     bedrooms: 4,
+  //     bathrooms: 3,
+  //     area: "2,500 sq ft",
+  //     type: "House",
+  //     status: "For Sale",
+  //     featured: false,
+  //     image: "api",
+  //   },
+  // ]);
+  const [properties, setProperties] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [updateStatus, setUpdateStatus] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    setLoading(true); // start loading
+    setError(null); // reset error
+
+    getRequest(`properties`)
+      .then((res) => {
+        setProperties(res?.data?.properties || []);
+        console.log("list properties", res?.data);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch properties:", err);
+        setError("Failed to fetch properties");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [updateStatus]);
 
   const handleAddProperty = () => {
     setShowAddForm(true);
@@ -279,19 +300,19 @@ const RealEstateProfile = () => {
               <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
                 {properties.map((property) => (
                   <div
-                    key={property.id}
+                    key={property._id}
                     className="group bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-2xl hover:border-blue-200 transition-all duration-300 transform hover:-translate-y-1"
                   >
                     <div className="relative h-56 bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center overflow-hidden">
                       <Home size={40} className="text-blue-400" />
                       <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
-                      <img src={property.image} alt="" />
+                      <img src={property?.image} alt="" />
                     </div>
 
                     <div className="p-6">
                       <div className="flex justify-between items-start mb-3">
                         <h3 className="font-bold text-gray-900 text-lg group-hover:text-blue-600 transition-colors line-clamp-2">
-                          {property.title}
+                          {property?.name}
                         </h3>
                         <span
                           className={`text-xs font-semibold px-3 py-1 rounded-full ${
@@ -300,50 +321,50 @@ const RealEstateProfile = () => {
                               : "bg-blue-100 text-blue-800"
                           }`}
                         >
-                          {property.status}
+                          {property?.status}
                         </span>
                       </div>
 
                       <div className="flex items-center gap-2 text-gray-600 mb-4">
                         <MapPin size={16} className="text-gray-400" />
-                        <span className="text-sm">{property.location}</span>
+                        <span className="text-sm">{property?.address}</span>
                       </div>
 
                       <div className="text-lg font-bold bg-[#059669] bg-clip-text text-transparent mb-4">
-                        {property.price}
+                        {property?.price}
                       </div>
 
                       <div className="flex justify-between text-sm text-gray-600 mb-6">
                         <div className="flex items-center gap-1">
                           <Bed size={16} className="text-gray-400" />
                           <span className="font-medium">
-                            {property.bedrooms}
-                          </span>
-                          <span>bed</span>
+                            {property?.bedrooms}
+                          </span>{" "}
+                          bed
                         </div>
                         <div className="flex items-center gap-1">
                           <Bath size={16} className="text-gray-400" />
                           <span className="font-medium">
-                            {property.bathrooms}
-                          </span>
-                          <span>bath</span>
+                            {property?.bathrooms}
+                          </span>{" "}
+                          bath
                         </div>
                         <div className="flex items-center gap-1">
                           <Square size={16} className="text-gray-400" />
-                          <span className="font-medium">{property.area}</span>
+                          <span className="font-medium">{property?.area}</span>
                         </div>
                       </div>
 
                       <div className="flex gap-3">
                         <button
-                          onClick={() => handleEditProperty(property.id)}
+                          onClick={() => handleEditProperty(property)}
                           className="flex-1 py-2.5 text-sm font-medium bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all duration-200"
                         >
                           Edit
                         </button>
 
                         <button
-                          onClick={() => handleDeleteProperty(property.id)}
+                          onClick={() => handleDeleteProperty(property._id)}
                           className="flex-1 py-2.5 text-sm font-medium bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-all duration-200"
                         >
                           Delete

@@ -25,11 +25,11 @@ import React from "react";
 
 const RealEstateProfile = () => {
   const [userProfile, setUserProfile] = useState({
-    name: "Abhishek ",
-    accountType: "Licensed Real Estate Agent",
-    email: "Abhishek@email.com",
-    phone: "+91 8975378578",
-    address: "1090, Lucknow",
+    name: " ",
+    accountType: "",
+    email: "",
+    phone: "",
+    address: "",
     location: { type: "Point", coordinates: [0, 0] },
     memberSince: "January 2025",
     rating: 4.9,

@@ -1,5 +1,7 @@
+/* eslint-disable no-undef */
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { v4 as uuidv4 } from "uuid";
 import {
   X,
   Home,
@@ -10,84 +12,138 @@ import {
   Phone,
   IndianRupee,
 } from "lucide-react";
-
+import { getRequest } from "../Helpers/index";
 const RealEstatePopups = () => {
   const [popups, setPopups] = useState([]);
   const navigate = useNavigate();
+  const [banners, setBanners] = useState([]);
+  const [params, setParams] = useState({
+    isPagination: true,
+    page: 1,
+    limit: 10,
+    search: "Summer",
+    sortBy: "recent",
+    isActive: true,
+    bannerType: "",
+  });
 
-  const adData = [
-    {
-      id: 1,
-      title: "Luxury Villa in Beverly Hills",
-      price: "₹2,850,000",
-      location: "Gomti Nagar, Lucknow",
-      image:
-        "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=300&h=200&fit=crop",
-      type: "Villa",
-      beds: 4,
-      baths: 3,
-      sqft: "3,200",
-      gradient: "from-blue-600 to-purple-600",
-    },
-    {
-      id: 2,
-      title: "Modern Downtown Apartment",
-      price: "₹850,000",
-      location: "Hazaratganj, Lucknow",
-      image:
-        "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=300&h=200&fit=crop",
-      type: "Apartment",
-      beds: 2,
-      baths: 2,
-      sqft: "1,100",
-      gradient: "from-emerald-500 to-teal-600",
-    },
-    {
-      id: 3,
-      title: "Cozy Family Home",
-      price: "₹425,000",
-      location: "Jankipuram, Lucknow",
-      image:
-        "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=300&h=200&fit=crop",
-      type: "House",
-      beds: 3,
-      baths: 2,
-      sqft: "2,100",
-      gradient: "from-orange-500 to-red-500",
-    },
-    {
-      id: 4,
-      title: "Oceanfront Condo",
-      price: "₹1,200,000",
-      location: "Gomti Nagar, Lucknow",
-      image:
-        "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=300&h=200&fit=crop",
-      type: "Condo",
-      beds: 2,
-      baths: 2,
-      sqft: "1,400",
-      gradient: "from-cyan-500 to-blue-500",
-    },
+  // Fetch banners
+  useEffect(() => {
+    const query = `?isPagination=${params.isPagination}&page=${params.page}&limit=${params.limit}&search=${params.search}&sortBy=${params.sortBy}&isActive=${params.isActive}&bannerType=${params.bannerType}`;
+
+    getRequest(`banner${query}`)
+      .then((res) => {
+        setBanners(res?.data?.data?.banners || []);
+        console.log("banners fetched:", res?.data?.data?.banners);
+      })
+      .catch((err) => console.error("Error fetching banners:", err));
+  }, []);
+
+  // const adData = [
+  //   {
+  //     id: 1,
+  //     title: "Luxury Villa in Beverly Hills",
+  //     price: "₹2,850,000",
+  //     location: "Gomti Nagar, Lucknow",
+  //     image:
+  //       "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=300&h=200&fit=crop",
+  //     type: "Villa",
+  //     beds: 4,
+  //     baths: 3,
+  //     sqft: "3,200",
+  //     gradient: "from-blue-600 to-purple-600",
+  //   },
+  //   {
+  //     id: 2,
+  //     title: "Modern Downtown Apartment",
+  //     price: "₹850,000",
+  //     location: "Hazaratganj, Lucknow",
+  //     image:
+  //       "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=300&h=200&fit=crop",
+  //     type: "Apartment",
+  //     beds: 2,
+  //     baths: 2,
+  //     sqft: "1,100",
+  //     gradient: "from-emerald-500 to-teal-600",
+  //   },
+  //   {
+  //     id: 3,
+  //     title: "Cozy Family Home",
+  //     price: "₹425,000",
+  //     location: "Jankipuram, Lucknow",
+  //     image:
+  //       "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=300&h=200&fit=crop",
+  //     type: "House",
+  //     beds: 3,
+  //     baths: 2,
+  //     sqft: "2,100",
+  //     gradient: "from-orange-500 to-red-500",
+  //   },
+  //   {
+  //     id: 4,
+  //     title: "Oceanfront Condo",
+  //     price: "₹1,200,000",
+  //     location: "Gomti Nagar, Lucknow",
+  //     image:
+  //       "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=300&h=200&fit=crop",
+  //     type: "Condo",
+  //     beds: 2,
+  //     baths: 2,
+  //     sqft: "1,400",
+  //     gradient: "from-cyan-500 to-blue-500",
+  //   },
+  // ];
+  const gradientMap = [
+    "from-blue-600 to-purple-600",
+    "from-emerald-500 to-teal-600",
+    "from-orange-500 to-red-500",
+    "from-cyan-500 to-blue-500",
   ];
+  const bannerPositions = {
+    top: banners.filter((b) => b.bannerType === "top"),
+    bottom: banners.filter((b) => b.bannerType === "bottom"),
+    left: banners.filter((b) => b.bannerType === "left"),
+    right: banners.filter((b) => b.bannerType === "right"),
+  };
 
   useEffect(() => {
-    const showPopup = (index = 0) => {
-      if (index < adData.length) {
-        const newPopup = {
-          ...adData[index],
-          timestamp: Date.now(),
-          show: true,
-        };
+    const types = ["top", "bottom", "left", "right"];
+    let index = 0;
 
-        setPopups((prev) => [...prev, newPopup]);
+    const showNextPopup = () => {
+      if (index < types.length) {
+        const type = types[index];
 
-        setTimeout(() => showPopup(index + 1), 1000);
+        // Filter banners for this type
+        const bannersOfType = banners.filter((b) => b.bannerType === type);
+
+        bannersOfType.forEach((banner, i) => {
+          const property = banner.propertyId || {};
+
+          setPopups((prev) => [
+            ...prev,
+            {
+              id: uuidv4(),
+              timestamp: Date.now() + i,
+              show: true,
+              position: type,
+              gradient: gradientMap[i % gradientMap.length],
+              location: property.address,
+              price: property.sellingPrice,
+              propertyType: property.propertyType,
+              title: banner.title,
+              bannerImage: banner.bannerImage,
+            },
+          ]);
+        });
+
+        index++;
+        setTimeout(showNextPopup, 1000);
       }
     };
 
-    const timer = setTimeout(() => showPopup(), 1000);
-    return () => clearTimeout(timer);
-  }, []);
+    showNextPopup();
+  }, [banners]);
 
   const closePopup = (timestamp) => {
     setPopups((prev) => prev.filter((popup) => popup.timestamp !== timestamp));
@@ -95,7 +151,10 @@ const RealEstatePopups = () => {
 
   return (
     <div className="hidden md:block absolute left-0 w-full h-full pointer-events-none z-50">
-      <div  onClick={() => navigate("/property-detail")} className="absolute right-4 top-4 space-y-4 pointer-events-auto cursor-pointer">
+      <div
+        onClick={() => navigate("/property-detail")}
+        className="absolute right-4 top-4 space-y-4 pointer-events-auto cursor-pointer"
+      >
         {popups.map((popup, index) => (
           <div
             key={`${popup.id}-${popup.timestamp}`}
@@ -106,7 +165,11 @@ const RealEstatePopups = () => {
             }`}
             style={{
               animationDelay: `${index * 200}ms`,
-              marginTop: `${index * 10}px`, // ✅ use margin instead of overriding transform
+              // marginTop: `${index * 10}px`, //  use margin instead of overriding transform
+              top: popup.position === "top" ? `${index * 10}px` : "auto",
+              bottom: popup.position === "bottom" ? `${index * 10}px` : "auto",
+              left: popup.position === "left" ? `${index * 10}px` : "auto",
+              right: popup.position === "right" ? `${index * 10}px` : "auto",
             }}
           >
             <div className="relative w-60 bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100">
@@ -120,7 +183,7 @@ const RealEstatePopups = () => {
 
               {/* Header with gradient */}
               <div
-                className={`bg-gradient-to-r ${popup.gradient} p-4 text-white relative overflow-hidden`}
+                className={`bg-gradient-to-r ${popup?.gradient} p-4 text-white relative overflow-hidden`}
               >
                 <div className="absolute inset-0 bg-black/10"></div>
                 <div className="relative z-10">
@@ -134,13 +197,13 @@ const RealEstatePopups = () => {
               {/* Property Image */}
               <div className="relative h-40 overflow-hidden">
                 <img
-                  src={popup.image}
-                  alt={popup.title}
+                  src={popup?.bannerImage}
+                  alt={popup?.title}
                   className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                 />
                 <div className="absolute top-3 left-3">
                   <span className="bg-white/90 backdrop-blur-sm text-gray-800 px-2 py-1 rounded-lg text-xs font-semibold">
-                    {popup.type}
+                    {popup.propertyType}
                   </span>
                 </div>
               </div>
@@ -167,7 +230,7 @@ const RealEstatePopups = () => {
 
                 {/* Action Buttons */}
                 <div className="flex gap-2">
-                  <button  
+                  <button
                     className={`flex-1 bg-gradient-to-r ${popup.gradient} text-white py-2 px-3 rounded-lg text-xs font-semibold hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5`}
                   >
                     View Details

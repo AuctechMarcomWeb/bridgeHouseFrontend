@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect, useContext, useRef } from "react";
-import { Menu, X, Stethoscope, User } from "lucide-react";
+import { Menu, X, Stethoscope, User, LogOut } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
@@ -116,21 +116,26 @@ const Navbar = () => {
 
                 {/* Dropdown Menu */}
                 {dropdownOpen && (
-                  <div className="absolute right-0 mt-2 bg-white shadow-xl rounded-md z-50 border border-gray-200 overflow-hidden w-auto min-w-max">
+                  <div className="absolute right-0 mt-2 w-full bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
                     <Link
                       to="/profile"
-                      className="block px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100 transition"
+                      className="block px-4 py-1.5 text-sm text-gray-700 hover:bg-gray-100 transition flex-start"
                       onClick={() => setDropdownOpen(false)}
                     >
-                      Profile
+                      <button className="flex items-center gap-2 w-full  py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer">
+                        <User className="w-5 h-5 " />
+                        Profile
+                      </button>
                     </Link>
+
                     <button
-                      className="w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100 transition"
                       onClick={() => {
                         logout();
                         setDropdownOpen(false);
                       }}
+                      className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer"
                     >
+                      <LogOut className="w-5 h-5" />
                       Logout
                     </button>
                   </div>

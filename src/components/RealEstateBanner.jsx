@@ -76,7 +76,7 @@ const RealEstateBanner = () => {
 
   return (
     <div
-      className="relative items-center justify-center w-full  flex items-center  overflow-hidden px-6 md:px-10 lg:px-20 py-16 md:py-24 lg:py-30 "
+      className="relative items-center justify-center w-full  flex items-center   px-6 md:px-10 lg:px-20 py-16 md:py-24 lg:py-30 "
       style={{
         backgroundImage: `url(${bannerBg})`,
         backgroundRepeat: "no-repeat",

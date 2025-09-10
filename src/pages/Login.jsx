@@ -11,6 +11,7 @@ import {
   Phone,
   Loader2,
   Luggage,
+  MapPin,
 } from "lucide-react";
 import logo from "../assets/bridge-house.png";
 import { Link, useNavigate } from "react-router-dom";
@@ -393,70 +394,106 @@ export default function Login() {
                 className="space-y-4"
               >
                 {/* New User Signup Form */}
-                {isNewUser ? (
+                {isNewUser && (
                   <>
                     <div className="grid grid-cols-1 gap-4">
                       {/* First Name */}
                       <div className="relative">
-                        <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+                        <label
+                          htmlFor="name"
+                          className="block mb-2 text-gray-700 font-medium"
+                        >
+                          Name
+                        </label>
+                        <div className="relative">
+                          <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+                          <input
+                            id="name"
+                            type="text"
+                            name="name"
+                            placeholder="Enter first name"
+                            value={formData?.name}
+                            onChange={handleInputChange}
+                            className="block w-full rounded-md border border-gray-300 pl-10 pr-3 py-2 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500 focus:outline-none"
+                            required
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Email */}
+                    <div className="relative">
+                      <label
+                        htmlFor="email"
+                        className="block mb-2 text-gray-700 font-medium"
+                      >
+                        E-mail
+                      </label>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                         <input
-                          type="text"
-                          name="name"
-                          placeholder="Enter first name"
-                          value={formData?.name}
+                          id="email"
+                          type="email"
+                          name="email"
+                          placeholder="Enter email"
+                          value={formData?.email}
                           onChange={handleInputChange}
                           className="block w-full rounded-md border border-gray-300 pl-10 pr-3 py-2 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500 focus:outline-none"
                           required
                         />
                       </div>
                     </div>
-
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-                      <input
-                        type="email"
-                        name="email"
-                        placeholder="Enter email"
-                        value={formData?.email}
-                        onChange={handleInputChange}
-                        className="block w-full rounded-md border border-gray-300 pl-10 pr-3 py-2 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500 focus:outline-none"
-                        required
-                      />
-                    </div>
                   </>
-                ) : null}
+                )}
 
                 {/* Phone Input (common for both) */}
                 <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-                  <input
-                    type="tel"
-                    name="phone"
-                    placeholder="Enter phone number"
-                    value={formData?.phone}
-                    onChange={handleInputChange}
-                    className="block w-full rounded-md border border-gray-300 pl-10 pr-3 py-2 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500 focus:outline-none"
-                    inputMode="numeric"
-                    maxLength={10}
-                    required
-                  />
+                  <label
+                    htmlFor="phone"
+                    className="block mb-2 text-gray-700 font-medium"
+                  >
+                    Phone
+                  </label>
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+
+                    <input
+                      id="phone"
+                      type="tel"
+                      name="phone"
+                      placeholder="Enter phone number"
+                      value={formData?.phone}
+                      onChange={handleInputChange}
+                      className="block w-full rounded-md border border-gray-300 pl-10 pr-3 py-2 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500 focus:outline-none"
+                      inputMode="numeric"
+                      maxLength={10}
+                      required
+                    />
+                  </div>
                 </div>
 
                 {/* Password Input (only for login) */}
                 {!isNewUser && (
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      name="password"
-                      placeholder="Enter password"
-                      value={formData?.password}
-                      onChange={handleInputChange}
-                      className="block w-full rounded-md border border-gray-300 pl-10 pr-10 py-2 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500 focus:outline-none"
-                      required
-                    />
-
+                    <label
+                      htmlFor="password"
+                      className="block mb-2 text-gray-700 font-medium"
+                    >
+                      Password
+                    </label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+                      <input
+                        id="password"
+                        type={showPassword ? "text" : "password"}
+                        name="password"
+                        placeholder="Enter password"
+                        value={formData?.password}
+                        onChange={handleInputChange}
+                        className="block w-full rounded-md border border-gray-300 pl-10 pr-10 py-2 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500 focus:outline-none"
+                        required
+                      />
+                    </div>
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
@@ -471,13 +508,19 @@ export default function Login() {
                   </div>
                 )}
 
-                {/* user type only for signup */}
+                {/* Occupation */}
                 {isNewUser && (
-                  <>
-                    {/* Occupation */}
+                  <div className="relative">
+                    <label
+                      htmlFor="occupation"
+                      className="block mb-2 text-gray-700 font-medium"
+                    >
+                      Occupation
+                    </label>
                     <div className="relative">
                       <Luggage className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                       <input
+                        id="occupation"
                         type="text"
                         name="occupation"
                         placeholder="Enter your service or occupation"
@@ -487,101 +530,117 @@ export default function Login() {
                         required
                       />
                     </div>
+                  </div>
+                )}
 
-                    {/* Gender */}
-                    <div className="mb-4">
-                      <label
-                        htmlFor="gender"
-                        className="block mb-2 text-gray-700 font-medium"
-                      >
-                        Gender
-                      </label>
-                      <select
-                        id="gender"
-                        name="gender"
-                        value={formData?.gender}
-                        onChange={handleInputChange}
-                        className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      >
-                        <option value="">Select Gender</option>
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                      </select>
-                    </div>
-                    {/* Account Type */}
-                    <div className="mb-4">
-                      <p className="mb-2 text-gray-700 font-medium">
-                        Account Type
-                      </p>
-                      <div className="flex gap-6">
-                        {["Buyer", "Seller"].map((type) => (
-                          <label
-                            key={type}
-                            className="relative flex items-center cursor-pointer"
-                          >
-                            <input
-                              type="radio"
-                              name="accountType"
-                              value={type}
-                              checked={formData?.accountType === type}
-                              onChange={handleInputChange}
-                              className="hidden"
-                            />
-                            <div className="w-5 h-5 border border-gray-300 rounded-full flex items-center justify-center">
-                              {formData?.accountType === type && (
-                                <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                              )}
-                            </div>
-                            <span className="ml-3 text-gray-700">
-                              {type.charAt(0).toUpperCase() + type.slice(1)}
-                            </span>
-                          </label>
-                        ))}
-                      </div>
-                    </div>
+                {/* Gender */}
+                {isNewUser && (
+                  <div className="mb-4">
+                    <label
+                      htmlFor="gender"
+                      className="block mb-2 text-gray-700 font-medium"
+                    >
+                      Gender
+                    </label>
+                    <select
+                      id="gender"
+                      name="gender"
+                      value={formData?.gender}
+                      onChange={handleInputChange}
+                      className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="">Select Gender</option>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                    </select>
+                  </div>
+                )}
 
-                    {/*Address*/}
-                    <div className=" relative ">
+                {/* Account Type */}
+                {isNewUser && (
+                  <div className="mb-4">
+                    <p className="mb-2 text-gray-700 font-medium">
+                      Account Type
+                    </p>
+                    <div className="flex gap-6">
+                      {["Buyer", "Seller"].map((type) => (
+                        <label
+                          key={type}
+                          className="relative flex items-center cursor-pointer"
+                        >
+                          <input
+                            type="radio"
+                            name="accountType"
+                            value={type}
+                            checked={formData?.accountType === type}
+                            onChange={handleInputChange}
+                            className="hidden"
+                          />
+                          <div className="w-5 h-5 border border-gray-300 rounded-full flex items-center justify-center">
+                            {formData?.accountType === type && (
+                              <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                            )}
+                          </div>
+                          <span className="ml-3 text-gray-700">{type}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Address */}
+                {isNewUser && (
+                  <div className="relative">
+                    <label
+                      htmlFor="address"
+                      className="block mb-2 text-gray-700 font-medium"
+                    >
+                      Address
+                    </label>
+                    <div className="relative">
+                      {/* <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" /> */}
                       <AddressForm
                         value={formData?.data?.address}
                         onSelect={handleLocationSelect}
                       />
                     </div>
-                    {/* Terms & Conditions (Sign Up Only) */}
-                    <div className="flex items-start space-x-3">
-                      <input
-                        type="checkbox"
-                        id="terms"
-                        className="mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                        required
-                      />
-                      <label
-                        htmlFor="terms"
-                        className="text-sm text-gray-600 leading-relaxed"
+                  </div>
+                )}
+
+                {/* Terms & Conditions */}
+                {isNewUser && (
+                  <div className="flex items-start space-x-3">
+                    <input
+                      type="checkbox"
+                      id="terms"
+                      className="mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                      required
+                    />
+                    <label
+                      htmlFor="terms"
+                      className="text-sm text-gray-600 leading-relaxed"
+                    >
+                      I agree to the{" "}
+                      <button
+                        type="button"
+                        className="text-blue-600 hover:text-blue-700 font-medium"
                       >
-                        I agree to the{" "}
-                        <button
-                          type="button"
-                          className="text-blue-600 hover:text-blue-700 font-medium"
-                        >
-                          Terms of Service
-                        </button>{" "}
-                        and{" "}
-                        <button
-                          type="button"
-                          className="text-blue-600 hover:text-blue-700 font-medium"
-                        >
-                          Privacy Policy
-                        </button>
-                      </label>
-                    </div>
-                  </>
+                        Terms of Service
+                      </button>{" "}
+                      and{" "}
+                      <button
+                        type="button"
+                        className="text-blue-600 hover:text-blue-700 font-medium"
+                      >
+                        Privacy Policy
+                      </button>
+                    </label>
+                  </div>
                 )}
 
                 <button
                   type="submit"
                   className="w-full bg-[#005697] text-white py-4 rounded-xl font-semibold text-lg shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all"
-                  //onClick={() => setIsNewUser((prev) => !prev)}
                 >
                   {isNewUser ? "Create Account" : "Login"}
                 </button>

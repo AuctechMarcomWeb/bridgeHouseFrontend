@@ -6,9 +6,9 @@ export const ProfileContext = createContext();
 
 export const ProfileProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [updateStatus,setUpdateStatus] = useState(false)
+  const [updateStatus, setUpdateStatus] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  
+
   console.log("isLoggedIn", isLoggedIn);
   useEffect(() => {
     getRequest(`auth/profile`)
@@ -23,19 +23,24 @@ export const ProfileProvider = ({ children }) => {
           console.log("error", error);
         }
       });
-
-      }, [updateStatus]);
+  }, [updateStatus]);
 
   const logout = () => {
     setUser(null);
     setIsLoggedIn(false);
-     deleteCookie("token-bridge-house"); 
+    deleteCookie("token-bridge-house");
     console.log("user Loggout");
-    
   };
   return (
     <ProfileContext.Provider
-      value={{ user, setUser, isLoggedIn,setUpdateStatus, setIsLoggedIn, logout }}
+      value={{
+        user,
+        setUser,
+        isLoggedIn,
+        setUpdateStatus,
+        setIsLoggedIn,
+        logout,
+      }}
     >
       {children}
     </ProfileContext.Provider>

@@ -17,6 +17,7 @@ import {
   Zap,
   Droplet,
   Wrench,
+  Home,
 } from "lucide-react";
 import { getRequest } from "../Helpers";
 
@@ -120,25 +121,6 @@ export default function RentalListingApp() {
       return newFavorites;
     });
   };
-
-  // const renderStars = (rating, reviews) => {
-  //   return (
-  //     <div className="flex items-center gap-1 text-sm mb-2">
-  //       {[...Array(5)].map((_, i) => (
-  //         <Star
-  //           key={i}
-  //           className={`w-4 h-4 ${
-  //             i < Math.floor(rating)
-  //               ? "fill-amber-400 text-amber-400"
-  //               : "text-gray-300"
-  //           }`}
-  //         />
-  //       ))}
-  //       <span className="text-gray-700 ml-2 font-medium">{rating}</span>
-  //       <span className="text-gray-500 text-xs">({reviews} reviews)</span>
-  //     </div>
-  //   );
-  // };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
@@ -391,12 +373,11 @@ export default function RentalListingApp() {
                   className="group bg-white rounded-2xl shadow-lg  overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 cursor-pointer"
                 >
                   <div className="relative overflow-hidden">
-                    <img
-                      src={listing?.gallery}
-                      alt={listing?.name}
-                      className=" w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <div className="absolute inset-0 bg-black/30 opacity-100 transition-opacity duration-300 flex items-center justify-center"></div>
+                    <div className="relative h-56 bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center overflow-hidden">
+                      <Home size={40} className="text-blue-400" />
+                      <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+                      <img src={listing?.gallery} alt="" />
+                    </div>
 
                     {listing?.status && (
                       <div

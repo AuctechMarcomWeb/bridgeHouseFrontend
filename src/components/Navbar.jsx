@@ -17,7 +17,7 @@ const Navbar = () => {
   const dropdownRef = useRef(null);
   const { getCookie } = useCookie();
 
-  const userID = getCookie("userID", userID);
+  //const userID = getCookie("userID", 30);
 
   useEffect(() => {
     console.log("User data in Navbar:", user);
@@ -121,7 +121,7 @@ const Navbar = () => {
                   />
 
                   <span className="text-sm font-medium text-gray-800">
-                    {user?.name || "User"}
+                    {user?.name || user?.phone}
                   </span>
                   <span className="text-gray-500 text-xs">▼</span>
                 </div>

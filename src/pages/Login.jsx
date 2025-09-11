@@ -32,7 +32,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-  const { user, setUpdateStatus, logout } = useContext(ProfileContext);
+  const { user, setUpdateStatus, logout ,login} = useContext(ProfileContext);
   const [userId, setUserId] = useState("");
   const [token, setToken] = useState("");
   const [formData, setFormData] = useState({
@@ -121,14 +121,15 @@ export default function Login() {
       if (res?.data?.success && res?.data?.statusCode === 200) {
         setError("");
         const token = res?.data?.data?.authToken;
-        const userId = res?.data?.data?._id;
+        //const userId = res?.data?.data?._id;
+        const userData = res?.data?.data;
         if (isNewUser) {
           setToken(token);
-          setUserId(userId);
+          setUserId(userData?._id);
           console.log("New User -> Token:", token, "UserId:", userId);
           setStep(3);
         } else {
-          setCookie("token-bridge-house", token, 30);
+          login(token, userData);
           console.log("Token saved in cookie");
           navigate("/");
         }
@@ -186,10 +187,12 @@ export default function Login() {
         url: `auth/update/${userId}`,
         cred: { formData },
       });
-      console.log("Update response:", res);
+      console.log("signup response:", res?.data?.data);
       setUpdateStatus((prev) => !prev);
-      setCookie("token-bridge-house", token, 30);
-      setCookie("userID", res?.data?.data?._id, 30);
+      const userData = res?.data?.data;
+      console.log("userData", userData);
+      
+      login(token, userData);
       console.log("Token saved for new user:=====================>", token);
       toast.success(res?.data?.message);
       navigate("/");
@@ -217,8 +220,9 @@ export default function Login() {
       setUpdateStatus((prev) => !prev);
       if (res?.data?.success && res?.data?.statusCode === 200) {
         const token = res?.data?.data?.authToken;
+        const userData = res?.data?.data;
+        login(token, userData);
         toast.success(res?.data?.message);
-        setCookie("token-bridge-house", token, 30);
         navigate("/");
       } else {
         toast.error(res?.data?.message);

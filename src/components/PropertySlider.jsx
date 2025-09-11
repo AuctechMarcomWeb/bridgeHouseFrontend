@@ -64,10 +64,10 @@ const PropertySlider = () => {
         <div className="relative overflow-hidden">
           <div className="relative rounded-3xl shadow-xl bg-white h-96">
             {banners.map((banner, index) => {
-              const property = banner.propertyId; // may be null
+              const property = banner?.propertyId; // may be null
               return (
                 <div
-                  key={banner._id}
+                  key={banner?._id}
                   className={`absolute inset-0 flex transition-all duration-700 ease-in-out ${
                     index === currentSlide
                       ? "opacity-100 translate-x-0 z-10"
@@ -83,7 +83,7 @@ const PropertySlider = () => {
 
                     <div className="relative z-10">
                       <h2 className="text-lg lg:text-2xl text-black font-bold mb-2 md:mb-4 leading-tight">
-                        {property?.name || banner.title}
+                        {property?.name || banner?.title}
                       </h2>
                       <p className="text-white/90 text-base mb-2 md:mb-6 font-medium">
                         {property?.address || "Location not available"}
@@ -91,11 +91,11 @@ const PropertySlider = () => {
                       <div className="mb-2 md:mb-6">
                         <p className="text-white/90 mb-2">
                           {property
-                            ? `Property Type: ${property.propertyType}`
+                            ? `Property Type: ${property?.propertyType}`
                             : ""}
                         </p>
                         <p className="md:text-xl font-bold">
-                          {property ? `₹${property.sellingPrice}` : ""}
+                          {property ? `₹${property?.sellingPrice}` : ""}
                         </p>
                       </div>
 
@@ -125,8 +125,8 @@ const PropertySlider = () => {
                   {/* Right Image */}
                   <div className="w-1/2 relative">
                     <img
-                      src={banner.bannerImage}
-                      alt={property?.name || banner.title}
+                      src={banner?.bannerImage}
+                      alt={property?.name || banner?.title}
                       className="w-full h-full object-cover rounded-r-2xl"
                     />
                     <div className="absolute top-4 right-4 w-12 h-12 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">

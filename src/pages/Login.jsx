@@ -187,6 +187,8 @@ export default function Login() {
         cred: { formData },
       });
       console.log("Update response:", res);
+      setUpdateStatus((prev) => !prev);
+
       setCookie("token-bridge-house", token, 30);
       console.log("Token saved for new user:=====================>", token);
       toast.success(res?.data?.message);
@@ -481,8 +483,12 @@ export default function Login() {
                     >
                       Password
                     </label>
+
                     <div className="relative">
+                      {/* Lock Icon (left) */}
                       <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+
+                      {/* Input Field */}
                       <input
                         id="password"
                         type={showPassword ? "text" : "password"}
@@ -493,18 +499,20 @@ export default function Login() {
                         className="block w-full rounded-md border border-gray-300 pl-10 pr-10 py-2 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500 focus:outline-none"
                         required
                       />
+
+                      {/* Eye Icon (right) */}
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                      >
+                        {showPassword ? (
+                          <EyeOff className="w-5 h-5" />
+                        ) : (
+                          <Eye className="w-5 h-5" />
+                        )}
+                      </button>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                    >
-                      {showPassword ? (
-                        <EyeOff className="w-5 h-5" />
-                      ) : (
-                        <Eye className="w-5 h-5" />
-                      )}
-                    </button>
                   </div>
                 )}
 
@@ -640,7 +648,7 @@ export default function Login() {
 
                 <button
                   type="submit"
-                  className="w-full bg-[#005697] text-white py-4 rounded-xl font-semibold text-lg shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all"
+                  className="w-full bg-[#005697] text-white py-2 rounded-xl font-semibold text-lg shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all"
                 >
                   {isNewUser ? "Create Account" : "Login"}
                 </button>

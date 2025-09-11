@@ -33,9 +33,14 @@ export default function EditProfileModal({
 
   useEffect(() => {
     if (show && user) {
-      setFormData(user);
+      setFormData({
+        ...user,
+        dob: user.dob ? user.dob.split("T")[0] : "",
+        address: user.address,
+      });
     }
   }, [show, user]);
+  console.log(user?.address);
 
   if (!show || !formData) return null;
 
@@ -76,36 +81,34 @@ export default function EditProfileModal({
   };
 
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files[0]; // single file only
     if (!file) return;
 
     setImageUploading(true);
 
     fileUpload({
-      url: `upload/uploadImage`,
+      url: "upload/uploadImage",
       cred: { file },
     })
       .then((res) => {
-        const uploadedUrl = res.data?.imageUrl;
-        if (uploadedUrl) {
-          setFormData((prev) => ({
-            ...prev,
-            profilepic: uploadedUrl, // replace with single image URL
-          }));
-          console.log("Uploaded image: ", uploadedUrl);
-        }
+        const imageUrl = res.data?.data?.imageUrl;
+        setFormData((prev) => ({
+          ...prev,
+          profilepic: imageUrl, // key is profilepic
+        }));
+        setImageUploading(false);
+        toast.success("Profile image uploaded successfully");
       })
       .catch((error) => {
-        console.error("Image upload failed:", error);
-      })
-      .finally(() => {
-        setImageUploading(false); // stop loader
+        console.error("Profile upload failed:", error);
+        toast.error("Profile upload failed");
+        setImageUploading(false);
       });
   };
 
   return (
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 relative">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 relative">
         {/* Close Button */}
         <button
           onClick={onClose}
@@ -198,6 +201,37 @@ export default function EditProfileModal({
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col">
               <label
+                htmlFor="E-mail"
+                className="block mb-2 font-medium text-gray-700"
+              >
+                E-mail
+              </label>
+              <input
+                id="E-mail"
+                type="email"
+                name="email"
+                value={formData?.email}
+                onChange={handleChange}
+                placeholder="Enter your email"
+                className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none h-12"
+              />
+            </div>
+            <div className="flex flex-col">
+              <label className="block mb-2 font-medium text-gray-700">
+                Address
+              </label>
+              <div className="h-12">
+                <AddressForm
+                  value={user?.address}
+                  onSelect={handleLocationSelect}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="flex flex-col">
+              <label
                 htmlFor="gender"
                 className="block mb-2 font-medium text-gray-700"
               >
@@ -211,49 +245,36 @@ export default function EditProfileModal({
                 className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 h-12"
               >
                 <option value="">Select Gender</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
               </select>
             </div>
-
-            <div className="flex flex-col">
-              <label className="block mb-2 font-medium text-gray-700">
-                Address
-              </label>
-              <div className="h-12">
-                <AddressForm
-                  value={formData?.address}
-                  onSelect={handleLocationSelect}
-                />
+            {/* Account Type */}
+            <div className="mb-4">
+              <p className="mb-2 text-gray-700 font-medium">Account Type</p>
+              <div className="flex items-center gap-6">
+                {["Buyer", "Seller"].map((type) => (
+                  <label
+                    key={type}
+                    className="flex items-center cursor-pointer "
+                  >
+                    <input
+                      type="radio"
+                      name="accountType"
+                      value={type}
+                      checked={formData?.accountType === type}
+                      onChange={handleChange}
+                      className="hidden"
+                    />
+                    <div className="w-5 h-5 border border-gray-300 rounded-full flex items-center justify-center">
+                      {formData?.accountType === type && (
+                        <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                      )}
+                    </div>
+                    <span className="ml-3 text-gray-700">{type}</span>
+                  </label>
+                ))}
               </div>
-            </div>
-          </div>
-
-          {/* Account Type */}
-          <div className="mb-4">
-            <p className="mb-2 text-gray-700 font-medium">Account Type</p>
-            <div className="flex gap-6">
-              {["Buyer", "Seller"].map((type) => (
-                <label
-                  key={type}
-                  className="relative flex items-center cursor-pointer"
-                >
-                  <input
-                    type="radio"
-                    name="accountType"
-                    value={type}
-                    checked={formData?.accountType === type}
-                    onChange={handleChange}
-                    className="hidden"
-                  />
-                  <div className="w-5 h-5 border border-gray-300 rounded-full flex items-center justify-center">
-                    {formData?.accountType === type && (
-                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                    )}
-                  </div>
-                  <span className="ml-3 text-gray-700">{type}</span>
-                </label>
-              ))}
             </div>
           </div>
 
@@ -300,11 +321,22 @@ export default function EditProfileModal({
               </div>
             ) : (
               formData?.profilepic && (
-                <img
-                  src={formData?.profilepic}
-                  alt="Preview"
-                  className="mt-2 w-24 h-24 object-cover rounded-full"
-                />
+                <div className="mt-2 relative w-24 h-24">
+                  <img
+                    src={formData.profilepic}
+                    alt="Preview"
+                    className="w-24 h-24 object-cover rounded-full"
+                  />
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setFormData((prev) => ({ ...prev, profilepic: "" }))
+                    }
+                    className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+                  >
+                    ×
+                  </button>
+                </div>
               )
             )}
           </div>

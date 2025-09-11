@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -39,60 +40,60 @@ const RealEstatePopups = () => {
       .catch((err) => console.error("Error fetching banners:", err));
   }, []);
 
-  // const adData = [
-  //   {
-  //     id: 1,
-  //     title: "Luxury Villa in Beverly Hills",
-  //     price: "₹2,850,000",
-  //     location: "Gomti Nagar, Lucknow",
-  //     image:
-  //       "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=300&h=200&fit=crop",
-  //     type: "Villa",
-  //     beds: 4,
-  //     baths: 3,
-  //     sqft: "3,200",
-  //     gradient: "from-blue-600 to-purple-600",
-  //   },
-  //   {
-  //     id: 2,
-  //     title: "Modern Downtown Apartment",
-  //     price: "₹850,000",
-  //     location: "Hazaratganj, Lucknow",
-  //     image:
-  //       "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=300&h=200&fit=crop",
-  //     type: "Apartment",
-  //     beds: 2,
-  //     baths: 2,
-  //     sqft: "1,100",
-  //     gradient: "from-emerald-500 to-teal-600",
-  //   },
-  //   {
-  //     id: 3,
-  //     title: "Cozy Family Home",
-  //     price: "₹425,000",
-  //     location: "Jankipuram, Lucknow",
-  //     image:
-  //       "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=300&h=200&fit=crop",
-  //     type: "House",
-  //     beds: 3,
-  //     baths: 2,
-  //     sqft: "2,100",
-  //     gradient: "from-orange-500 to-red-500",
-  //   },
-  //   {
-  //     id: 4,
-  //     title: "Oceanfront Condo",
-  //     price: "₹1,200,000",
-  //     location: "Gomti Nagar, Lucknow",
-  //     image:
-  //       "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=300&h=200&fit=crop",
-  //     type: "Condo",
-  //     beds: 2,
-  //     baths: 2,
-  //     sqft: "1,400",
-  //     gradient: "from-cyan-500 to-blue-500",
-  //   },
-  // ];
+  const adData = [
+    {
+      id: 1,
+      title: "Luxury Villa in Beverly Hills",
+      price: "₹2,850,000",
+      location: "Gomti Nagar, Lucknow",
+      image:
+        "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=300&h=200&fit=crop",
+      type: "Villa",
+      beds: 4,
+      baths: 3,
+      sqft: "3,200",
+      gradient: "from-blue-600 to-purple-600",
+    },
+    {
+      id: 2,
+      title: "Modern Downtown Apartment",
+      price: "₹850,000",
+      location: "Hazaratganj, Lucknow",
+      image:
+        "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=300&h=200&fit=crop",
+      type: "Apartment",
+      beds: 2,
+      baths: 2,
+      sqft: "1,100",
+      gradient: "from-emerald-500 to-teal-600",
+    },
+    {
+      id: 3,
+      title: "Cozy Family Home",
+      price: "₹425,000",
+      location: "Jankipuram, Lucknow",
+      image:
+        "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=300&h=200&fit=crop",
+      type: "House",
+      beds: 3,
+      baths: 2,
+      sqft: "2,100",
+      gradient: "from-orange-500 to-red-500",
+    },
+    {
+      id: 4,
+      title: "Oceanfront Condo",
+      price: "₹1,200,000",
+      location: "Gomti Nagar, Lucknow",
+      image:
+        "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=300&h=200&fit=crop",
+      type: "Condo",
+      beds: 2,
+      baths: 2,
+      sqft: "1,400",
+      gradient: "from-cyan-500 to-blue-500",
+    },
+  ];
   const gradientMap = [
     "from-blue-600 to-purple-600",
     "from-emerald-500 to-teal-600",
@@ -151,10 +152,7 @@ const RealEstatePopups = () => {
 
   return (
     <div className="hidden md:block absolute left-0 w-full h-full pointer-events-none z-50">
-      <div
-       
-        className="absolute right-4 top-4 space-y-4 pointer-events-auto "
-      >
+      <div className="absolute right-4 top-4 space-y-4 pointer-events-auto ">
         {popups.map((popup, index) => (
           <div
             key={`${popup.id}-${popup.timestamp}`}
@@ -183,7 +181,8 @@ const RealEstatePopups = () => {
               </button>
 
               {/* Header with gradient */}
-              <div  onClick={() => navigate("/property-detail")}
+              <div
+                onClick={() => navigate("/property-detail")}
                 className={`bg-gradient-to-r ${popup?.gradient} p-4 text-white relative overflow-hidden`}
               >
                 {/* Dark overlay (lower z-index so it won't block button) */}
@@ -199,7 +198,10 @@ const RealEstatePopups = () => {
               </div>
 
               {/* Property Image */}
-              <div  onClick={() => navigate("/property-detail")} className="relative h-40 overflow-hidden">
+              <div
+                onClick={() => navigate("/property-detail")}
+                className="relative h-40 overflow-hidden"
+              >
                 <img
                   src={popup?.bannerImage}
                   alt={popup?.title}
@@ -234,7 +236,8 @@ const RealEstatePopups = () => {
 
                 {/* Action Buttons */}
                 <div className="flex gap-2">
-                  <button  onClick={() => navigate("/property-detail")}
+                  <button
+                    onClick={() => navigate("/property-detail")}
                     className={`flex-1 bg-gradient-to-r ${popup.gradient} text-white py-2 px-3 rounded-lg text-xs font-semibold hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5`}
                   >
                     View Details

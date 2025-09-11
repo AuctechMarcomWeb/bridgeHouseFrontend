@@ -53,7 +53,7 @@ const AddPropertyModal = ({
         description: modalData?.description || "",
         facilities: modalData?.facilities || [],
         services: modalData?.services || [],
-        address: modalData?.address || "",
+        address: modalData.formData?.address,
         location: modalData?.location || { type: "Point", coordinates: [0, 0] },
         nearby: modalData?.nearby?.length
           ? modalData?.nearby
@@ -68,7 +68,8 @@ const AddPropertyModal = ({
       setSelectedFacilities(modalData.facilities || []);
       setSelectedServices(modalData.services || []);
     }
-  }, [modalData, user]);
+  }, [modalData, show]);
+  console.log("modalData?.address", modalData?.address);
 
   // ✅ Reset + Close
   const handleCancel = () => {

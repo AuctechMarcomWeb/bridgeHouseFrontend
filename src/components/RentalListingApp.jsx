@@ -74,6 +74,7 @@ export default function RentalListingApp() {
   const [loading, setLoading] = useState(false);
   const [listings, setListing] = useState([]);
   const [showAll, setShowAll] = useState(false);
+  const [imageError, setImageError] = useState(false);
   const [fiters, setFiters] = useState({
     page: 1,
     limit: 10,
@@ -373,10 +374,37 @@ export default function RentalListingApp() {
                   className="group bg-white rounded-2xl shadow-lg  overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 cursor-pointer"
                 >
                   <div className="relative overflow-hidden">
-                    <div className="relative h-56 bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center overflow-hidden">
-                      <Home size={40} className="text-blue-400" />
-                      <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
-                      <img src={listing?.gallery} alt="" />
+                    <div className="relative h-56 bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center overflow-hidden group rounded-xl">
+                      {Array.isArray(listing?.gallery) &&
+                      listing.gallery.length > 0 ? (
+                        <>
+                          <img
+                            src={listing?.gallery[0]}
+                            alt={`${listing?.title || "Listing"} image`}
+                            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            onError={(e) => {
+                              // Fallback if image fails to load
+                              e.target.style.display = "none";
+                              e.target.nextElementSibling.style.display =
+                                "flex";
+                            }}
+                          />
+                          {/* Hidden fallback that shows if image fails to load */}
+                          <div className="hidden absolute inset-0 items-center justify-center">
+                            <Home size={50} className="text-blue-400" />
+                          </div>
+                          <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+                        </>
+                      ) : (
+                        <>
+                          {/* Default fallback when no gallery images */}
+                          <Home
+                            size={50}
+                            className="text-blue-400 transition-transform duration-300 group-hover:scale-110"
+                          />
+                          <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+                        </>
+                      )}
                     </div>
 
                     {listing?.status && (

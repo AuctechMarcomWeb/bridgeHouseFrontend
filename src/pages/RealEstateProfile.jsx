@@ -20,6 +20,8 @@ import {
   Zap,
   Droplet,
   Wrench,
+  IdCard,
+  Calendar,
 } from "lucide-react";
 import Swal from "sweetalert2";
 import AddPropertyModal from "../components/AddPropertyModal";
@@ -28,6 +30,8 @@ import { deleteRequest, getRequest } from "../Helpers";
 import toast from "react-hot-toast";
 import { ProfileContext } from "../context/ProfileContext";
 import { useNavigate } from "react-router-dom";
+import { formatDate } from "../Utils";
+import { FaUser, FaBirthdayCake, FaIdBadge } from "react-icons/fa";
 
 export default function RealEstateProfile() {
   const { user, isLoggedIn } = useContext(ProfileContext);
@@ -134,10 +138,22 @@ export default function RealEstateProfile() {
                 <h1 className="text-xl md:text-2xl  font-bold mb-1">
                   {userProfile?.name}
                 </h1>
-                <p className="text-blue-100 text-sm mb-4">
-                  {userProfile?.accountType}
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm item-start">
+                  <div className="flex items-center gap-2">
+                    <User className="w-4 h-4" />
+                    <span>{userProfile?.gender || "-"}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4" />
+                    <span>{formatDate(userProfile?.dob) || "-"}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <IdCard className="w-4 h-4" />
+                    <span>{userProfile?.accountType || "-"}</span>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm item-start">
                   <div className="flex items-center gap-2">
                     <Mail size={16} className="text-blue-200" />
                     <span className="text-blue-100">{userProfile?.email}</span>
@@ -146,8 +162,8 @@ export default function RealEstateProfile() {
                     <Phone size={16} className="text-blue-200" />
                     <span className="text-blue-100">{userProfile?.phone}</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <MapPin size={16} className="text-blue-200" />
+                  <div className="flex items-center gap-1">
+                    <MapPin size={20} className="text-blue-200" />
                     <span className="text-blue-100">
                       {userProfile?.address}
                     </span>
@@ -214,10 +230,36 @@ export default function RealEstateProfile() {
                   key={property?.id}
                   className="group bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-2xl hover:border-blue-200 transition-all duration-300 transform hover:-translate-y-1"
                 >
-                  <div className="relative h-56 bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center overflow-hidden">
-                    <Home size={40} className="text-blue-400" />
-                    <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
-                    <img src={property?.gallery} alt="" />
+                  <div className="relative h-56 bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center overflow-hidden group rounded-xl">
+                    {Array.isArray(property?.gallery) &&
+                    property?.gallery?.length > 0 ? (
+                      <>
+                        <img
+                          src={property?.gallery[0]}
+                          alt={`${property?.title || "Listing"} image`}
+                          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                          onError={(e) => {
+                            // Fallback if image fails to load
+                            e.target.style.display = "none";
+                            e.target.nextElementSibling.style.display = "flex";
+                          }}
+                        />
+                        {/* Hidden fallback that shows if image fails to load */}
+                        <div className="hidden absolute inset-0 items-center justify-center">
+                          <Home size={50} className="text-blue-400" />
+                        </div>
+                        <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+                      </>
+                    ) : (
+                      <>
+                        {/* Default fallback when no gallery images */}
+                        <Home
+                          size={50}
+                          className="text-blue-400 transition-transform duration-300 group-hover:scale-110"
+                        />
+                        <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+                      </>
+                    )}
                   </div>
 
                   <div className="p-6">

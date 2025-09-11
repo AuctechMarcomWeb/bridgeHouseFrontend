@@ -5,10 +5,11 @@ import Locationform from "./Locationform";
 
 const SearchBar = () => {
   const [selectedLocation, setSelectedLocation] = useState("Select State");
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const dropdownRef = useRef(null);
   const [states, setStates] = useState([]);
+  // const [selectedState, setSelectedState] = useState();
+
   const navigate = useNavigate();
 
   // ✅ Load states
@@ -54,48 +55,22 @@ const SearchBar = () => {
     <div className="flex flex-wrap items-center justify-start">
       <div className="bg-white rounded-full shadow-xl flex items-center md:max-w-2xl w-full transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
         {/* State Dropdown */}
-        <div
-          ref={dropdownRef}
-          className="relative flex items-center px-2 md:px-5 border-r border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors duration-200"
-          onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-        >
-          <span className="md:font-semibold text-sm text-gray-700 mr-2 whitespace-nowrap">
-            {selectedLocation}
-          </span>
-          <svg
-            className={`text-gray-500 transition-transform duration-200 ${
-              isDropdownOpen ? "rotate-180" : ""
-            }`}
-            width="12"
-            height="8"
-            viewBox="0 0 12 8"
-            fill="currentColor"
-          >
-            <path
-              d="M1 1l5 5 5-5"
-              stroke="currentColor"
-              strokeWidth="2"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
 
-          {isDropdownOpen && (
-            <div className="absolute top-full left-0 right-0 bg-white max-h-60 overflow-y-auto rounded-xl shadow-lg z-50 mt-2 py-2">
-              <ul className="text-sm text-gray-700">
-                {states.map((state) => (
-                  <li
-                    key={state.isoCode}
-                    onClick={() => handleLocationSelect(state.name)}
-                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                  >
-                    {state.name}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+        {/* State Dropdown using native select */}
+        <div className="relative flex items-center px-2 md:px-5 border-r border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors duration-200">
+          <select
+            className="form-select text-sm md:font-semibold text-gray-700 w-30 border-none focus:outline-none focus:ring-0"
+            value={selectedLocation}
+            onChange={(e) => handleLocationSelect(e.target.value)}
+            aria-label="Select state"
+          >
+            <option value="">Select state</option>
+            {states.map((state) => (
+              <option key={state.isoCode} value={state.name}>
+                {state.name}
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* Address Search */}

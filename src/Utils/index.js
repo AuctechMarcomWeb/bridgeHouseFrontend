@@ -272,17 +272,17 @@ export const getDaysLeft = (freeTrialEndDate) => {
   return daysLeft;
 };
 
-
+// utils.js
 export const formatDate = (inputDate) => {
-  const parts = inputDate.split('/');
+  if (!inputDate) return "";
 
-  if (parts.length === 3) {
-    const year = parts[0];
-    const month = parts[1];
-    const day = parts[2];
+  const date = new Date(inputDate);
+  if (isNaN(date)) return "Invalid date";
 
-    return `${day}-${month}-${year}`;
-  }
+  // Format as DD-MM-YYYY
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+  const year = date.getFullYear();
 
-  return 'Invalid date';
-}
+  return `${day}-${month}-${year}`;
+};

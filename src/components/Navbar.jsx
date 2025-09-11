@@ -104,10 +104,14 @@ const Navbar = () => {
                   }}
                 >
                   <img
-                    src="https://images.unsplash.com/photo-1502685104226-ee32379fefbe?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=3&w=256&h=256&q=80"
+                    src={
+                      user?.profilepic ||
+                      "https://images.unsplash.com/photo-1502685104226-ee32379fefbe?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=3&w=256&h=256&q=80"
+                    }
                     alt="User Avatar"
                     className="w-8 h-8 rounded-full object-cover border border-gray-300"
                   />
+
                   <span className="text-sm font-medium text-gray-800">
                     {user?.name || user?.phone || "User"}
                   </span>

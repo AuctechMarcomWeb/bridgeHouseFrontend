@@ -1,10 +1,11 @@
 import React, { createContext, useEffect, useState } from "react";
 import { getRequest } from "../Helpers";
-import { deleteCookie } from "../Hooks/cookie";
+import useCookie, { deleteCookie } from "../Hooks/cookie";
 
 export const ProfileContext = createContext();
 
 export const ProfileProvider = ({ children }) => {
+  const { setCookie } = useCookie();
   const [user, setUser] = useState(null);
   const [updateStatus, setUpdateStatus] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -21,9 +22,16 @@ export const ProfileProvider = ({ children }) => {
         if (error?.response.status == 401) {
           setIsLoggedIn(false);
           console.log("error", error);
+          setUser(null);
         }
       });
   }, [updateStatus]);
+
+    const login = (token, userData) => {
+    setCookie("token-bridge-house", token, 30); 
+    setUser(userData);
+    setIsLoggedIn(true);
+  };
 
   const logout = () => {
     setUser(null);
@@ -39,6 +47,7 @@ export const ProfileProvider = ({ children }) => {
         isLoggedIn,
         setUpdateStatus,
         setIsLoggedIn,
+        login,
         logout,
       }}
     >

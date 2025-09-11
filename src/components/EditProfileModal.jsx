@@ -23,6 +23,8 @@ export default function EditProfileModal({
   const [loading, setLoading] = useState(false);
   const [imageUploading, setImageUploading] = useState(false);
   const { user } = useContext(ProfileContext);
+  console.log("user", user);
+  
   const { setCookie } = useCookie();
 
   const handleChange = (e) => {
@@ -32,15 +34,22 @@ export default function EditProfileModal({
   console.log("user", user);
 
   useEffect(() => {
-    if (show && user) {
-      setFormData({
-        ...user,
-        dob: user.dob ? user.dob.split("T")[0] : "",
-        address: user.address,
-      });
-    }
-  }, [show, user]);
-  console.log(user?.address);
+  if (show && user) {
+    setFormData({
+      name: user.name || "",
+      phone: user.phone || "",
+      email: user.email || "",
+      dob: user.dob ? user.dob.split("T")[0] : "",
+      occupation: user.occupation || "",
+      gender: user.gender || "",
+      accountType: user.accountType || "",
+      address: user.address || "",
+      profilepic: user.profilepic || "",
+    });
+  }
+}, [show, user]);
+
+  console.log(user?.name);
 
   if (!show || !formData) return null;
 

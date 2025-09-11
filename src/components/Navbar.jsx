@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 import logo from "../assets/bridge-house.png";
 import { ProfileContext } from "../context/ProfileContext";
+import useCookie from "../Hooks/cookie";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -14,6 +15,13 @@ const Navbar = () => {
   const { user, isLoggedIn, logout } = useContext(ProfileContext);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const { getCookie } = useCookie();
+
+  const userID = getCookie("userID", userID);
+
+  useEffect(() => {
+    console.log("User data in Navbar:", user);
+  }, [user]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -113,7 +121,7 @@ const Navbar = () => {
                   />
 
                   <span className="text-sm font-medium text-gray-800">
-                    {user?.name || user?.phone || "User"}
+                    {user?.name || "User"}
                   </span>
                   <span className="text-gray-500 text-xs">▼</span>
                 </div>

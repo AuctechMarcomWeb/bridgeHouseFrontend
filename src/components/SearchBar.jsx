@@ -57,7 +57,7 @@ const SearchBar = () => {
         {/* State Dropdown */}
 
         {/* State Dropdown using native select */}
-        <div className="relative flex items-center px-2 md:px-5 border-r border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors duration-200">
+        <div className="relative flex items-center px-2 md:px-5 border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors duration-200">
           <select
             className="form-select text-sm md:font-semibold text-gray-700 w-30 border-none focus:outline-none focus:ring-0"
             value={selectedLocation}
@@ -74,7 +74,7 @@ const SearchBar = () => {
         </div>
 
         {/* Address Search */}
-        <div className="flex-1 md:px-5">
+        <div className="flex-1 md:px-3">
           <Locationform
             value={searchQuery}
             onSelect={(val) => setSearchQuery(val ? String(val) : "")}

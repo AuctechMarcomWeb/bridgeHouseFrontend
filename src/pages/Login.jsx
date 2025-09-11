@@ -188,8 +188,8 @@ export default function Login() {
       });
       console.log("Update response:", res);
       setUpdateStatus((prev) => !prev);
-
       setCookie("token-bridge-house", token, 30);
+      setCookie("userID", res?.data?.data?._id, 30);
       console.log("Token saved for new user:=====================>", token);
       toast.success(res?.data?.message);
       navigate("/");

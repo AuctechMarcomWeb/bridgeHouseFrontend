@@ -145,15 +145,15 @@ const RealEstatePopups = () => {
     showNextPopup();
   }, [banners]);
 
-  const closePopup = (timestamp) => {
-    setPopups((prev) => prev.filter((popup) => popup.timestamp !== timestamp));
+  const closePopup = (id) => {
+    setPopups((prev) => prev.filter((popup) => popup.id !== id));
   };
 
   return (
     <div className="hidden md:block absolute left-0 w-full h-full pointer-events-none z-50">
       <div
-        onClick={() => navigate("/property-detail")}
-        className="absolute right-4 top-4 space-y-4 pointer-events-auto cursor-pointer"
+       
+        className="absolute right-4 top-4 space-y-4 pointer-events-auto "
       >
         {popups.map((popup, index) => (
           <div
@@ -175,17 +175,21 @@ const RealEstatePopups = () => {
             <div className="relative w-60 bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100">
               {/* Close Button */}
               <button
-                onClick={() => closePopup(popup.timestamp)}
-                className="absolute top-3 right-3 z-10 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:bg-white transition-all duration-200 hover:scale-110"
+                type="button"
+                onClick={() => closePopup(popup.id)}
+                className="absolute top-3 right-3 z-20 flex items-center justify-center w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white transition-all duration-200 hover:scale-110 cursor-pointer"
               >
-                <X size={16} className="text-gray-600" />
+                <X size={20} className="text-gray-600 pointer-events-none" />
               </button>
 
               {/* Header with gradient */}
-              <div
+              <div  onClick={() => navigate("/property-detail")}
                 className={`bg-gradient-to-r ${popup?.gradient} p-4 text-white relative overflow-hidden`}
               >
-                <div className="absolute inset-0 bg-black/10"></div>
+                {/* Dark overlay (lower z-index so it won't block button) */}
+                <div className="absolute inset-0 bg-black/10 z-0"></div>
+
+                {/* Content inside header */}
                 <div className="relative z-10">
                   <div className="flex items-center gap-2">
                     <Star className="w-4 h-4 fill-yellow-300 text-yellow-300" />
@@ -195,7 +199,7 @@ const RealEstatePopups = () => {
               </div>
 
               {/* Property Image */}
-              <div className="relative h-40 overflow-hidden">
+              <div  onClick={() => navigate("/property-detail")} className="relative h-40 overflow-hidden">
                 <img
                   src={popup?.bannerImage}
                   alt={popup?.title}
@@ -230,7 +234,7 @@ const RealEstatePopups = () => {
 
                 {/* Action Buttons */}
                 <div className="flex gap-2">
-                  <button
+                  <button  onClick={() => navigate("/property-detail")}
                     className={`flex-1 bg-gradient-to-r ${popup.gradient} text-white py-2 px-3 rounded-lg text-xs font-semibold hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5`}
                   >
                     View Details

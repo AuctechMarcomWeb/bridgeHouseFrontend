@@ -32,7 +32,7 @@ const RealEstatePopups = () => {
   useEffect(() => {
     const query = `?isPagination=${params.isPagination}&page=${params.page}&limit=${params.limit}&search=${params.search}&sortBy=${params.sortBy}&isActive=${params.isActive}&bannerType=${params.bannerType}`;
 
-    getRequest(`banner${query}`)
+    getRequest(`banner?query=${query}`)
       .then((res) => {
         setBanners(res?.data?.data?.banners || []);
         console.log("banners fetched:", res?.data?.data?.banners);
@@ -40,60 +40,60 @@ const RealEstatePopups = () => {
       .catch((err) => console.error("Error fetching banners:", err));
   }, []);
 
-  const adData = [
-    {
-      id: 1,
-      title: "Luxury Villa in Beverly Hills",
-      price: "₹2,850,000",
-      location: "Gomti Nagar, Lucknow",
-      image:
-        "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=300&h=200&fit=crop",
-      type: "Villa",
-      beds: 4,
-      baths: 3,
-      sqft: "3,200",
-      gradient: "from-blue-600 to-purple-600",
-    },
-    {
-      id: 2,
-      title: "Modern Downtown Apartment",
-      price: "₹850,000",
-      location: "Hazaratganj, Lucknow",
-      image:
-        "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=300&h=200&fit=crop",
-      type: "Apartment",
-      beds: 2,
-      baths: 2,
-      sqft: "1,100",
-      gradient: "from-emerald-500 to-teal-600",
-    },
-    {
-      id: 3,
-      title: "Cozy Family Home",
-      price: "₹425,000",
-      location: "Jankipuram, Lucknow",
-      image:
-        "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=300&h=200&fit=crop",
-      type: "House",
-      beds: 3,
-      baths: 2,
-      sqft: "2,100",
-      gradient: "from-orange-500 to-red-500",
-    },
-    {
-      id: 4,
-      title: "Oceanfront Condo",
-      price: "₹1,200,000",
-      location: "Gomti Nagar, Lucknow",
-      image:
-        "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=300&h=200&fit=crop",
-      type: "Condo",
-      beds: 2,
-      baths: 2,
-      sqft: "1,400",
-      gradient: "from-cyan-500 to-blue-500",
-    },
-  ];
+  // const adData = [
+  //   {
+  //     id: 1,
+  //     title: "Luxury Villa in Beverly Hills",
+  //     price: "₹2,850,000",
+  //     location: "Gomti Nagar, Lucknow",
+  //     image:
+  //       "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=300&h=200&fit=crop",
+  //     type: "Villa",
+  //     beds: 4,
+  //     baths: 3,
+  //     sqft: "3,200",
+  //     gradient: "from-blue-600 to-purple-600",
+  //   },
+  //   {
+  //     id: 2,
+  //     title: "Modern Downtown Apartment",
+  //     price: "₹850,000",
+  //     location: "Hazaratganj, Lucknow",
+  //     image:
+  //       "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=300&h=200&fit=crop",
+  //     type: "Apartment",
+  //     beds: 2,
+  //     baths: 2,
+  //     sqft: "1,100",
+  //     gradient: "from-emerald-500 to-teal-600",
+  //   },
+  //   {
+  //     id: 3,
+  //     title: "Cozy Family Home",
+  //     price: "₹425,000",
+  //     location: "Jankipuram, Lucknow",
+  //     image:
+  //       "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=300&h=200&fit=crop",
+  //     type: "House",
+  //     beds: 3,
+  //     baths: 2,
+  //     sqft: "2,100",
+  //     gradient: "from-orange-500 to-red-500",
+  //   },
+  //   {
+  //     id: 4,
+  //     title: "Oceanfront Condo",
+  //     price: "₹1,200,000",
+  //     location: "Gomti Nagar, Lucknow",
+  //     image:
+  //       "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=300&h=200&fit=crop",
+  //     type: "Condo",
+  //     beds: 2,
+  //     baths: 2,
+  //     sqft: "1,400",
+  //     gradient: "from-cyan-500 to-blue-500",
+  //   },
+  // ];
   const gradientMap = [
     "from-blue-600 to-purple-600",
     "from-emerald-500 to-teal-600",
@@ -145,7 +145,7 @@ const RealEstatePopups = () => {
 
     showNextPopup();
   }, [banners]);
-
+  //console.log("bannerImage", banner.bannerImage);
   const closePopup = (id) => {
     setPopups((prev) => prev.filter((popup) => popup.id !== id));
   };

@@ -64,8 +64,8 @@ const Addressform = ({ value, onSelect }) => {
 
     onSelect({
       address: formatted,
-    //   latitude: place.location.latitude,
-    //   longitude: place.location.longitude,
+      //   latitude: place.location.latitude,
+      //   longitude: place.location.longitude,
       location: {
         type: "Point",
         coordinates: [place.location.longitude, place.location.latitude],
@@ -81,12 +81,12 @@ const Addressform = ({ value, onSelect }) => {
         value={searchTerm}
         onChange={handleSearch}
         placeholder="Search location or address"
-          className="w-full p-4 border border-gray-300 rounded-xl outline-none"
+        className="w-full p-4 border border-gray-300 rounded-xl outline-none"
       />
 
       {/* Suggestions Dropdown */}
       {detailsVisible && places.length > 0 && (
-        <div className="absolute bg-white border rounded shadow w-full z-10 mt-1 max-h-60 overflow-auto">
+        <div className="absolute bg-white shadow w-full z-10 max-h-60 overflow-auto">
           {places.map((place, idx) => (
             <div
               key={idx}

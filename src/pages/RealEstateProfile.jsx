@@ -79,12 +79,22 @@ export default function RealEstateProfile() {
     "Water Supply": Droplet,
     Maintenance: Wrench,
   };
+  console.log("user", userProfile?._id);
 
   useEffect(() => {
-    getRequest("properties")
-      .then((res) => setProperties(res.data?.data?.properties || []))
-      .catch((err) => toast.error("Failed to load properties", err));
-  }, [updateStatus]);
+    if (!userProfile?._id) return; // wait until profile is loaded
+
+    getRequest(`properties?userId=${userProfile?._id}`)
+      .then((res) => {
+        console.log("Properties API response:", res?.data?.data?.properties);
+        setProperties(res?.data?.data?.properties || []);
+      })
+      .catch((err) => {
+        console.error("Failed to load properties:", err);
+        toast.error("Failed to load properties");
+        setProperties([]); // fallback
+      });
+  }, [userProfile?._id, updateStatus]);
 
   const handleDelete = (id) => {
     console.log("id", id);

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import {
   ChevronDown,
@@ -28,56 +29,100 @@ import {
   Bath,
   Bed,
   Square,
+  Droplet,
+  Wrench,
 } from "lucide-react";
+import { useParams } from "react-router-dom";
+import { getRequest } from "../Helpers";
 
 export default function PropertyDetailPage() {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
-
+  const [loading, setLoading] = useState(true);
   const [showDescription, setShowDescription] = useState(true);
-  const [showFeatures, setShowFeatures] = useState(true);
+  const [showServices, setshowServices] = useState(true);
   const [showAbout, setShowAbout] = useState(true);
-  const [showAmenities, setShowAmenities] = useState(true);
+  const [showNearby, setShowNearby] = useState(false);
+  const [showFacilities, setshowFacilities] = useState(true);
   const [showFloorPlan, setShowFloorPlan] = useState(true);
   const [showGallery, setShowGallery] = useState(true);
   const [selectedImage, setSelectedImage] = useState(0);
+  const [images, setImages] = useState([]);
   const [totalAmount, setTotalAmount] = useState(15000);
   const [downPayment, setDownPayment] = useState(10000);
   const [loanTerm, setLoanTerm] = useState(3);
   const [interestRate, setInterestRate] = useState(15);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [properties, setProperties] = useState(false);
+  const { id } = useParams();
 
-  const images = [
-    "https://i.pinimg.com/1200x/8e/cf/f7/8ecff71ffd6b62d82084f18cbe08f205.jpg",
-    "https://i.pinimg.com/1200x/2b/76/cc/2b76cc89c6c9553288e83f48495a5357.jpg",
-    "https://i.pinimg.com/1200x/4e/aa/83/4eaa8389a96a657e7f08c7ca52fc8e36.jpg",
-    "https://i.pinimg.com/1200x/4e/aa/83/4eaa8389a96a657e7f08c7ca52fc8e36.jpg",
-    "https://i.pinimg.com/1200x/e2/87/22/e28722ecaf7884ece3f2d56d025f17ad.jpg",
-    "https://i.pinimg.com/1200x/5f/cf/18/5fcf18af55889a6328d7a9ba69b78b0e.jpg",
-    "https://i.pinimg.com/1200x/1c/df/70/1cdf709620dbdb2b1abc1369d2c02d0e.jpg",
-  ];
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    setLoading(true);
+    getRequest(`properties/${id}`)
+      .then((res) => {
+        console.log("Properties Details Pages ===", res?.data?.data);
+        setProperties(res?.data?.data);
+      })
+      .catch((error) => {
+        console.log("error", error);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [id]);
 
-  const propertyFeatures = [
-    { icon: <Bed className="w-5 h-5" />, label: "Bedrooms", value: "3" },
-    { icon: <Bath className="w-5 h-5" />, label: "Bathrooms", value: "2" },
-    { icon: <Car className="w-5 h-5" />, label: "Parking", value: "1" },
-    { icon: <Home className="w-5 h-5" />, label: "Balcony", value: "Yes" },
-    {
-      icon: <Square className="w-5 h-5" />,
-      label: "Floor",
-      value: "5th of 12",
-    },
-    { icon: "👔", label: "Wardrobe", value: "1" },
-    { icon: "📺", label: "TV", value: "4" },
-    { icon: "💧", label: "Water Purifier", value: "2" },
-    { icon: "🔥", label: "Microwave", value: "2" },
-    { icon: "❄️", label: "AC", value: "4" },
-    { icon: "🍽️", label: "Fridge", value: "1" },
-    { icon: "🏠", label: "Curtains", value: "yes" },
-  ];
+  useEffect(() => {
+    if (properties?.gallery) {
+      setImages(properties?.gallery);
+    }
+  }, [properties]);
 
-  const amenities = [
+  //if (!images || images.length === 0) return null;
+
+  // const images = [
+  //   "https://i.pinimg.com/1200x/8e/cf/f7/8ecff71ffd6b62d82084f18cbe08f205.jpg",
+  //   "https://i.pinimg.com/1200x/2b/76/cc/2b76cc89c6c9553288e83f48495a5357.jpg",
+  //   "https://i.pinimg.com/1200x/4e/aa/83/4eaa8389a96a657e7f08c7ca52fc8e36.jpg",
+  //   "https://i.pinimg.com/1200x/4e/aa/83/4eaa8389a96a657e7f08c7ca52fc8e36.jpg",
+  //   "https://i.pinimg.com/1200x/e2/87/22/e28722ecaf7884ece3f2d56d025f17ad.jpg",
+  //   "https://i.pinimg.com/1200x/5f/cf/18/5fcf18af55889a6328d7a9ba69b78b0e.jpg",
+  //   "https://i.pinimg.com/1200x/1c/df/70/1cdf709620dbdb2b1abc1369d2c02d0e.jpg",
+  // ];
+
+  // const service = [
+  //   { icon: <Bed className="w-5 h-5" />, label: "Bedrooms", value: "3" },
+  //   { icon: <Bath className="w-5 h-5" />, label: "Bathrooms", value: "2" },
+  //   { icon: <Car className="w-5 h-5" />, label: "Parking", value: "1" },
+  //   {
+  //     icon: <Droplet className="w-5 h-5" />,
+  //     label: "Water Supply",
+  //     value: "Yes",
+  //   },
+  //   {
+  //     icon: <Square className="w-5 h-5" />,
+  //     label: "Floor",
+  //     value: "5th of 12",
+  //   },
+  //   { icon: "Wrench", label: "Maintenance", value: "1" },
+  //   { icon: "📺", label: "TV", value: "4" },
+  //   { icon: "💧", label: "Water Purifier", value: "2" },
+  //   { icon: "🔥", label: "Microwave", value: "2" },
+  //   { icon: "❄️", label: "AC", value: "4" },
+  //   { icon: "🍽️", label: "Fridge", value: "1" },
+  //   { icon: "🏠", label: "Curtains", value: "yes" },
+  // ];
+
+  const serviceIcons = {
+    "Water Supply": <Droplet className="w-5 h-5" />,
+    Maintenance: <Wrench className="w-5 h-5" />,
+    Bedrooms: <Bed className="w-5 h-5" />,
+    Bathrooms: <Bath className="w-5 h-5" />,
+    Parking: <Car className="w-5 h-5" />,
+    Floor: <Square className="w-5 h-5" />,
+  };
+  const facilities = [
     "Gym",
     "Swimming Pool",
     "Power Backup",
@@ -103,6 +148,13 @@ export default function PropertyDetailPage() {
     return monthlyPayment.toFixed(2);
   };
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+        <div className="w-12 h-12 border-4 border-t-blue-500 border-b-blue-500 border-gray-200 rounded-full animate-spin"></div>
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
       {/* Hero Header */}
@@ -121,14 +173,13 @@ export default function PropertyDetailPage() {
             {/* Left Content */}
             <div>
               <h1 className="text-xl lg:text-3xl font-bold text-white tracking-tight drop-shadow-lg mb-3">
-                Luxury Hilltop Villa <br className="hidden md:block" /> with
-                Valley Views
+                {/* <br className="hidden md:block" /> with
+                Valley Views */}
+                {properties?.name}
               </h1>
               <div className="flex items-center gap-2 text-gray-200 font-light">
                 <MapPin className="w-5 h-5 text-blue-400" />
-                <span className="text-base">
-                  Mohawk River Valley, Upstate NY
-                </span>
+                <span className="text-base">{properties?.address}</span>
               </div>
             </div>
 
@@ -136,7 +187,7 @@ export default function PropertyDetailPage() {
             <div className="flex items-center gap-4">
               <div className="text-right">
                 <div className="text-2xl font-extrabold text-yellow-400 drop-shadow-md">
-                  ₹850,000
+                  {properties?.actualPrice}
                 </div>
                 <div className="text-sm text-gray-300">Total Visits: 45</div>
               </div>
@@ -224,58 +275,40 @@ export default function PropertyDetailPage() {
               {showDescription && (
                 <div className="prose prose-gray max-w-none">
                   <p className="text-base text-gray-500 leading-relaxed">
-                    This exceptional property is mostly wooded and sits high on
-                    a hilltop overlooking the breathtaking Mohawk River Valley.
-                    Located right in the heart of Upstate NY's Amish farm
-                    Country, this land is certified organic making it extremely
-                    rare! Good road frontage on a paved county road with
-                    utilities make it an amazing setting for your dream country
-                    getaway! If you like views, you must see this property!
+                    {properties?.description}
                   </p>
                 </div>
               )}
             </div>
 
-            {/* Property Features */}
+            {/* Property Services services */}
             <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-bold text-gray-800">
-                  Property Features
-                </h3>
+                <h3 className="text-xl font-bold text-gray-800">Services</h3>
                 <button
-                  onClick={() => setShowFeatures(!showFeatures)}
+                  onClick={() => setshowServices(!showServices)}
                   className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
                 >
-                  {showFeatures ? (
+                  {showServices ? (
                     <ChevronUp className="w-6 h-6" />
                   ) : (
                     <ChevronDown className="w-6 h-6" />
                   )}
                 </button>
               </div>
-              {showFeatures && (
+              {showServices && properties?.services?.length > 0 && (
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {propertyFeatures.map((feature, index) => (
+                  {properties?.services.map((service, index) => (
                     <div
                       key={index}
                       className="group p-2  rounded-xl hover:shadow-md transition-all duration-300 hover:-translate-y-1"
                     >
                       <div className="flex items-center gap-3">
                         <div className="w-6 h-6 bg-gradient-to-br from-red-800 to-pink-400 rounded-lg flex items-center justify-center text-white shadow-lg">
-                          {typeof feature.icon === "string" ? (
-                            <span className="text-sm">{feature.icon}</span>
-                          ) : (
-                            feature.icon
-                          )}
+                          {/* {const Icon = serviceIcons[service] || Star;} */}
+                          {serviceIcons[service] || "❓"}
                         </div>
-                        <div>
-                          <div className="text-sm  text-gray-600">
-                            {feature.label}
-                          </div>
-                          <div className="text-sm  text-gray-600">
-                            {feature.value}
-                          </div>
-                        </div>
+                        <div className="text-sm  text-gray-600">{service}</div>
                       </div>
                     </div>
                   ))}
@@ -284,7 +317,7 @@ export default function PropertyDetailPage() {
             </div>
 
             {/* About Property */}
-            <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
+            {/* <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-xl font-bold text-gray-800">
                   About Property
@@ -314,37 +347,37 @@ export default function PropertyDetailPage() {
                       "Inviting living room with balcony.",
                       "Terrace with breathtaking views.",
                       "Independent electric and water connections.",
-                    ].map((feature, index) => (
+                    ].map((service, index) => (
                       <div key={index} className="flex items-start gap-3">
                         <div className="w-2 h-2 bg-gradient-to-r from-green-400 to-green-600 rounded-full mt-3 flex-shrink-0"></div>
                         <span className="text-base text-gray-500">
-                          {feature}
+                          {service}
                         </span>
                       </div>
                     ))}
                   </div>
                 </div>
               )}
-            </div>
+            </div> */}
 
-            {/* Amenities */}
+            {/* facilities */}
             <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-xl font-bold text-gray-800">Amenities</h3>
                 <button
-                  onClick={() => setShowAmenities(!showAmenities)}
+                  onClick={() => setshowFacilities(!showFacilities)}
                   className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
                 >
-                  {showAmenities ? (
+                  {showFacilities ? (
                     <ChevronUp className="w-6 h-6" />
                   ) : (
                     <ChevronDown className="w-6 h-6" />
                   )}
                 </button>
               </div>
-              {showAmenities && (
+              {showFacilities && (
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {amenities.map((amenity, index) => (
+                  {properties?.facilities?.map((facility, index) => (
                     <div
                       key={index}
                       className="group p-2 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl hover:shadow-md transition-all duration-300 hover:-translate-y-1"
@@ -354,9 +387,39 @@ export default function PropertyDetailPage() {
                           <span className="text-xs ">✓</span>
                         </div>
                         <span className="text-base text-gray-500">
-                          {amenity}
+                          {facility}
                         </span>
                       </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Nearby Section */}
+            <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-bold text-gray-800">Nearby</h3>
+                <button
+                  onClick={() => setShowNearby(!showNearby)}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  {showNearby ? (
+                    <ChevronUp className="w-6 h-6" />
+                  ) : (
+                    <ChevronDown className="w-6 h-6" />
+                  )}
+                </button>
+              </div>
+
+              {showNearby && (
+                <div className="space-y-3">
+                  {properties?.nearby?.map((place) => (
+                    <div key={place._id} className="flex items-start gap-3">
+                      <div className="w-2 h-2 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full mt-3 flex-shrink-0"></div>
+                      <span className="text-base text-gray-500">
+                        {place.distance} km from {place.name}
+                      </span>
                     </div>
                   ))}
                 </div>

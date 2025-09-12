@@ -18,26 +18,30 @@ import { ProfileProvider } from "./context/ProfileContext";
 function App() {
   return (
     <>
-    <Router>
-      {/* <ProfileProvider> */}
-      <Navbar/>
-      {/* </ProfileProvider> */}
+      <Router>
+        {/* <ProfileProvider> */}
+        <Navbar />
+        {/* </ProfileProvider> */}
 
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<AboutUs />} />
-        <Route path="/gallery" element={<RealEstateGallery />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/profile" element={<RealEstateProfile />} />
-        <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
-        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-         <Route path="/property-detail" element={<PropertyDetailPage />} />
-         <Route path="/property-list" element={<PropertyListings />} />
-         <Route path="/login" element={<Login />} />
-         {/* <Route path="/signup" element ={<Signup/>} /> */}
-      </Routes>
-    <Footer/>
-    </Router>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<AboutUs />} />
+          <Route path="/gallery" element={<RealEstateGallery />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/profile" element={<RealEstateProfile />} />
+          <Route
+            path="/terms-and-conditions"
+            element={<TermsAndConditions />}
+          />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/property-detail" element={<PropertyDetailPage />} />
+          <Route path="/property-detail/:id" element={<PropertyDetailPage />} />
+          <Route path="/property-list" element={<PropertyListings />} />
+          <Route path="/login" element={<Login />} />
+          {/* <Route path="/signup" element ={<Signup/>} /> */}
+        </Routes>
+        <Footer />
+      </Router>
     </>
   );
 }

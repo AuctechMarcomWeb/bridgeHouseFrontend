@@ -102,10 +102,10 @@ const Navbar = () => {
             {/* Desktop Right Section */}
 
             {isLoggedIn ? (
-              <div ref={dropdownRef} className="relative">
+              <div ref={dropdownRef} className="relative hidden md:block">
                 {/* Avatar + Name + Arrow */}
                 <div
-                  className="flex items-center gap-2 cursor-pointer p-2 rounded-md hover:bg-gray-50 transition"
+                  className="flex items-center gap-2 cursor-pointer p-2 rounded-md hover:bg-gray-50 transition "
                   onClick={() => {
                     console.log("clicked");
                     setDropdownOpen((prev) => !prev);
@@ -211,7 +211,10 @@ const Navbar = () => {
                     onClick={() => setDropdownOpen((prev) => !prev)}
                   >
                     <img
-                      src="https://images.unsplash.com/photo-1502685104226-ee32379fefbe?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=3&w=256&h=256&q=80"
+                      src={
+                        user?.profilepic ||
+                        "https://images.unsplash.com/photo-1502685104226-ee32379fefbe?ixlib=rb-4.0.3&auto=format&fit=facearea&facepad=3&w=256&h=256&q=80"
+                      }
                       alt="User Avatar"
                       className="w-8 h-8 rounded-full object-cover border border-gray-300"
                     />
@@ -232,6 +235,8 @@ const Navbar = () => {
                           setIsMenuOpen(false);
                         }}
                       >
+                        {" "}
+                        <User className="w-5 h-5 " />
                         Profile
                       </Link>
                       <button
@@ -242,6 +247,7 @@ const Navbar = () => {
                           setIsMenuOpen(false);
                         }}
                       >
+                        <LogOut className="w-5 h-5" />
                         Logout
                       </button>
                     </div>

@@ -32,13 +32,15 @@ import { ProfileContext } from "../context/ProfileContext";
 import { useNavigate } from "react-router-dom";
 import { formatDate } from "../Utils";
 import { FaUser, FaBirthdayCake, FaIdBadge } from "react-icons/fa";
+import CreatePasswordModal from "../components/CreatePasswordModal";
 
 export default function RealEstateProfile() {
   const { user, isLoggedIn } = useContext(ProfileContext);
   const navigate = useNavigate();
-
+  const [loading, setLoading] = useState(true);
   const [userProfile, setUserProfile] = useState({});
   const [showEdit, setShowEdit] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [update, setUpdate] = useState(false);
   // Redirect if not logged in
   useEffect(() => {
@@ -48,16 +50,17 @@ export default function RealEstateProfile() {
   }, [isLoggedIn, navigate]);
 
   useEffect(() => {
+    setLoading(true);
     getRequest(`auth/profile`)
       .then((res) => {
         if (res?.data) {
-          setUserProfile(res?.data?.data);
-          console.log("profile show===", res);
+          setUserProfile(res.data.data);
         }
       })
       .catch((err) => {
         console.error("Error fetching profile:", err);
-      });
+      })
+      .finally(() => setLoading(false));
   }, [update]);
 
   const handleSave = (update) => {
@@ -83,8 +86,7 @@ export default function RealEstateProfile() {
   console.log("user", userProfile?._id);
 
   useEffect(() => {
-    if (!userProfile?._id) return; // wait until profile is loaded
-
+    if (!userProfile?._id) return;
     getRequest(`properties?userId=${userProfile?._id}`)
       .then((res) => {
         console.log("Properties API response:", res?.data?.data?.properties);
@@ -129,6 +131,13 @@ export default function RealEstateProfile() {
       <div className="max-w-7xl mx-auto p-6">
         {/* Enhanced Header with Stats */}
         <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden mb-8">
+          {loading && (
+            <div className="absolute inset-0 bg-white/70 flex flex-col items-center justify-center z-50">
+              <div className="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mb-4"></div>
+              <p className="text-gray-500 text-sm">Loading user profile...</p>
+            </div>
+          )}
+
           <div className="bg-[#004d88] p-8">
             <div className="flex flex-col lg:flex-row items-start lg:items-center gap-6">
               <div className="relative">
@@ -182,12 +191,23 @@ export default function RealEstateProfile() {
                 </div>
               </div>
 
-              <button
-                onClick={() => setShowEdit(true)}
-                className="px-6 py-3 bg-white text-blue-600 font-semibold rounded-xl hover:bg-blue-50 transition-all duration-300 shadow-lg"
-              >
-                Edit Profile
-              </button>
+              <div className="flex flex-col gap-4">
+                <button
+                  className="px-4 py-2 bg-white text-blue-600 font-semibold rounded-xl hover:bg-blue-50 transition-all duration-300 shadow-lg"
+                  onClick={() => {
+                    setShowPassword(true);
+                    console.log("showPassword:", true);
+                  }}
+                >
+                  Create Password
+                </button>
+                <button
+                  onClick={() => setShowEdit(true)}
+                  className="px-4 py-2 bg-white text-blue-600 font-semibold rounded-xl hover:bg-blue-50 transition-all duration-300 shadow-lg"
+                >
+                  Edit Profile
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -381,6 +401,14 @@ export default function RealEstateProfile() {
             onClose={() => setShowEdit(false)}
             onSave={handleSave} // <-- pass callback
             userProfile={userProfile}
+            setUpdate={setUpdate}
+          />
+        )}
+
+        {showPassword && (
+          <CreatePasswordModal
+            show={showPassword}
+            onClose={() => setShowPassword(false)}
             setUpdate={setUpdate}
           />
         )}

@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -23,9 +24,6 @@ import { getRequest } from "../Helpers";
 
 export default function RentalListingApp() {
   const navigate = useNavigate();
-  function handleClick() {
-    navigate("/property-detail");
-  }
   const iconMap = {
     // Facilities
     Parking: Car,
@@ -85,7 +83,6 @@ export default function RentalListingApp() {
 
   useEffect(() => {
     const { page, limit, search, sortBy, isPagination } = fiters;
-
     const queryParams = new URLSearchParams({
       page,
       limit,
@@ -98,11 +95,17 @@ export default function RentalListingApp() {
     getRequest(`properties?${queryParams}`)
       .then((res) => {
         setListing(res?.data?.data?.properties || []);
-        console.log("listing res", res?.data?.data || []);
+        console.log("Property Lists Res", res?.data?.data || []);
       })
       .catch((err) => console.log("Api Error", err))
       .finally(() => setLoading(false));
   }, [fiters]);
+
+  const handleClick = (id) => {
+    console.log("id=====", id);
+
+    navigate(`/property-detail/${id}`);
+  };
 
   const toggleDropdown = (dropdown) => {
     setOpenDropdowns((prev) => ({
@@ -369,8 +372,8 @@ export default function RentalListingApp() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {(showAll ? listings : listings.slice(0, 4)).map((listing) => (
                 <div
-                  onClick={handleClick}
-                  key={listing?.id}
+                  onClick={() => handleClick(listing?._id)}
+                  key={listing?._id}
                   className="group bg-white rounded-2xl shadow-lg  overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 cursor-pointer"
                 >
                   <div className="relative overflow-hidden">

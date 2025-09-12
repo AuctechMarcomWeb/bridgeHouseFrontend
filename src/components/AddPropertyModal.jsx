@@ -205,7 +205,6 @@ const AddPropertyModal = ({
     if (!formData.name.trim()) newErrors.name = "Property name is required";
     if (!formData.propertyType.trim())
       newErrors.propertyType = "Property type is required";
-    if (!formData.address.trim()) newErrors.address = "Address is required";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;

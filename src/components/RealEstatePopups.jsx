@@ -18,11 +18,12 @@ const RealEstatePopups = () => {
   const [popups, setPopups] = useState([]);
   const navigate = useNavigate();
   const [banners, setBanners] = useState([]);
+
   const [params, setParams] = useState({
     isPagination: true,
     page: 1,
     limit: 10,
-    search: "Summer",
+    search: "",
     sortBy: "recent",
     isActive: true,
     bannerType: "",
@@ -39,6 +40,10 @@ const RealEstatePopups = () => {
       })
       .catch((err) => console.error("Error fetching banners:", err));
   }, []);
+
+  useEffect(() => {
+    console.log("Popups state updated:", popups);
+  }, [popups]);
 
   // const adData = [
   //   {
@@ -103,23 +108,33 @@ const RealEstatePopups = () => {
   const bannerPositions = {
     top: banners.filter((b) => b.bannerType === "top"),
     bottom: banners.filter((b) => b.bannerType === "bottom"),
-    left: banners.filter((b) => b.bannerType === "left"),
-    right: banners.filter((b) => b.bannerType === "right"),
+    left: banners.filter((b) => b.bannerType === "leftside"),
+    right: banners.filter((b) => b.bannerType === "rightside"),
   };
 
   useEffect(() => {
-    const types = ["top", "bottom", "left", "right"];
+    const types = ["top", "bottom", "leftside", "rightside"];
     let index = 0;
 
     const showNextPopup = () => {
       if (index < types.length) {
         const type = types[index];
+        const bannersOfType = bannerPositions[type] || [];
+        // console.log("bannersOfType", bannersOfType);
 
         // Filter banners for this type
-        const bannersOfType = banners.filter((b) => b.bannerType === type);
+        //const bannersOfType = banners.filter((b) => b.bannerType === type);
+        // console.log(
+        //   "➡️ Banner before push:",
+        //   banners?.bannerImage,
+        //   banners?.title
+        // );
 
         bannersOfType.forEach((banner, i) => {
-          const property = banner.propertyId || {};
+          // console.log("Single banner object:", banner);
+          // console.log("   bannerImage:", banner?.bannerImage);
+          // console.log("   title:", banner?.title);
+          const property = banner?.propertyId || {};
 
           setPopups((prev) => [
             ...prev,
@@ -145,7 +160,8 @@ const RealEstatePopups = () => {
 
     showNextPopup();
   }, [banners]);
-  //console.log("bannerImage", banner.bannerImage);
+
+  // console.log("bannerImage", banners?.bannerImage);
   const closePopup = (id) => {
     setPopups((prev) => prev.filter((popup) => popup.id !== id));
   };
@@ -155,7 +171,7 @@ const RealEstatePopups = () => {
       <div className="absolute right-4 top-4 space-y-4 pointer-events-auto ">
         {popups.map((popup, index) => (
           <div
-            key={`${popup.id}-${popup.timestamp}`}
+            key={`${popup?.id}-${popup?.timestamp}`}
             className={`transition-all duration-500 ease-out ${
               popup.show
                 ? "translate-x-0 opacity-100"
@@ -166,15 +182,16 @@ const RealEstatePopups = () => {
               // marginTop: `${index * 10}px`, //  use margin instead of overriding transform
               top: popup.position === "top" ? `${index * 10}px` : "auto",
               bottom: popup.position === "bottom" ? `${index * 10}px` : "auto",
-              left: popup.position === "left" ? `${index * 10}px` : "auto",
-              right: popup.position === "right" ? `${index * 10}px` : "auto",
+              left: popup.position === "leftside" ? `${index * 10}px` : "auto",
+              right:
+                popup.position === "rightside" ? `${index * 10}px` : "auto",
             }}
           >
             <div className="relative w-60 bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100">
               {/* Close Button */}
               <button
                 type="button"
-                onClick={() => closePopup(popup.id)}
+                onClick={() => closePopup(popup?.id)}
                 className="absolute top-3 right-3 z-20 flex items-center justify-center w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white transition-all duration-200 hover:scale-110 cursor-pointer"
               >
                 <X size={20} className="text-gray-600 pointer-events-none" />
@@ -209,7 +226,7 @@ const RealEstatePopups = () => {
                 />
                 <div className="absolute top-3 left-3">
                   <span className="bg-white/90 backdrop-blur-sm text-gray-800 px-2 py-1 rounded-lg text-xs font-semibold">
-                    {popup.propertyType}
+                    {popup?.propertyType}
                   </span>
                 </div>
               </div>
@@ -217,19 +234,19 @@ const RealEstatePopups = () => {
               {/* Content */}
               <div className="p-4">
                 <h3 className="font-bold text-gray-900 text-sm mb-2 line-clamp-2">
-                  {popup.title}
+                  {popup?.title}
                 </h3>
 
                 <div className="flex items-center gap-1 text-gray-600 mb-3">
                   <MapPin size={14} />
-                  <span className="text-xs">{popup.location}</span>
+                  <span className="text-xs">{popup?.location}</span>
                 </div>
 
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-1">
                     <IndianRupee size={16} className="text-green-600" />
                     <span className="font-bold text-lg text-gray-900">
-                      {popup.price}
+                      {popup?.price}
                     </span>
                   </div>
                 </div>
@@ -238,7 +255,7 @@ const RealEstatePopups = () => {
                 <div className="flex gap-2">
                   <button
                     onClick={() => navigate("/property-detail")}
-                    className={`flex-1 bg-gradient-to-r ${popup.gradient} text-white py-2 px-3 rounded-lg text-xs font-semibold hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5`}
+                    className={`flex-1 bg-gradient-to-r ${popup?.gradient} text-white py-2 px-3 rounded-lg text-xs font-semibold hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5`}
                   >
                     View Details
                   </button>
@@ -249,7 +266,7 @@ const RealEstatePopups = () => {
               </div>
 
               {/* Bottom accent */}
-              <div className={`h-1 bg-gradient-to-r ${popup.gradient}`}></div>
+              <div className={`h-1 bg-gradient-to-r ${popup?.gradient}`}></div>
             </div>
           </div>
         ))}

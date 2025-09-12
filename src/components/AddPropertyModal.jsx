@@ -28,7 +28,6 @@ const AddPropertyModal = ({
     facilities: [],
     services: [],
     address: "",
-    location: { type: "Point", coordinates: [0, 0] },
     nearby: [{ name: "", distance: "" }],
     documents: [{ name: "", number: "", image: "" }],
     gallery: [],
@@ -54,7 +53,6 @@ const AddPropertyModal = ({
         facilities: modalData?.facilities || [],
         services: modalData?.services || [],
         address: modalData.formData?.address,
-        location: modalData?.location || { type: "Point", coordinates: [0, 0] },
         nearby: modalData?.nearby?.length
           ? modalData?.nearby
           : [{ name: "", distance: "" }],
@@ -331,7 +329,7 @@ const AddPropertyModal = ({
         {/* Address & Description */}
         <div className="grid grid-cols-2 gap-4">
           <Addressform
-            value={formData?.address}
+            value={formData?.address || modalData?.address}
             onSelect={handleLocationSelect}
           />
           <textarea

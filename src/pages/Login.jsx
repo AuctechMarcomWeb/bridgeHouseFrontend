@@ -32,7 +32,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-  const { user, setUpdateStatus, logout ,login} = useContext(ProfileContext);
+  const { user, setUpdateStatus, logout, login } = useContext(ProfileContext);
   const [userId, setUserId] = useState("");
   const [token, setToken] = useState("");
   const [formData, setFormData] = useState({
@@ -183,15 +183,17 @@ export default function Login() {
     e.preventDefault();
     setLoading(true);
     try {
+      console.log("userId", userId);
+
       const res = await patchRequest({
         url: `auth/update/${userId}`,
-        cred: { formData },
+        cred: { ...formData },
       });
       console.log("signup response:", res?.data?.data);
       setUpdateStatus((prev) => !prev);
       const userData = res?.data?.data;
       console.log("userData", userData);
-      
+
       login(token, userData);
       console.log("Token saved for new user:=====================>", token);
       toast.success(res?.data?.message);

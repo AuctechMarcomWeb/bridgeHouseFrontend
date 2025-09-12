@@ -5,7 +5,13 @@ import { getRequest } from "../Helpers";
 
 const BANNER_TYPES = ["leftside", "rightside", "top", "bottom"];
 
-const RealEstatePopup = ({ pagination = 1, limit = 5, searchTerm = "", sortBy = "", isActive = true }) => {
+const RealEstatePopup = ({
+  pagination = 1,
+  limit = 5,
+  searchTerm = "",
+  sortBy = "",
+  isActive = true,
+}) => {
   const [popups, setPopups] = useState([]);
   const navigate = useNavigate();
 
@@ -17,15 +23,19 @@ const RealEstatePopup = ({ pagination = 1, limit = 5, searchTerm = "", sortBy = 
         );
 
         const banners = res?.data?.banners || [];
+        console.log("bannners======", banners);
 
         if (banners.length) {
           // Add metadata for timing and type
           const bannersWithMeta = banners.map((banner) => ({
             ...banner,
-            bannerType: BANNER_TYPES.includes(banner.bannerType) ? banner.bannerType : "top",
+            bannerType: BANNER_TYPES.includes(banner.bannerType)
+              ? banner.bannerType
+              : "top",
             timestamp: Date.now() + Math.random(),
             show: true,
           }));
+          console.log("bannersWithMeta", bannersWithMeta);
 
           // Show popups one by one
           const showPopup = (index = 0) => {
@@ -56,9 +66,13 @@ const RealEstatePopup = ({ pagination = 1, limit = 5, searchTerm = "", sortBy = 
           key={popup.timestamp}
           className={`fixed ${
             popup.bannerType === "top" ? "top-4 left-1/2 -translate-x-1/2" : ""
-          } ${popup.bannerType === "bottom" ? "bottom-4 left-1/2 -translate-x-1/2" : ""} ${
-            popup.bannerType === "leftside" ? "top-1/3 left-4" : ""
-          } ${popup.bannerType === "rightside" ? "top-1/3 right-4" : ""} transition-all duration-500 ease-out`}
+          } ${
+            popup.bannerType === "bottom"
+              ? "bottom-4 left-1/2 -translate-x-1/2"
+              : ""
+          } ${popup.bannerType === "leftside" ? "top-1/3 left-4" : ""} ${
+            popup.bannerType === "rightside" ? "top-1/3 right-4" : ""
+          } transition-all duration-500 ease-out`}
           style={{ marginTop: `${index * 10}px` }}
         >
           <div
@@ -75,7 +89,9 @@ const RealEstatePopup = ({ pagination = 1, limit = 5, searchTerm = "", sortBy = 
 
             {/* Header */}
             <div
-              className={`bg-gradient-to-r ${popup.gradient || "from-blue-600 to-purple-600"} p-4 text-white relative overflow-hidden`}
+              className={`bg-gradient-to-r ${
+                popup.gradient || "from-blue-600 to-purple-600"
+              } p-4 text-white relative overflow-hidden`}
             >
               <div className="absolute inset-0 bg-black/10"></div>
               <div className="relative z-10 flex items-center gap-2">
@@ -87,10 +103,15 @@ const RealEstatePopup = ({ pagination = 1, limit = 5, searchTerm = "", sortBy = 
             {/* Image */}
             <div className="relative h-40 overflow-hidden">
               <img
-                src={popup.bannerImage} // Correct root path
+                src={
+                  popup.bannerImage ||
+                  popup.bannersImages?.[0] ||
+                  "/fallback.jpg"
+                }
                 alt={popup.title}
                 className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
               />
+
               <div className="absolute top-3 left-3">
                 <span className="bg-white/90 backdrop-blur-sm text-gray-800 px-2 py-1 rounded-lg text-xs font-semibold">
                   {popup.bannerType}
@@ -101,7 +122,9 @@ const RealEstatePopup = ({ pagination = 1, limit = 5, searchTerm = "", sortBy = 
             {/* Content */}
             <div className="p-4">
               {/* Title */}
-              <h3 className="font-bold text-gray-900 text-sm mb-2 line-clamp-2">{popup.title}</h3>
+              <h3 className="font-bold text-gray-900 text-sm mb-2 line-clamp-2">
+                {popup.title}
+              </h3>
 
               {/* Address */}
               <div className="flex items-center gap-1 text-gray-600 mb-3">
@@ -122,7 +145,9 @@ const RealEstatePopup = ({ pagination = 1, limit = 5, searchTerm = "", sortBy = 
               {/* Action Buttons */}
               <div className="flex gap-2">
                 <button
-                  className={`flex-1 bg-gradient-to-r ${popup.gradient || "from-blue-600 to-purple-600"} text-white py-2 px-3 rounded-lg text-xs font-semibold hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5`}
+                  className={`flex-1 bg-gradient-to-r ${
+                    popup.gradient || "from-blue-600 to-purple-600"
+                  } text-white py-2 px-3 rounded-lg text-xs font-semibold hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5`}
                 >
                   View Details
                 </button>
@@ -133,7 +158,11 @@ const RealEstatePopup = ({ pagination = 1, limit = 5, searchTerm = "", sortBy = 
             </div>
 
             {/* Bottom accent */}
-            <div className={`h-1 bg-gradient-to-r ${popup.gradient || "from-blue-600 to-purple-600"}`}></div>
+            <div
+              className={`h-1 bg-gradient-to-r ${
+                popup.gradient || "from-blue-600 to-purple-600"
+              }`}
+            ></div>
           </div>
         </div>
       ))}

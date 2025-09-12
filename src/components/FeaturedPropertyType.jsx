@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-// import RealEstatePopups from "./RealEstatePopups";
+import RealEstatePopups from "./RealEstatePopups";
 import {
   ArrowUpRight,
   Building,
@@ -11,7 +11,7 @@ import {
   Copy,
 } from "lucide-react";
 import { getRequest } from "../Helpers";
-import RealEstatePopup from "./RealEstatePopup";
+//import RealEstatePopup from "./RealEstatePopup";
 
 // const propertyTypes = [
 //   {
@@ -152,8 +152,8 @@ export default function FeaturedPropertyType() {
           );
         })}
       </div>
-      {/* <RealEstatePopups /> */}
-      <RealEstatePopup/>
+      <RealEstatePopups />
+      {/* <RealEstatePopup /> */}
     </div>
   );
 }

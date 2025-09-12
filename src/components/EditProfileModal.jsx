@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import { ProfileContext } from "../context/ProfileContext";
 import useCookie from "../Hooks/cookie";
 import AddressForm from "../components/Addressform";
+import { formatDateCreatedAt } from "../Utils";
 
 export default function EditProfileModal({
   show,
@@ -15,16 +16,27 @@ export default function EditProfileModal({
   userProfile,
   setUpdate,
 }) {
-  const [formData, setFormData] = useState({
-    dob: "",
-    profilepic: "",
-  });
+  const { user, setUser } = useContext(ProfileContext);
+  console.log("user", user);
+  const [formData, setFormData] = useState(
+    user
+      ? { ...user, dob: formatDateCreatedAt(user?.dob) }
+      : {
+          dob: "",
+          profilepic: "",
+          name: "",
+          phone: "",
+          email: "",
+          gender: "",
+          accountType: "",
+          occupation: "",
+          address: "",
+        }
+  );
   console.log("formdata", formData);
   const [loading, setLoading] = useState(false);
   const [imageUploading, setImageUploading] = useState(false);
-  const { user } = useContext(ProfileContext);
-  console.log("user", user);
-  
+
   const { setCookie } = useCookie();
 
   const handleChange = (e) => {
@@ -33,23 +45,8 @@ export default function EditProfileModal({
   };
   console.log("user", user);
 
-  useEffect(() => {
-  if (show && user) {
-    setFormData({
-      name: user.name || "",
-      phone: user.phone || "",
-      email: user.email || "",
-      dob: user.dob ? user.dob.split("T")[0] : "",
-      occupation: user.occupation || "",
-      gender: user.gender || "",
-      accountType: user.accountType || "",
-      address: user.address || "",
-      profilepic: user.profilepic || "",
-    });
-  }
-}, [show, user]);
-
-  console.log(user?.name);
+  console.log(user?.address);
+  console.log(user?.gender);
 
   if (!show || !formData) return null;
 
@@ -70,14 +67,17 @@ export default function EditProfileModal({
       .then((res) => {
         console.log("Update edit profile response:", res?.data?.data);
         toast.success(res?.data?.message);
+        // ✅ Context update karo
+        setUser(res?.data?.data);
         if (res?.data?.token) {
-          setCookie("token-bridge-house", res.data.token, 30);
-          console.log("Token saved for new user:", res.data.token);
+          setCookie("token-bridge-house", res?.data?.token, 30);
+          console.log("Token saved for new user:", res?.data?.token);
         }
+        setUpdate((prev) => !prev);
+
         if (onSave) {
           onSave(res?.data?.data);
         }
-        setUpdate((prev) => !prev);
         onClose();
       })
       .catch((err) => {
@@ -249,7 +249,7 @@ export default function EditProfileModal({
               <select
                 id="gender"
                 name="gender"
-                value={formData?.gender}
+                value={user?.gender}
                 onChange={handleChange}
                 className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 h-12"
               >

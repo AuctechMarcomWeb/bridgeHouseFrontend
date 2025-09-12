@@ -51,7 +51,8 @@ export default function RealEstateProfile() {
     getRequest(`auth/profile`)
       .then((res) => {
         if (res?.data) {
-          setUserProfile(res.data.data);
+          setUserProfile(res?.data?.data);
+          console.log("profile show===", res);
         }
       })
       .catch((err) => {

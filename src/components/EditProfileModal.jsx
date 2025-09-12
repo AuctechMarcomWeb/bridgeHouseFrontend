@@ -43,10 +43,6 @@ export default function EditProfileModal({
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-  console.log("user", user);
-
-  console.log(user?.address);
-  console.log(user?.gender);
 
   if (!show || !formData) return null;
 

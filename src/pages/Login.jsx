@@ -45,8 +45,6 @@ export default function Login() {
     gender: "",
     occupation: "",
     accountType: "",
-    dob: "1995-08-15",
-    profilepic: "https://example.com/profile.jpg",
   });
 
   console.log("formData", formData);

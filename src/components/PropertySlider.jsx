@@ -9,19 +9,21 @@ const PropertySlider = () => {
   function handleClick() {
     navigate("/property-detail");
   }
-
+  const [loading, setLoading] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [direction, setDirection] = useState("next");
   const [banners, setBanners] = useState([]);
 
   // Fetch banners
   useEffect(() => {
+    setLoading(true);
     getRequest(`banner`)
       .then((res) => {
         setBanners(res?.data?.data?.banners || []);
         console.log("banners fetched:", res?.data?.data?.banners);
       })
-      .catch((err) => console.error("Error fetching banners:", err));
+      .catch((err) => console.error("Error fetching banners:", err))
+      .finally(() => setLoading(false));
   }, []);
 
   const nextSlide = () => {
@@ -63,86 +65,96 @@ const PropertySlider = () => {
         {/* Slider */}
         <div className="relative overflow-hidden">
           <div className="relative rounded-3xl shadow-xl bg-white h-96">
-            {banners.map((banner, index) => {
-              const property = banner?.propertyId; // may be null
-              return (
-                <div
-                  key={banner?._id}
-                  className={`absolute inset-0 flex transition-all duration-700 ease-in-out ${
-                    index === currentSlide
-                      ? "opacity-100 translate-x-0 z-10"
-                      : direction === "next"
-                      ? "opacity-0 -translate-x-full"
-                      : "opacity-0 translate-x-full"
-                  }`}
-                >
-                  {/* Left Content */}
-                  <div className="w-1/2 rounded-l-2xl bg-gradient-to-br from-teal-600 via-teal-400 to-teal-200 text-white p-2 md:p-14 flex flex-col justify-center relative overflow-hidden">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16"></div>
-                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-12 -translate-x-12"></div>
+            {loading && (
+              <div className="absolute inset-0 flex justify-center items-center bg-white/70 z-20">
+                <div className="w-12 h-12 border-4 border-t-blue-500 border-b-blue-500 border-gray-200 rounded-full animate-spin"></div>
+              </div>
+            )}
 
-                    <div className="relative z-10">
-                      <h2 className="text-lg lg:text-2xl text-black font-bold mb-2 md:mb-4 leading-tight">
-                        {property?.name || banner?.title}
-                      </h2>
-                      <p className="text-white/90 text-base mb-2 md:mb-6 font-medium">
-                        {property?.address || "Location not available"}
-                      </p>
-                      <div className="mb-2 md:mb-6">
-                        <p className="text-white/90 mb-2">
-                          {property
-                            ? `Property Type: ${property?.propertyType}`
-                            : ""}
+            {!loading &&
+              banners.map((banner, index) => {
+                const property = banner?.propertyId; // may be null
+                return (
+                  <div
+                    key={banner?._id}
+                    className={`absolute inset-0 flex transition-all duration-700 ease-in-out ${
+                      index === currentSlide
+                        ? "opacity-100 translate-x-0 z-10"
+                        : direction === "next"
+                        ? "opacity-0 -translate-x-full"
+                        : "opacity-0 translate-x-full"
+                    }`}
+                  >
+                    {/* Left Content */}
+                    <div className="w-1/2 rounded-l-2xl bg-gradient-to-br from-teal-600 via-teal-400 to-teal-200 text-white p-2 md:p-14 flex flex-col justify-center relative overflow-hidden">
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-16 translate-x-16"></div>
+                      <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-12 -translate-x-12"></div>
+
+                      <div className="relative z-10">
+                        <h2 className="text-lg lg:text-2xl text-black font-bold mb-2 md:mb-4 leading-tight">
+                          {property?.name || banner?.title}
+                        </h2>
+                        <p className="text-white/90 text-base mb-2 md:mb-6 font-medium">
+                          {property?.address || "Location not available"}
                         </p>
-                        <p className="md:text-xl font-bold">
-                          {property ? `₹${property?.sellingPrice}` : ""}
-                        </p>
-                      </div>
+                        <div className="mb-2 md:mb-6">
+                          <p className="text-white/90 mb-2">
+                            {property
+                              ? `Property Type: ${property?.propertyType}`
+                              : ""}
+                          </p>
+                          <p className="md:text-xl font-bold">
+                            {property ? `₹${property?.sellingPrice}` : ""}
+                          </p>
+                        </div>
 
-                      <div className="space-y-3 md:mb-8 mb-4">
-                        {property?.facilities?.map((feature, idx) => (
-                          <div key={idx} className="flex items-start space-x-3">
-                            <Check
-                              className="w-5 h-5 text-white mt-1 flex-shrink-0"
-                              strokeWidth={2.5}
-                            />
-                            <span className="text-white/95 text-sm leading-relaxed">
-                              {feature}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
+                        <div className="space-y-3 md:mb-8 mb-4">
+                          {property?.facilities?.map((feature, idx) => (
+                            <div
+                              key={idx}
+                              className="flex items-start space-x-3"
+                            >
+                              <Check
+                                className="w-5 h-5 text-white mt-1 flex-shrink-0"
+                                strokeWidth={2.5}
+                              />
+                              <span className="text-white/95 text-sm leading-relaxed">
+                                {feature}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
 
-                      <button
-                        onClick={handleClick}
-                        className="bg-black text-white px-3 py-1 md:px-6 md:py-3 rounded-lg font-semibold hover:bg-gray-800 transition-colors duration-200 cursor-pointer"
-                      >
-                        See Details
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Right Image */}
-                  <div className="w-1/2 relative">
-                    <img
-                      src={banner?.bannerImage}
-                      alt={property?.name || banner?.title}
-                      className="w-full h-full object-cover rounded-r-2xl"
-                    />
-                    <div className="absolute top-4 right-4 w-12 h-12 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
-                      <div className="w-6 h-6 bg-white/80 rounded">
-                        <img
-                          width="48"
-                          height="48"
-                          src="https://img.icons8.com/color/48/verified-account--v1.png"
-                          alt="verified-account"
-                        />
+                        <button
+                          onClick={handleClick}
+                          className="bg-black text-white px-3 py-1 md:px-6 md:py-3 rounded-lg font-semibold hover:bg-gray-800 transition-colors duration-200 cursor-pointer"
+                        >
+                          See Details
+                        </button>
                       </div>
                     </div>
+
+                    {/* Right Image */}
+                    <div className="w-1/2 relative">
+                      <img
+                        src={banner?.bannerImage}
+                        alt={property?.name || banner?.title}
+                        className="w-full h-full object-cover rounded-r-2xl"
+                      />
+                      <div className="absolute top-4 right-4 w-12 h-12 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
+                        <div className="w-6 h-6 bg-white/80 rounded">
+                          <img
+                            width="48"
+                            height="48"
+                            src="https://img.icons8.com/color/48/verified-account--v1.png"
+                            alt="verified-account"
+                          />
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
           </div>
 
           {/* Navigation Arrows */}

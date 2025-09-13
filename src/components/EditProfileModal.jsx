@@ -33,6 +33,7 @@ export default function EditProfileModal({
           address: "",
         }
   );
+
   console.log("formdata", formData);
   const [loading, setLoading] = useState(false);
   const [imageUploading, setImageUploading] = useState(false);

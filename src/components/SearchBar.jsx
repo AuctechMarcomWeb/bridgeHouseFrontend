@@ -1,16 +1,18 @@
 import { State } from "country-state-city";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import Locationform from "./Locationform";
+import { PropertyContext } from "../context/propertyContext";
 
 const SearchBar = () => {
   const [selectedLocation, setSelectedLocation] = useState("Select State");
   const [searchQuery, setSearchQuery] = useState("");
   const dropdownRef = useRef(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [states, setStates] = useState([]);
-  // const [selectedState, setSelectedState] = useState();
-
+  //const [selectedState, setSelectedState] = useState();
   const navigate = useNavigate();
+  const { search, setSearch } = useContext(PropertyContext);
 
   // ✅ Load states
   useEffect(() => {
@@ -38,17 +40,27 @@ const SearchBar = () => {
 
   // ✅ Just redirect
   const handleSearch = () => {
-    if (selectedLocation === "Select State") {
-      alert("Please select a state first!");
+    if (
+      (!selectedLocation || selectedLocation === "Select State") &&
+      (!searchQuery || searchQuery.trim() === "")
+    ) {
+      alert("Please select at least a state or an address!");
       return;
     }
-    if (!searchQuery) {
-      alert("Please select an address!");
-      return;
+    // Update context
+    // setSearch(searchQuery);
+
+    // query params banaye
+    const queryParams = new URLSearchParams();
+    if (selectedLocation && selectedLocation !== "Select State") {
+      queryParams.append("state", selectedLocation);
+    }
+    if (searchQuery && searchQuery.trim() !== "") {
+      queryParams.append("address", searchQuery.trim());
     }
 
-    // Redirect with params
-    navigate(`/property-list`);
+    // navigate with filters
+    navigate(`/property-list?${queryParams.toString()}`);
   };
 
   return (

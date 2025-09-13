@@ -22,7 +22,6 @@ const Locationform = ({ value, onSelect }) => {
     const val = e.target.value;
     setSearchTerm(val);
     setDetailsVisible(true);
-
     if (val.trim().length < 1) {
       setPlaces([]);
       return;

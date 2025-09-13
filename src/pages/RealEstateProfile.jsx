@@ -87,9 +87,12 @@ export default function RealEstateProfile() {
 
   useEffect(() => {
     if (!userProfile?._id) return;
-    getRequest(`properties?userId=${userProfile?._id}`)
+    getRequest(`properties?addedBy=${userProfile?._id}&approvalStatus`)
       .then((res) => {
-        console.log("Properties API response:", res?.data?.data?.properties);
+        console.log(
+          "user Properties API response:",
+          res?.data?.data?.properties
+        );
         setProperties(res?.data?.data?.properties || []);
       })
       .catch((err) => {

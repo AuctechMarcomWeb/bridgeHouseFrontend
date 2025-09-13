@@ -1,18 +1,16 @@
 import React, { createContext, useState, useEffect } from "react";
-import { getRequest } from "../Helpers"; // aapki helper API function
+import { getRequest } from "../Helpers";
 import toast from "react-hot-toast";
-
-// Context create
 export const PropertyContext = createContext();
 
 export const PropertyProvider = ({ children }) => {
   const [properties, setProperties] = useState([]);
   const [updateStatus, setUpdateStatus] = useState(false);
-  // const [search, setSearch] = useState("");
+  const [search, setSearch] = useState("");
 
   // API call function
   useEffect(() => {
-    getRequest(`properties?search`)
+    getRequest(`properties?search=${search}`)
       .then((res) => {
         console.log(
           "context Properties API response:===",
@@ -26,13 +24,15 @@ export const PropertyProvider = ({ children }) => {
         console.error("Failed to load properties:", err);
         toast.error("Failed to load properties");
       });
-  }, [updateStatus]);
+  }, [search, updateStatus]);
 
   return (
     <PropertyContext.Provider
       value={{
         properties,
         setUpdateStatus,
+        search,
+        setSearch,
       }}
     >
       {children}

@@ -9,10 +9,10 @@ const PropertySlider = () => {
   function handleClick() {
     navigate("/property-detail");
   }
+  const [banners, setBanners] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [direction, setDirection] = useState("next");
-  const [banners, setBanners] = useState([]);
 
   // Fetch banners
   useEffect(() => {

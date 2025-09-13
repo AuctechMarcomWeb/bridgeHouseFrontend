@@ -413,7 +413,7 @@ export default function PropertyDetailPage() {
               </div>
 
               {showNearby && (
-                <div className="space-y-3">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {properties?.nearby?.map((place) => (
                     <div key={place._id} className="flex items-start gap-3">
                       <div className="w-2 h-2 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full mt-3 flex-shrink-0"></div>

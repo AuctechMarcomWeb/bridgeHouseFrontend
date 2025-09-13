@@ -34,7 +34,7 @@ function App() {
             element={<TermsAndConditions />}
           />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/property-detail" element={<PropertyDetailPage />} />
+          {/* <Route path="/property-detail" element={<PropertyDetailPage />} /> */}
           <Route path="/property-detail/:id" element={<PropertyDetailPage />} />
           <Route path="/property-list" element={<PropertyListings />} />
           <Route path="/login" element={<Login />} />

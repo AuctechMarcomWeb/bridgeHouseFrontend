@@ -6,13 +6,18 @@ import { PropertyContext } from "../context/propertyContext";
 
 const SearchBar = () => {
   const [selectedLocation, setSelectedLocation] = useState("Select State");
+  console.log("selectedLocation", selectedLocation);
+
   const [searchQuery, setSearchQuery] = useState("");
+  console.log("searchQuery=====", searchQuery);
+
   const dropdownRef = useRef(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [states, setStates] = useState([]);
+
   //const [selectedState, setSelectedState] = useState();
   const navigate = useNavigate();
-  const { search, setSearch } = useContext(PropertyContext);
+  const { search, setSearch, setUpdateStatus } = useContext(PropertyContext);
 
   // ✅ Load states
   useEffect(() => {
@@ -48,19 +53,20 @@ const SearchBar = () => {
       return;
     }
     // Update context
-    // setSearch(searchQuery);
+    //setSearch(searchQuery);
+    setUpdateStatus((prev) => !prev);
 
     // query params banaye
-    const queryParams = new URLSearchParams();
-    if (selectedLocation && selectedLocation !== "Select State") {
-      queryParams.append("state", selectedLocation);
-    }
-    if (searchQuery && searchQuery.trim() !== "") {
-      queryParams.append("address", searchQuery.trim());
-    }
+    // const queryParams = new URLSearchParams();
+    // if (selectedLocation && selectedLocation !== "Select State") {
+    //   queryParams.append("state", selectedLocation);
+    // }
+    // if (searchQuery && searchQuery.trim() !== "") {
+    //   queryParams.append("address", searchQuery.trim());
+    // }
 
     // navigate with filters
-    navigate(`/property-list?${queryParams.toString()}`);
+    navigate(`/property-list`);
   };
 
   return (
@@ -89,7 +95,12 @@ const SearchBar = () => {
         <div className="flex-1 md:px-3">
           <Locationform
             value={searchQuery}
-            onSelect={(val) => setSearchQuery(val ? String(val) : "")}
+            onChange={(val) => setSearchQuery(val)}
+            onSelect={(val) => {
+              console.log("Location selected:", val);
+              //  setSearchQuery(val?.address || "");
+              setSearch(val?.address || "");
+            }}
           />
         </div>
 

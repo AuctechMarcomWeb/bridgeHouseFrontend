@@ -3,12 +3,14 @@ import axios from "axios";
 
 const Locationform = ({ value, onSelect }) => {
   const [searchTerm, setSearchTerm] = useState(value || "");
+  console.log("searchTerm", searchTerm);
+
   const [places, setPlaces] = useState([]);
   const [detailsVisible, setDetailsVisible] = useState(false);
   const apiKey = "AIzaSyAQqh6qd0umyH9zAmfsfbVHuMvFcN_m3kQ";
   const url = "https://places.googleapis.com/v1/places:searchText";
 
-  // 🧹 Clean Plus Code from address
+  // Clean Plus Code from address
   const cleanAddress = (address) => {
     if (!address) return "";
     if (address.match(/^[A-Z0-9]+\+[A-Z0-9]+/)) {
@@ -17,7 +19,7 @@ const Locationform = ({ value, onSelect }) => {
     return address;
   };
 
-  // 🔎 Search Places (Google Places API)
+  //  Search Places (Google Places API)
   const handleSearch = async (e) => {
     const val = e.target.value;
     setSearchTerm(val);

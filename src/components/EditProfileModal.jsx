@@ -202,7 +202,7 @@ export default function EditProfileModal({
             </div>
           </div>
 
-          {/* Third Row: Gender + Address */}
+          {/* Third Row: Email + Address */}
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col">
               <label
@@ -245,7 +245,7 @@ export default function EditProfileModal({
               <select
                 id="gender"
                 name="gender"
-                value={user?.gender}
+                value={formData?.gender}
                 onChange={handleChange}
                 className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 h-12"
               >

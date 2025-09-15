@@ -31,6 +31,9 @@ import {
   Square,
   Droplet,
   Wrench,
+  LucideRuler,
+  Layers,
+  Compass,
 } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { getRequest } from "../Helpers";
@@ -42,8 +45,8 @@ export default function PropertyDetailPage() {
   const [loading, setLoading] = useState(true);
   const [showDescription, setShowDescription] = useState(true);
   const [showServices, setshowServices] = useState(true);
-  const [showAbout, setShowAbout] = useState(true);
-  const [showNearby, setShowNearby] = useState(false);
+  const [showDetails, setShowDetails] = useState(true);
+  const [showNearby, setShowNearby] = useState(true);
   const [showFacilities, setshowFacilities] = useState(true);
   const [showFloorPlan, setShowFloorPlan] = useState(true);
   const [showGallery, setShowGallery] = useState(true);
@@ -281,84 +284,100 @@ export default function PropertyDetailPage() {
               )}
             </div>
 
-            {/* Property Services services */}
+            {/* Property Details */}
             <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
+              {/* Header with toggle */}
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-bold text-gray-800">Services</h3>
+                <h3 className="text-xl font-bold text-gray-800">Details</h3>
                 <button
-                  onClick={() => setshowServices(!showServices)}
+                  onClick={() => setShowDetails(!showDetails)}
                   className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
                 >
-                  {showServices ? (
+                  {showDetails ? (
                     <ChevronUp className="w-6 h-6" />
                   ) : (
                     <ChevronDown className="w-6 h-6" />
                   )}
                 </button>
               </div>
-              {showServices && properties?.services?.length > 0 && (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {properties?.services.map((service, index) => (
-                    <div
-                      key={index}
-                      className="group p-2  rounded-xl hover:shadow-md transition-all duration-300 hover:-translate-y-1"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-6 h-6 bg-gradient-to-br from-red-800 to-pink-400 rounded-lg flex items-center justify-center text-white shadow-lg">
-                          {/* {const Icon = serviceIcons[service] || Star;} */}
-                          {serviceIcons[service] || "❓"}
-                        </div>
-                        <div className="text-sm  text-gray-600">{service}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
 
-            {/* About Property */}
-            {/* <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-bold text-gray-800">
-                  About Property
-                </h3>
-                <button
-                  onClick={() => setShowAbout(!showAbout)}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                  {showAbout ? (
-                    <ChevronUp className="w-6 h-6" />
-                  ) : (
-                    <ChevronDown className="w-6 h-6" />
-                  )}
-                </button>
-              </div>
-              {showAbout && (
-                <div className="space-y-6">
-                  <p className="text-base text-gray-500 leading-relaxed">
-                    This property is mostly wooded and sits high on a hilltop
-                    overlooking the Mohawk River Valley.
-                  </p>
-                  <div className="space-y-3">
-                    {[
-                      "100 meters from school, 3km away from bypass.",
-                      "First floor - 2 large bedrooms with attached bathrooms.",
-                      "Spacious and well-equipped kitchen.",
-                      "Inviting living room with balcony.",
-                      "Terrace with breathtaking views.",
-                      "Independent electric and water connections.",
-                    ].map((service, index) => (
-                      <div key={index} className="flex items-start gap-3">
-                        <div className="w-2 h-2 bg-gradient-to-r from-green-400 to-green-600 rounded-full mt-3 flex-shrink-0"></div>
-                        <span className="text-base text-gray-500">
-                          {service}
-                        </span>
+              {showDetails && (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {/* Area */}
+                  <div className="group p-3 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl hover:shadow-md transition-all duration-300 hover:-translate-y-1">
+                    <div className="flex items-center gap-3">
+                      <div className="w-6 h-6 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center text-white shadow-md">
+                        <LucideRuler className="w-4 h-4" />
                       </div>
-                    ))}
+                      <span className="text-gray-600 text-base font-medium">
+                        {properties?.propertyDetails?.area ?? "—"} sq ft
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Bedrooms */}
+                  <div className="group p-3 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl hover:shadow-md transition-all duration-300 hover:-translate-y-1">
+                    <div className="flex items-center gap-3">
+                      <div className="w-6 h-6 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center text-white shadow-md">
+                        <Bed className="w-4 h-4" />
+                      </div>
+                      <span className="text-gray-600 text-base font-medium">
+                        {properties?.propertyDetails?.bedrooms ?? "—"} Bedrooms
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Bathrooms */}
+                  <div className="group p-3 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl hover:shadow-md transition-all duration-300 hover:-translate-y-1">
+                    <div className="flex items-center gap-3">
+                      <div className="w-6 h-6 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center text-white shadow-md">
+                        <Bath className="w-4 h-4" />
+                      </div>
+                      <span className="text-gray-600 text-base font-medium">
+                        {properties?.propertyDetails?.bathrooms ?? "—"}{" "}
+                        Bathrooms
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Floors */}
+                  <div className="group p-3 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl hover:shadow-md transition-all duration-300 hover:-translate-y-1">
+                    <div className="flex items-center gap-3">
+                      <div className="w-6 h-6 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center text-white shadow-md">
+                        <Layers className="w-4 h-4" />
+                      </div>
+                      <span className="text-gray-600 text-base font-medium">
+                        {properties?.propertyDetails?.floors ?? "—"} Floors
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Facing */}
+                  <div className="group p-3 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl hover:shadow-md transition-all duration-300 hover:-translate-y-1">
+                    <div className="flex items-center gap-3">
+                      <div className="w-6 h-6 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center text-white shadow-md">
+                        <Compass className="w-4 h-4" />
+                      </div>
+                      <span className="text-gray-600 text-base font-medium capitalize">
+                        Facing {properties?.propertyDetails?.facing ?? "—"}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Built Year */}
+                  <div className="group p-3 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl hover:shadow-md transition-all duration-300 hover:-translate-y-1">
+                    <div className="flex items-center gap-3">
+                      <div className="w-6 h-6 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center text-white shadow-md">
+                        <Calendar className="w-4 h-4" />
+                      </div>
+                      <span className="text-gray-600 text-base font-medium">
+                        Built {properties?.propertyDetails?.builtYear ?? "—"}
+                      </span>
+                    </div>
                   </div>
                 </div>
               )}
-            </div> */}
+            </div>
 
             {/* facilities */}
             <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
@@ -396,6 +415,41 @@ export default function PropertyDetailPage() {
               )}
             </div>
 
+            {/* Property Services services */}
+            <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-bold text-gray-800">Services</h3>
+                <button
+                  onClick={() => setshowServices(!showServices)}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  {showServices ? (
+                    <ChevronUp className="w-6 h-6" />
+                  ) : (
+                    <ChevronDown className="w-6 h-6" />
+                  )}
+                </button>
+              </div>
+              {showServices && properties?.services?.length > 0 && (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {properties?.services.map((service, index) => (
+                    <div
+                      key={index}
+                      className="group p-2  rounded-xl hover:shadow-md transition-all duration-300 hover:-translate-y-1"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-6 h-6 bg-gradient-to-br from-red-800 to-pink-400 rounded-lg flex items-center justify-center text-white shadow-lg">
+                          {/* {const Icon = serviceIcons[service] || Star;} */}
+                          {serviceIcons[service] || "❓"}
+                        </div>
+                        <div className="text-sm  text-gray-600">{service}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
             {/* Nearby Section */}
             <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
               <div className="flex justify-between items-center mb-6">
@@ -418,7 +472,7 @@ export default function PropertyDetailPage() {
                     <div key={place._id} className="flex items-start gap-3">
                       <div className="w-2 h-2 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full mt-3 flex-shrink-0"></div>
                       <span className="text-base text-gray-500">
-                        {place.distance} km from {place.name}
+                        {place.distance} Km from {place.name}
                       </span>
                     </div>
                   ))}

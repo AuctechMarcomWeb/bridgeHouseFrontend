@@ -8,6 +8,7 @@ import { validatePassword } from "../Utils";
 export default function CreatePasswordModal({ show, onClose, setUpdate }) {
   const { user } = useContext(ProfileContext);
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -29,13 +30,25 @@ export default function CreatePasswordModal({ show, onClose, setUpdate }) {
       );
       return;
     }
+    if (!confirmPassword) {
+      setError("Password cannot be empty");
+      return;
+    }
+
+    if (!validatePassword(confirmPassword)) {
+      setError(
+        "Password must be at least 8 characters, include an uppercase letter, a number, and a special character"
+      );
+      return;
+    }
 
     setLoading(true);
 
-    const payload = { phone: user?.phone, password };
+    const payload = { phone: user?.phone, password, confirmPassword };
 
     postRequest({ url: "auth/createPassword", cred: payload })
       .then((res) => {
+        console.log("user Create pasword", res?.data?.message);
         if (res?.data?.success) {
           toast.success(res?.data?.message);
           setUpdate((prev) => !prev);
@@ -110,6 +123,50 @@ export default function CreatePasswordModal({ show, onClose, setUpdate }) {
                 placeholder="Enter password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                className={`block w-full rounded-md border ${
+                  error ? "border-red-500" : "border-gray-300"
+                } pl-10 pr-10 py-2 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500 focus:outline-none`}
+                required
+              />
+
+              {/* Show/Hide Eye Icon */}
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                {showPassword ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
+              </button>
+            </div>
+
+            {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
+          </div>
+
+          {/* confirmPassword */}
+          <div className="relative">
+            <label
+              htmlFor="confirmPassword"
+              className="block mb-2 text-gray-700 font-medium"
+            >
+              Confirm Password
+            </label>
+
+            <div className="relative">
+              {/* Lock Icon */}
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+
+              {/* Input Field */}
+              <input
+                id="confirmPassword"
+                type={showPassword ? "text" : "password"}
+                name="confirmPassword"
+                placeholder="Enter confirmPassword"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 className={`block w-full rounded-md border ${
                   error ? "border-red-500" : "border-gray-300"
                 } pl-10 pr-10 py-2 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500 focus:outline-none`}

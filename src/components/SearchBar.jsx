@@ -52,18 +52,18 @@ const SearchBar = () => {
       alert("Please select at least a state or an address!");
       return;
     }
+    const queryParams = new URLSearchParams();
+
+    if (selectedLocation && selectedLocation !== "Select State") {
+      queryParams.append("state", selectedLocation);
+    }
+
+    if (searchQuery && searchQuery.trim() === "") {
+      queryParams.append("address", searchQuery);
+    }
     // Update context
     //setSearch(searchQuery);
     setUpdateStatus((prev) => !prev);
-
-    // query params banaye
-    // const queryParams = new URLSearchParams();
-    // if (selectedLocation && selectedLocation !== "Select State") {
-    //   queryParams.append("state", selectedLocation);
-    // }
-    // if (searchQuery && searchQuery.trim() !== "") {
-    //   queryParams.append("address", searchQuery.trim());
-    // }
 
     // navigate with filters
     navigate(`/property-list`);
@@ -98,7 +98,7 @@ const SearchBar = () => {
             onChange={(val) => setSearchQuery(val)}
             onSelect={(val) => {
               console.log("Location selected:", val);
-              //  setSearchQuery(val?.address || "");
+              setSearchQuery(val?.address || "");
               setSearch(val?.address || "");
             }}
           />

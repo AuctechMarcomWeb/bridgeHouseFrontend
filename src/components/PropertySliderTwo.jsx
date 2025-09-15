@@ -308,7 +308,7 @@ const PropertySliderTwo = () => {
             )}
           </div>
 
-          <div className="flex flex-wrap items-center bg-gray-50 rounded-xl p-4 gap-x-3 gap-y-1">
+          {/* <div className="flex flex-wrap items-center bg-gray-50 rounded-xl p-4 gap-x-3 gap-y-1">
             {property.nearby?.map((place, index) => (
               <div
                 key={index}
@@ -320,7 +320,7 @@ const PropertySliderTwo = () => {
                 </span> - <span>{place.distance}</span>
               </div>
             ))}
-          </div>
+          </div> */}
         </div>
         <button className="w-full bg-teal-500 text-white py-2 sm:py-3 rounded-lg sm:rounded-xl text-sm sm:text-base font-semibold transition-all duration-300 hover:bg-gradient-to-r hover:from-blue-700 hover:to-purple-700 hover:shadow-lg transform hover:-translate-y-1">
           View Details

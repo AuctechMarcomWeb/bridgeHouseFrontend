@@ -22,7 +22,12 @@ import {
   Wrench,
   IdCard,
   Calendar,
+  Ruler,
+  LucideRuler,
+  Layers,
+  Compass,
 } from "lucide-react";
+
 import Swal from "sweetalert2";
 import AddPropertyModal from "../components/AddPropertyModal";
 import EditProfileModal from "../components/EditProfileModal";
@@ -264,35 +269,54 @@ export default function RealEstateProfile() {
                   key={property?.id}
                   className="group bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-2xl hover:border-blue-200 transition-all duration-300 transform hover:-translate-y-1"
                 >
-                  <div className="relative h-56 bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center overflow-hidden group rounded-xl">
-                    {Array.isArray(property?.gallery) &&
-                    property?.gallery?.length > 0 ? (
-                      <>
-                        <img
-                          src={property?.gallery[0]}
-                          alt={`${property?.title || "Listing"} image`}
-                          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                          onError={(e) => {
-                            // Fallback if image fails to load
-                            e.target.style.display = "none";
-                            e.target.nextElementSibling.style.display = "flex";
-                          }}
-                        />
-                        {/* Hidden fallback that shows if image fails to load */}
-                        <div className="hidden absolute inset-0 items-center justify-center">
-                          <Home size={50} className="text-blue-400" />
-                        </div>
-                        <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
-                      </>
-                    ) : (
-                      <>
-                        {/* Default fallback when no gallery images */}
-                        <Home
-                          size={50}
-                          className="text-blue-400 transition-transform duration-300 group-hover:scale-110"
-                        />
-                        <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
-                      </>
+                  <div className="relative overflow-hidden">
+                    <div className="relative h-56 bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center overflow-hidden group rounded-xl">
+                      {Array.isArray(property?.gallery) &&
+                      property?.gallery?.length > 0 ? (
+                        <>
+                          <img
+                            src={property?.gallery[0]}
+                            alt={`${property?.title || "Listing"} image`}
+                            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            onError={(e) => {
+                              // Fallback if image fails to load
+                              e.target.style.display = "none";
+                              e.target.nextElementSibling.style.display =
+                                "flex";
+                            }}
+                          />
+                          {/* Hidden fallback that shows if image fails to load */}
+                          <div className="hidden absolute inset-0 items-center justify-center">
+                            <Home size={50} className="text-blue-400" />
+                          </div>
+                          <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+                        </>
+                      ) : (
+                        <>
+                          {/* Default fallback when no gallery images */}
+                          <Home
+                            size={50}
+                            className="text-blue-400 transition-transform duration-300 group-hover:scale-110"
+                          />
+                          <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+                        </>
+                      )}
+                    </div>
+
+                    {property?.approvalStatus && (
+                      <div
+                        className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs backdrop-blur-sm shadow-lg text-white ${
+                          property.approvalStatus === "Published"
+                            ? "bg-green-500/90"
+                            : property.approvalStatus === "Pending"
+                            ? "bg-amber-500/90"
+                            : property.approvalStatus === "Rejected"
+                            ? "bg-red-500/90"
+                            : "bg-blue-500/90" //
+                        }`}
+                      >
+                        {property.approvalStatus}
+                      </div>
                     )}
                   </div>
 
@@ -318,6 +342,47 @@ export default function RealEstateProfile() {
                     </div>
 
                     <div className="space-y-2">
+                      <div className="flex flex-wrap items-center bg-gray-50 rounded-xl p-4 gap-x-6 gap-y-2">
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <LucideRuler className="w-4 h-4 text-blue-500" />
+                          <span className="font-medium">
+                            {property?.propertyDetails?.area ?? "—"} sq ft
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <Bed className="w-4 h-4 text-blue-500" />
+                          <span className="font-medium">
+                            {property?.propertyDetails?.bedrooms ?? "—"}{" "}
+                            Bedrooms
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <Bath className="w-4 h-4 text-blue-500" />
+                          <span className="font-medium">
+                            {property?.propertyDetails?.bathrooms ?? "—"}{" "}
+                            Bathrooms
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <Layers className="w-4 h-4 text-blue-500" />
+                          <span className="font-medium">
+                            {property?.propertyDetails?.floors ?? "—"} Floors
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-gray-600 capitalize">
+                          <Compass className="w-4 h-4 text-blue-500" />
+                          <span className="font-medium">
+                            Facing {property?.propertyDetails?.facing ?? "—"}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <Calendar className="w-4 h-4 text-blue-500" />
+                          <span className="font-medium">
+                            Built {property?.propertyDetails?.builtYear ?? "—"}
+                          </span>
+                        </div>
+                      </div>
+
                       {/* Facilities + Services */}
                       <div className="flex flex-wrap items-center bg-gray-50 rounded-xl p-4 gap-x-6 gap-y-2">
                         {[
@@ -395,6 +460,7 @@ export default function RealEstateProfile() {
           isModalOpen={isModalOpen}
           setIsModalOpen={setIsModalOpen}
           modalData={selectedProperty}
+          setModalData={setSelectedProperty}
           setUpdateStatus={setUpdateStatus}
         />
 

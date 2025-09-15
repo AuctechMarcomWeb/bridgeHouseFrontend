@@ -19,8 +19,13 @@ import {
   Droplet,
   Wrench,
   Home,
+  Layers,
+  Compass,
+  LucideRuler,
+  Calendar,
 } from "lucide-react";
 import { getRequest } from "../Helpers";
+import { Pagination } from "antd";
 
 export default function RentalListingApp() {
   const navigate = useNavigate();
@@ -73,33 +78,31 @@ export default function RentalListingApp() {
   const [listings, setListing] = useState([]);
   const [showAll, setShowAll] = useState(false);
   const [imageError, setImageError] = useState(false);
-  const [fiters, setFiters] = useState({
-    page: 1,
-    limit: 10,
-    search: "",
-    sortBy: "recent",
-    isPagination: true,
-  });
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const [limit] = useState(10);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [approvalStatus, setApprovalStatus] = useState("");
+  // Decide which listings to show
+  let displayListings = showAll
+    ? listings.length > limit
+      ? listings.slice((page - 1) * limit, page * limit)
+      : listings
+    : listings.slice(0, 4);
 
   useEffect(() => {
-    const { page, limit, search, sortBy, isPagination } = fiters;
-    const queryParams = new URLSearchParams({
-      page,
-      limit,
-      search,
-      sortBy,
-      isPagination,
-    }).toString();
-
     setLoading(true);
-    getRequest(`properties?${queryParams}`)
+    getRequest(
+      `properties?search=${searchTerm}&page=${page}&limit=${limit}&approvalStatus=${approvalStatus}`
+    )
       .then((res) => {
         setListing(res?.data?.data?.properties || []);
+        setTotal(res?.totalProperties || res?.total || 0);
         console.log("Property Lists Res", res?.data?.data || []);
       })
       .catch((err) => console.log("Api Error", err))
       .finally(() => setLoading(false));
-  }, [fiters]);
+  }, [searchTerm, page, limit, approvalStatus]);
 
   const handleClick = (id) => {
     console.log("id=====", id);
@@ -370,7 +373,7 @@ export default function RentalListingApp() {
           <div className="flex-1 min-w-0">
             {/* Enhanced Listing Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {(showAll ? listings : listings.slice(0, 4)).map((listing) => (
+              {displayListings.map((listing) => (
                 <div
                   onClick={() => handleClick(listing?._id)}
                   key={listing?._id}
@@ -411,14 +414,24 @@ export default function RentalListingApp() {
                     </div>
 
                     {listing?.status && (
-                      <div
-                        className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs  backdrop-blur-sm ${
-                          listing?.status === "Featured"
-                            ? "bg-amber-500/90 text-white shadow-lg"
-                            : "bg-blue-500/90 text-white shadow-lg"
-                        }`}
-                      >
-                        {listing?.status}
+                      <div className="absolute top-4 left-4 space-y-2">
+                        {/* Status Badge */}
+                        <div
+                          className={`px-3 py-1 rounded-full text-xs backdrop-blur-sm ${
+                            listing?.status === "Featured"
+                              ? "bg-amber-500/90 text-white shadow-lg"
+                              : "bg-blue-500/90 text-white shadow-lg"
+                          }`}
+                        >
+                          {listing?.status}
+                        </div>
+
+                        {/* Verified Badge just below status */}
+                        {listing?.isVerified && (
+                          <div className="px-3 py-1 rounded-full text-xs bg-green-500 text-white shadow-lg backdrop-blur-sm">
+                            Verified
+                          </div>
+                        )}
                       </div>
                     )}
 
@@ -458,6 +471,45 @@ export default function RentalListingApp() {
                     </div>
 
                     <div className="space-y-2">
+                      {/* <div className="flex flex-wrap items-center bg-gray-50 rounded-xl p-4 gap-x-6 gap-y-2">
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <LucideRuler className="w-4 h-4 text-blue-500" />
+                          <span className="font-medium">
+                            {listing?.propertyDetails?.area ?? "—"} sq ft
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <Bed className="w-4 h-4 text-blue-500" />
+                          <span className="font-medium">
+                            {listing?.propertyDetails?.bedrooms ?? "—"} Bedrooms
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <Bath className="w-4 h-4 text-blue-500" />
+                          <span className="font-medium">
+                            {listing?.propertyDetails?.bathrooms ?? "—"}{" "}
+                            Bathrooms
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <Layers className="w-4 h-4 text-blue-500" />
+                          <span className="font-medium">
+                            {listing?.propertyDetails?.floors ?? "—"} Floors
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-gray-600 capitalize">
+                          <Compass className="w-4 h-4 text-blue-500" />
+                          <span className="font-medium">
+                            Facing {listing?.propertyDetails?.facing ?? "—"}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <Calendar className="w-4 h-4 text-blue-500" />
+                          <span className="font-medium">
+                            Built {listing?.propertyDetails?.builtYear ?? "—"}
+                          </span>
+                        </div>
+                      </div> */}
                       {/* Facilities + Services */}
                       <div className="flex flex-wrap items-center bg-gray-50 rounded-xl p-4 gap-x-6 gap-y-2">
                         {[
@@ -519,6 +571,19 @@ export default function RentalListingApp() {
               </div>
             )}
           </div>
+          {/* Pagination */}
+          {showAll && listings.length > limit && (
+            <div className="flex justify-center mt-8">
+              <Pagination
+                current={page}
+                pageSize={limit}
+                total={listings.length}
+                onChange={(newPage) => setPage(newPage)}
+                showSizeChanger={false}
+                showQuickJumper
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>

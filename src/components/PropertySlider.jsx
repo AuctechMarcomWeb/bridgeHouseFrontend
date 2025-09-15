@@ -6,9 +6,10 @@ import { getRequest } from "../Helpers";
 
 const PropertySlider = () => {
   const navigate = useNavigate();
-  function handleClick() {
-    navigate("/property-detail");
-  }
+  const handleClick = (id) => {
+    navigate(`/property-detail/${id}`);
+  };
+
   const [banners, setBanners] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -91,13 +92,13 @@ const PropertySlider = () => {
                       <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-12 -translate-x-12"></div>
 
                       <div className="relative z-10">
-                        <h2 className="text-lg lg:text-2xl text-black font-bold mb-2 md:mb-4 leading-tight">
+                        <h2 className="text-lg lg:text-2xl text-black font-bold mb-2 md:mb-2 leading-tight">
                           {property?.name || banner?.title}
                         </h2>
-                        <p className="text-white/90 text-base mb-2 md:mb-6 font-medium">
+                        <p className="text-white/90 text-base mb-2 md:mb-4 font-medium">
                           {property?.address || "Location not available"}
                         </p>
-                        <div className="mb-2 md:mb-6">
+                        <div className="mb-2 md:mb-4">
                           <p className="text-white/90 mb-2">
                             {property
                               ? `Property Type: ${property?.propertyType}`
@@ -108,7 +109,7 @@ const PropertySlider = () => {
                           </p>
                         </div>
 
-                        <div className="space-y-3 md:mb-8 mb-4">
+                        <div className="space-y-3 md:mb-6 mb-3">
                           {property?.facilities?.map((feature, idx) => (
                             <div
                               key={idx}
@@ -126,7 +127,7 @@ const PropertySlider = () => {
                         </div>
 
                         <button
-                          onClick={handleClick}
+                          onClick={() => handleClick(property?._id)}
                           className="bg-black text-white px-3 py-1 md:px-6 md:py-3 rounded-lg font-semibold hover:bg-gray-800 transition-colors duration-200 cursor-pointer"
                         >
                           See Details

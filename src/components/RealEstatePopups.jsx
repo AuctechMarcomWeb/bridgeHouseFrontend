@@ -166,6 +166,9 @@ const RealEstatePopups = () => {
     setPopups((prev) => prev.filter((popup) => popup.id !== id));
   };
 
+  const handleClick = (id) => {
+    navigate(`/property-detail/${id}`);
+  };
   return (
     <div className="hidden md:block absolute left-0 w-full h-full pointer-events-none z-50">
       <div className="absolute right-4 top-4 space-y-4 pointer-events-auto ">
@@ -199,7 +202,7 @@ const RealEstatePopups = () => {
 
               {/* Header with gradient */}
               <div
-                onClick={() => navigate("/property-detail")}
+                onClick={() => handleClick(property?._id)}
                 className={`bg-gradient-to-r ${popup?.gradient} p-4 text-white relative overflow-hidden`}
               >
                 {/* Dark overlay (lower z-index so it won't block button) */}
@@ -254,7 +257,7 @@ const RealEstatePopups = () => {
                 {/* Action Buttons */}
                 <div className="flex gap-2">
                   <button
-                    onClick={() => navigate("/property-detail")}
+                    onClick={() => handleClick(property?._id)}
                     className={`flex-1 bg-gradient-to-r ${popup?.gradient} text-white py-2 px-3 rounded-lg text-xs font-semibold hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5`}
                   >
                     View Details

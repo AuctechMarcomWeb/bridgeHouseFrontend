@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { Modal } from "antd";
-import { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { ProfileContext } from "../context/ProfileContext";
 import { fileUpload, postRequest, putRequest } from "../Helpers";
@@ -12,537 +12,889 @@ const AddPropertyModal = ({
   isModalOpen,
   setIsModalOpen,
   modalData,
+  setModalData,
   setUpdateStatus,
   show,
   onClose,
 }) => {
-  const { user } = useContext(ProfileContext);
+  const { user, setUser } = useContext(ProfileContext);
+  console.log("modalData===", modalData);
 
-  const [formData, setFormData] = useState({
-    addedBy: user?._id,
-    name: "",
-    propertyType: "",
-    actualPrice: "",
-    sellingPrice: "",
-    description: "",
-    facilities: [],
-    services: [],
-    address: "",
-    nearby: [{ name: "", distance: "" }],
-    documents: [{ name: "", number: "", image: "" }],
-    gallery: [],
-  });
+  const [formData, setFormData] = useState(
+    modalData
+      ? { ...modalData }
+      : {
+          address: "",
+          addedBy: user?._id,
+          name: "",
+          propertyType: "",
+          documents: [],
+          description: "",
+          propertyDetails: {
+            area: "",
+            bedrooms: "",
+            bathrooms: "",
+            floors: "",
+            facing: "",
+            builtYear: "",
+          },
+          status: "Available",
+          approvalStatus: "Published",
+          isVerified: false,
+          isAdopted: false,
+          actualPrice: "",
+          sellingPrice: "",
+          facilities: [],
+          services: [],
+          nearby: [],
+          gallery: [],
+          propertyCode: "",
+        }
+  );
 
-  const [errors, setErrors] = useState({});
+  console.log("formData===>", formData);
+
   const [loading, setLoading] = useState(false);
-  const [selectedFacilities, setSelectedFacilities] = useState([]);
-  const [selectedServices, setSelectedServices] = useState([]);
-  const facilitiesOptions = ["Parking", "Lift", "Power Backup"];
-  const servicesOptions = ["Water Supply", "Maintenance"];
+  const [galleryLoading, setGalleryLoading] = useState(false);
+  const [documentLoading, setDocumentLoading] = useState(false);
+  const [errors, setErrors] = useState({});
 
-  // ✅ Prefill when editing
+  const [facilityInput, setFacilityInput] = useState("");
+  const [serviceInput, setServiceInput] = useState("");
+  const [nearbyName, setNearbyName] = useState("");
+  const [nearbyDistance, setNearbyDistance] = useState("");
+  const [docName, setDocName] = useState("");
+  const [docNumber, setDocNumber] = useState("");
+  const [addedBy, setAddBy] = useState(null);
+
+  React.useEffect(() => {
+    if (user?._id) {
+      setAddBy(user._id);
+    }
+  }, [user]);
+
   useEffect(() => {
     if (modalData) {
       setFormData({
-        addedBy: modalData?.addedBy || user?._id,
-        name: modalData?.name || "",
-        propertyType: modalData?.propertyType || "",
-        actualPrice: modalData?.actualPrice || "",
-        sellingPrice: modalData?.sellingPrice || "",
-        description: modalData?.description || "",
-        facilities: modalData?.facilities || [],
-        services: modalData?.services || [],
-        address: modalData.formData?.address,
-        nearby: modalData?.nearby?.length
-          ? modalData?.nearby
-          : [{ name: "", distance: "" }],
-        documents: modalData?.documents?.length
-          ? modalData?.documents
-          : [{ name: "", number: "", image: "" }],
-        gallery: modalData?.gallery || [],
+        ...modalData,
       });
-
-      // ✅ Sync selects separately
-      setSelectedFacilities(modalData.facilities || []);
-      setSelectedServices(modalData.services || []);
     }
-  }, [modalData, show]);
-  console.log("modalData?.address", modalData?.address);
+  }, [modalData]);
 
   // ✅ Reset + Close
   const handleCancel = () => {
     setFormData({
+      address: "",
+      location: {
+        type: "Point",
+        coordinates: [],
+      },
       addedBy: user?._id,
       name: "",
       propertyType: "",
+      documents: [],
+      description: "",
+      propertyDetails: {
+        area: "",
+        bedrooms: "",
+        bathrooms: "",
+        floors: "",
+        facing: "",
+        builtYear: "",
+      },
+      status: "Available",
+      approvalStatus: "Published",
+      isVerified: false,
+      isAdopted: false,
       actualPrice: "",
       sellingPrice: "",
-      description: "",
       facilities: [],
       services: [],
-      address: "",
-      location: { type: "Point", coordinates: [0, 0] },
-      nearby: [{ name: "", distance: "" }],
-      documents: [{ name: "", number: "", image: "" }],
+      nearby: [],
       gallery: [],
+      propertyCode: "",
     });
-    setErrors({});
+
+    setModalData(null);
     setIsModalOpen(false);
   };
   //Location
   const handleLocationSelect = (data) => {
     setFormData({
       ...formData,
-      address: data?.address, // cleaned formatted address
+      address: data?.address,
       location: data?.location, // coordinates
     });
   };
-  // ✅ Input Change
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  const handleChange = (e) => {
+    const { name, value, type, checked, dataset } = e.target;
+
+    if (dataset.nested) {
+      const nestedKey = dataset.nested; // e.g., "propertyDetails"
+      setFormData((prev) => ({
+        ...prev,
+        [nestedKey]: {
+          ...prev[nestedKey],
+          [name]: type === "checkbox" ? checked : value,
+        },
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: type === "checkbox" ? checked : value,
+      }));
+    }
   };
 
-  // ✅ Add Nearby
-  const addNearby = () => {
+  const handleChangeImage = (e) => {
+    const files = Array.from(e.target.files);
+
+    files.forEach((file) => {
+      fileUpload({
+        url: `upload/uploadImage`,
+        cred: { file },
+      })
+        .then((res) => {
+          setFormData((prev) => ({
+            ...prev,
+            gallery: [...(prev.gallery || []), res.data?.data?.imageUrl], // ✅ Push into gallery array
+          }));
+          console.log("res data pic ", res?.data);
+        })
+        .catch((error) => {
+          console.error("Image upload failed:", error);
+        });
+    });
+  };
+  // 🔹 Validate form
+  const validateForm = () => {
+    let newErrors = {};
+
+    if (!formData.name.trim()) newErrors.name = "Property name is required";
+    if (!formData.address.trim()) newErrors.address = "Address is required";
+    if (!formData.propertyType.trim())
+      newErrors.propertyType = "Property type is required";
+    if (!formData.actualPrice || formData.actualPrice <= 0)
+      newErrors.actualPrice = "Valid actual price is required";
+    if (!formData.sellingPrice || formData.sellingPrice <= 0)
+      newErrors.sellingPrice = "Valid selling price is required";
+    if (!formData.description.trim())
+      newErrors.description = "Description is required";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  // nearBY
+
+  const handleNearByChange = (e, index) => {
+    const { name, value } = e.target;
+    const updatedFacilities = [...formData.nearby];
+
+    if (name.includes("Name")) {
+      updatedFacilities[index].name = value;
+    } else if (name.includes("Distance")) {
+      updatedFacilities[index].distance = value;
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      nearby: updatedFacilities,
+    }));
+  };
+
+  const addNearBy = () => {
     setFormData((prev) => ({
       ...prev,
       nearby: [...prev.nearby, { name: "", distance: "" }],
     }));
   };
 
-  const removeNearby = (index) => {
-    const updatedNearby = [...formData.nearby];
-    updatedNearby.splice(index, 1);
-    setFormData((prev) => ({ ...prev, nearby: updatedNearby }));
-  };
-
-  const handleNearbyChange = (index, field, value) => {
-    const updatedNearby = [...formData.nearby];
-    updatedNearby[index][field] = value;
-    setFormData((prev) => ({ ...prev, nearby: updatedNearby }));
-  };
-
-  const handleFacilitiesChange = (values) => {
-    setSelectedFacilities(values);
-    setFormData((prev) => ({ ...prev, facilities: values }));
-  };
-
-  const handleServicesChange = (values) => {
-    setSelectedServices(values);
-    setFormData((prev) => ({ ...prev, services: values }));
-  };
-
-  // ✅ Image Upload for Gallery
-  const handleChangeImage = (e) => {
-    const files = Array.from(e.target.files);
-    Promise.all(
-      files.map((file) =>
-        fileUpload({
-          url: `upload/uploadImage`,
-          cred: { file },
-        }).then((res) => res.data?.data?.imageUrl)
-      )
-    )
-      .then((uploadedUrls) => {
-        setFormData((prev) => ({
-          ...prev,
-          gallery: [...(prev.gallery || []), ...uploadedUrls],
-        }));
-        console.log("Uploaded images: ", uploadedUrls);
-      })
-      .catch((error) => {
-        console.error("Image upload failed:", error);
-      });
-  };
-  // Remove Image Handler
-  const handleRemoveImage = (index) => {
+  const removeNearBy = (index) => {
+    const updatedFacilities = formData.nearby.filter((_, i) => i !== index);
     setFormData((prev) => ({
       ...prev,
-      gallery: prev.gallery.filter((_, i) => i !== index),
+      nearby: updatedFacilities,
     }));
   };
-  // ✅ Document Upload
-  const handleDocumentImage = (e, index) => {
+
+  // document
+
+  const handleDocumentChange = (e, index) => {
+    const { name, value } = e.target;
+    const updatedDocuments = [...formData.documents];
+
+    if (name.includes("Name")) {
+      updatedDocuments[index].name = value;
+    } else if (name.includes("Number")) {
+      updatedDocuments[index].number = value;
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      documents: updatedDocuments,
+    }));
+  };
+
+  const handleDocumentImageChange = (e, index) => {
     const file = e.target.files[0];
     if (!file) return;
 
+    // Upload to server
     fileUpload({
       url: `upload/uploadImage`,
       cred: { file },
     })
       .then((res) => {
-        const imageUrl = res.data?.data?.imageUrl;
-        setFormData((prev) => {
-          const updatedDocs = [...prev.documents];
-          updatedDocs[index].image = imageUrl;
-          return { ...prev, documents: updatedDocs };
-        });
+        const uploadedUrl = res.data?.data?.imageUrl;
+        const updatedDocuments = [...formData.documents];
+        updatedDocuments[index].image = uploadedUrl;
+
+        setFormData((prev) => ({
+          ...prev,
+          documents: updatedDocuments,
+        }));
       })
       .catch((error) => {
         console.error("Document image upload failed:", error);
       });
   };
 
-  const handleDocumentChange = (index, field, value) => {
-    setFormData((prev) => {
-      const updatedDocs = [...prev.documents];
-      updatedDocs[index][field] = value;
-      return { ...prev, documents: updatedDocs };
-    });
-  };
-
-  const handleRemoveDocument = (index) => {
+  const removeDocumentImage = (index) => {
+    const updatedDocuments = [...formData.documents];
+    updatedDocuments[index].image = ""; // clear the image
     setFormData((prev) => ({
       ...prev,
-      documents: prev.documents.filter((_, i) => i !== index),
+      documents: updatedDocuments,
     }));
   };
 
-  // ✅ Validation
-  const validateForm = () => {
-    let newErrors = {};
-    if (!formData.name.trim()) newErrors.name = "Property name is required";
-    if (!formData.propertyType.trim())
-      newErrors.propertyType = "Property type is required";
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  const addDocument = () => {
+    setFormData((prev) => ({
+      ...prev,
+      documents: [...prev.nearby, { name: "", number: "", image: "" }],
+    }));
   };
 
-  // ✅ Submit - Add
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setLoading(true);
-    if (!validateForm()) return;
-
-    postRequest({ url: `properties`, cred: formData })
-      .then((res) => {
-        console.log("add property", res?.data?.data);
-        toast.success(res?.data?.message);
-        setUpdateStatus((prev) => !prev);
-        handleCancel();
-      })
-      .catch((err) => {
-        console.error(err);
-        toast.error(err?.response?.data?.message);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+  const removeDocument = (index) => {
+    const updatedFacilities = formData.documents.filter((_, i) => i !== index);
+    setFormData((prev) => ({
+      ...prev,
+      documents: updatedFacilities,
+    }));
   };
-
-  // ✅ Submit - Edit
+  // 🔹 Submit handler for edit
   const handleEdit = (e) => {
     e.preventDefault();
-    setLoading(true);
     if (!validateForm()) return;
+
+    setLoading(true);
 
     putRequest({ url: `properties/${modalData?._id}`, cred: formData })
       .then((res) => {
-        console.log("update property", res?.data?.data);
-        toast.success(res?.data?.message);
+        toast.success(res?.data?.message || "Property updated successfully");
         setUpdateStatus((prev) => !prev);
         handleCancel();
       })
-      .catch((err) => {
-        console.error(err);
-        toast.error(err?.response?.data?.message);
+      .catch((error) => {
+        console.log("error", error);
+        toast.error(error?.response?.data?.message || "Update failed");
       })
       .finally(() => {
         setLoading(false);
       });
   };
 
+  // 🔹 Submit handler for create
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+
+    setLoading(true);
+    postRequest({ url: `properties`, cred: formData })
+      .then((res) => {
+        toast.success(res?.data?.message || "Property added successfully");
+        setUpdateStatus((prev) => !prev);
+        handleCancel();
+      })
+      .catch((error) => {
+        console.log("error", error);
+        toast.error(error?.response?.data?.message || "Creation failed");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
   return (
     <Modal
-      title={modalData ? "Edit Property" : "Add Property"}
+      title={modalData ? `Edit Property` : `Add Property`}
       open={isModalOpen}
-      onCancel={handleCancel}
       footer={null}
-      width={800}
+      onCancel={handleCancel}
+      width={1000}
+      style={{ top: 20 }}
     >
-      <hr className="my-2 py-2" />
-      <form
-        onSubmit={modalData ? handleEdit : handleSubmit}
-        className="space-y-6"
-        noValidate
+      <div
+        style={{
+          maxHeight: "80vh",
+          overflowY: "auto",
+          paddingRight: "50px",
+          marginBottom: "50px",
+        }}
       >
-        {/* Property Title */}
-        <div>
-          <input
-            type="text"
-            name="name"
-            value={formData?.name}
-            onChange={handleInputChange}
-            placeholder="Enter property title"
-            className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-            required
-          />
-          {errors.name && (
-            <div className="text-red-500 mt-1">{errors.name}</div>
-          )}
-        </div>
-
-        {/* Property Type */}
-        <div>
-          <select
-            name="propertyType"
-            value={formData?.propertyType}
-            onChange={handleInputChange}
-            className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-            required
-          >
-            <option value="">Select Property Type</option>
-            {["Villa", "Commercial", "Residential", "Plot"].map((type) => (
-              <option key={type} value={type}>
-                {type}
-              </option>
-            ))}
-          </select>
-          {errors.propertyType && (
-            <div className="text-red-500 mt-1">{errors.propertyType}</div>
-          )}
-        </div>
-
-        {/* Prices */}
-        <div className="grid grid-cols-2 gap-4">
-          <input
-            type="text"
-            name="actualPrice"
-            value={formData?.actualPrice}
-            onChange={handleInputChange}
-            placeholder="Actual Price"
-            className="w-full p-4 border border-gray-300 rounded-xl outline-none"
-          />
-          <input
-            type="text"
-            name="sellingPrice"
-            value={formData?.sellingPrice}
-            onChange={handleInputChange}
-            placeholder="Selling Price"
-            className="w-full p-4 border border-gray-300 rounded-xl outline-none"
-          />
-        </div>
-
-        {/* Address & Description */}
-        <div className="grid grid-cols-2 gap-4">
-          <Addressform
-            value={formData?.address || modalData?.address}
-            onSelect={handleLocationSelect}
-          />
-          <textarea
-            name="description"
-            value={formData?.description}
-            onChange={handleInputChange}
-            placeholder="Description"
-            rows="1"
-            className="w-full p-4 border border-gray-300 rounded-xl outline-none"
-          />
-        </div>
-
-        {/* Nearby Places */}
-        <div>
-          <div className="flex justify-between items-center mb-2">
-            <label className="text-sm font-semibold">Nearby Places</label>
-            <button
-              type="button"
-              onClick={addNearby}
-              className="text-blue-600 font-semibold"
-            >
-              + Add
-            </button>
-          </div>
-          {formData.nearby.map((item, index) => (
-            <div
-              key={index}
-              className="grid grid-cols-[1fr_1fr_auto] gap-2 mb-2"
-            >
-              <input
-                type="text"
-                placeholder="Name"
-                value={item.name}
-                onChange={(e) =>
-                  handleNearbyChange(index, "name", e.target.value)
-                }
-                className="w-full p-4 border border-gray-300 rounded-xl outline-none"
-              />
-              <input
-                type="text"
-                placeholder="Distance"
-                value={item.distance}
-                onChange={(e) =>
-                  handleNearbyChange(index, "distance", e.target.value)
-                }
-                className="w-full p-4 border border-gray-300 rounded-xl outline-none"
-              />
-              <button
-                type="button"
-                onClick={() => removeNearby(index)}
-                className="text-red-500"
-              >
-                <X size={20} />
-              </button>
-            </div>
-          ))}
-        </div>
-
-        {/* Facilities & Services */}
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block mb-2 font-semibold">Facilities</label>
-            <Select
-              mode="multiple"
-              allowClear
-              style={{ width: "100%" }}
-              placeholder="Select Facilities"
-              value={selectedFacilities}
-              onChange={handleFacilitiesChange}
-            >
-              {facilitiesOptions.map((f) => (
-                <Select.Option key={f} value={f}>
-                  {f}
-                </Select.Option>
-              ))}
-            </Select>
-          </div>
-          <div>
-            <label className="block mb-2 font-semibold">Services</label>
-            <Select
-              mode="multiple"
-              allowClear
-              style={{ width: "100%" }}
-              placeholder="Select Services"
-              value={selectedServices}
-              onChange={handleServicesChange}
-            >
-              {servicesOptions.map((s) => (
-                <Select.Option key={s} value={s}>
-                  {s}
-                </Select.Option>
-              ))}
-            </Select>
-          </div>
-        </div>
-
-        {/* Gallery */}
-        <div>
-          <label className="block font-semibold mb-2">Images</label>
-          <input
-            type="file"
-            name="gallery"
-            multiple
-            onChange={handleChangeImage}
-            className="mb-2"
-          />
-
-          {/* Preview Images */}
-          <div className="flex gap-2 overflow-auto">
-            {formData?.gallery?.map((imgUrl, index) => (
-              <div key={index} className="relative">
-                <img
-                  src={imgUrl}
-                  alt={`uploaded-${index}`}
-                  className="w-16 h-16 object-cover rounded"
-                />
-                {/* Delete Button */}
-                <button
-                  type="button"
-                  onClick={() => handleRemoveImage(index)}
-                  className="absolute top-0 right-0 bg-red-500 text-white rounded-full text-xs px-1"
-                >
-                  ✕
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Documents - single line for image, name, number */}
-        <div>
-          <label className="block font-semibold mb-2">Documents</label>
-          <div className="flex flex-col gap-4">
-            {formData?.documents?.map((doc, index) => (
-              <div key={index} className=" p-3 rounded-xl flex flex-col gap-2">
-                {/* Delete Button */}
-                {/* <button
-                  type="button"
-                  onClick={() => handleRemoveDocument(index)}
-                  className="absolute top-0 right-0 bg-red-500 text-white rounded-full text-xs px-1"
-                >
-                  ✕
-                </button> */}
-                {/* First Line: Name + Number */}
-                <div className="flex items-center gap-4">
+        <form
+          onSubmit={modalData ? handleEdit : handleSubmit}
+          className="needs-validation"
+        >
+          <div className="row">
+            <div className="container">
+              <div className="grid grid-cols-2 gap-4">
+                {/* Property Name */}
+                <div>
+                  <label className="form-label fw-bold">Property Name *</label>
                   <input
-                    type="file"
-                    className="w-32"
-                    onChange={(e) => handleDocumentImage(e, index)}
+                    type="text"
+                    className={`w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all ${
+                      errors?.name ? "is-invalid" : ""
+                    }`}
+                    name="name"
+                    required
+                    value={formData?.name || ""}
+                    onChange={handleChange}
+                    placeholder="Enter property name (e.g., Luxury Villa)"
                   />
-                  {doc.image && (
-                    <img
-                      src={doc.image}
-                      alt={`doc-${index}`}
-                      className="w-16 h-16 object-cover rounded"
-                    />
+                  {errors?.name && (
+                    <div className="invalid-feedback">{errors.name}</div>
                   )}
                 </div>
 
-                {/* Second Line: File Upload + Preview */}
-                <div className="flex gap-4">
+                {/* Property Type */}
+                <div>
+                  <label className="form-label fw-bold">Property Type *</label>
+                  <select
+                    className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                    name="propertyType"
+                    value={formData?.propertyType || ""}
+                    required
+                    onChange={handleChange}
+                  >
+                    <option value="">Select Property Type</option>
+                    <option value="Villa">Villa</option>
+                    <option value="Residential">Residential</option>
+                    <option value="Farmhouse">Farmhouse</option>
+                    <option value="Plot">Plot</option>
+                    <option value="Commercial">Commercial</option>
+                  </select>
+                </div>
+
+                {/* Actual Price */}
+                <div>
+                  <label className="form-label fw-bold">
+                    Actual Price (₹) *
+                  </label>
                   <input
-                    type="text"
-                    placeholder="Document Name"
-                    value={doc.name}
-                    onChange={(e) =>
-                      handleDocumentChange(index, "name", e.target.value)
-                    }
-                    className="w-full p-4 border border-gray-300 rounded-xl outline-none"
+                    type="number"
+                    className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                    name="actualPrice"
+                    value={formData?.actualPrice || ""}
+                    required
+                    onChange={handleChange}
+                    min="0"
                   />
+                </div>
+
+                {/* Selling Price */}
+                <div>
+                  <label className="form-label fw-bold">
+                    Selling Price (₹) *
+                  </label>
                   <input
-                    type="text"
-                    placeholder="Document Number"
-                    value={doc.number}
-                    onChange={(e) =>
-                      handleDocumentChange(index, "number", e.target.value)
-                    }
-                    className="w-full p-4 border border-gray-300 rounded-xl outline-none"
+                    type="number"
+                    className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                    name="sellingPrice"
+                    value={formData?.sellingPrice || ""}
+                    required
+                    onChange={handleChange}
+                    min="0"
+                  />
+                </div>
+
+                {/* Description */}
+                <div className="col-span-2">
+                  <label className="form-label fw-bold">Description *</label>
+                  <textarea
+                    className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                    name="description"
+                    rows={3}
+                    required
+                    value={formData?.description || ""}
+                    onChange={handleChange}
+                    placeholder="Enter property description"
                   />
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
+            </div>
 
-        {/* Actions */}
-        <div className="flex justify-end gap-2">
-          <button
-            type="button"
-            className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100"
-            onClick={handleCancel}
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className={`px-6 py-2 rounded-lg text-white font-semibold transition 
-              ${
+            {/* =================== */}
+
+            <hr className="m-0 p-0 my-3" />
+
+            <div className="mb-6">
+              <label className="form-label fw-bold">Property Details</label>
+              <div className="grid grid-cols-2 gap-4 mt-2">
+                {/* Area */}
+                <div>
+                  <label className="form-label fw-bold">Area</label>
+                  <input
+                    type="text"
+                    className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                    name="area"
+                    data-nested="propertyDetails"
+                    value={formData?.propertyDetails?.area || ""}
+                    onChange={handleChange}
+                    placeholder="Enter area (e.g., 1200 sqft)"
+                  />
+                </div>
+
+                {/* Bedrooms */}
+                <div>
+                  <label className="form-label fw-bold">Bedrooms</label>
+                  <input
+                    type="text"
+                    className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                    name="bedrooms"
+                    data-nested="propertyDetails"
+                    value={formData?.propertyDetails?.bedrooms || ""}
+                    onChange={handleChange}
+                    placeholder="Enter number of bedrooms"
+                  />
+                </div>
+
+                {/* Bathrooms */}
+                <div>
+                  <label className="form-label fw-bold">Bathrooms</label>
+                  <input
+                    type="text"
+                    className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                    name="bathrooms"
+                    data-nested="propertyDetails"
+                    value={formData?.propertyDetails?.bathrooms || ""}
+                    onChange={handleChange}
+                    placeholder="Enter number of bathrooms"
+                  />
+                </div>
+
+                {/* Floors */}
+                <div>
+                  <label className="form-label fw-bold">Floors</label>
+                  <input
+                    type="text"
+                    className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                    name="floors"
+                    data-nested="propertyDetails"
+                    value={formData?.propertyDetails?.floors || ""}
+                    onChange={handleChange}
+                    placeholder="Enter number of floors"
+                  />
+                </div>
+
+                {/* Facing */}
+                <div>
+                  <label className="form-label fw-bold">Facing</label>
+                  <input
+                    type="text"
+                    className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                    name="facing"
+                    data-nested="propertyDetails"
+                    value={formData?.propertyDetails?.facing || ""}
+                    onChange={handleChange}
+                    placeholder="Enter facing direction"
+                  />
+                </div>
+
+                {/* Built Year */}
+                <div>
+                  <label className="form-label fw-bold">Built Year</label>
+                  <input
+                    type="text"
+                    className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                    name="builtYear"
+                    data-nested="propertyDetails"
+                    value={formData?.propertyDetails?.builtYear || ""}
+                    onChange={handleChange}
+                    placeholder="Enter year built"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <hr className="m-0 p-0 my-3" />
+
+            {/* ======================= */}
+            <div className="grid grid-cols-2 gap-4">
+              {/* Address */}
+              <div>
+                <label className="form-label fw-bold">Address *</label>
+                <Addressform
+                  value={formData?.address || modalData?.address}
+                  onSelect={handleLocationSelect}
+                  className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                />
+              </div>
+
+              {/* Property Code */}
+              <div>
+                <label className="form-label fw-bold">Property Code *</label>
+                <input
+                  type="text"
+                  className={`w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all ${
+                    errors?.propertyCode ? "is-invalid" : ""
+                  }`}
+                  name="propertyCode"
+                  value={formData?.propertyCode || ""}
+                  required
+                  onChange={handleChange}
+                  placeholder="Enter unique property code"
+                />
+                {errors?.propertyCode && (
+                  <div className="invalid-feedback">{errors.propertyCode}</div>
+                )}
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              {/* Facilities */}
+              <div>
+                <label className="form-label fw-bold">Facilities *</label>
+                <Select
+                  value={formData?.facilities || []}
+                  mode="tags"
+                  size="large"
+                  className="w-full"
+                  placeholder="Enter/Select Your Facilities"
+                  onChange={(value) =>
+                    setFormData({ ...formData, facilities: value })
+                  }
+                />
+              </div>
+
+              {/* Services */}
+              <div>
+                <label className="form-label fw-bold">Services *</label>
+                <Select
+                  value={formData?.services || []}
+                  mode="tags"
+                  size="large"
+                  className="w-full"
+                  placeholder="Enter/Select Your Services"
+                  onChange={(value) =>
+                    setFormData({ ...formData, services: value })
+                  }
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              {/* Property Images Upload */}
+              <div>
+                <label className="form-label fw-bold">Property Images *</label>
+                <input
+                  type="file"
+                  className="w-full p-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                  name="propertyImages"
+                  accept="image/*"
+                  required={!modalData}
+                  multiple
+                  onChange={handleChangeImage}
+                />
+              </div>
+
+              {/* Gallery Preview */}
+              {formData?.gallery?.length > 0 && (
+                <div>
+                  <div className="flex gap-2 flex-wrap mt-2">
+                    {formData.gallery.map((item, index) => (
+                      <div key={index} className="relative inline-block">
+                        {/* Image */}
+                        <img
+                          src={item}
+                          alt={`gallery-${index}`}
+                          className="w-16 h-16 object-cover rounded"
+                        />
+
+                        {/* Remove Button */}
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              gallery: prev.gallery.filter(
+                                (_, i) => i !== index
+                              ),
+                            }))
+                          }
+                          className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center cursor-pointer"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <hr className="m-0 p-0 my-3" />
+
+            {/* Nearby */}
+            <div className="col-span-2">
+              <label className="form-label font-bold">Nearby</label>
+
+              {formData?.nearby?.map((facility, index) => (
+                <div
+                  key={index}
+                  className="grid grid-cols-2 gap-4 border p-4 rounded mb-2 items-end"
+                >
+                  {/* Name */}
+                  <div>
+                    <label className="form-label">Name</label>
+                    <input
+                      type="text"
+                      name={`facilityName_${index}`}
+                      value={facility?.name || ""}
+                      onChange={(e) => handleNearByChange(e, index)}
+                      className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                      placeholder="Enter nearby name"
+                    />
+                  </div>
+
+                  {/* Distance / Description */}
+                  <div>
+                    <label className="form-label">Description</label>
+                    <input
+                      type="text"
+                      name={`facilityDistance_${index}`}
+                      value={facility?.distance || ""}
+                      onChange={(e) => handleNearByChange(e, index)}
+                      className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                      placeholder="Enter distance / description"
+                    />
+                  </div>
+
+                  {/* Remove Button */}
+                  {formData?.nearby?.length > 1 && (
+                    <div className="col-span-2 flex justify-end">
+                      <button
+                        type="button"
+                        className="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600 transition-all"
+                        onClick={() => removeNearBy(index)}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))}
+
+              {/* Add More Button */}
+              <div className="col-span-2 mt-2">
+                <button
+                  type="button"
+                  className="bg-green-500 text-white px-4 py-2 rounded text-sm hover:bg-green-600 transition-all"
+                  onClick={addNearBy}
+                >
+                  Add More
+                </button>
+              </div>
+            </div>
+
+            <hr className="m-0 p-0 my-3" />
+            {/* Documents */}
+            <div className="col-span-2">
+              <label className="form-label font-bold">Documents</label>
+
+              {formData?.documents?.map((doc, index) => (
+                <div
+                  key={index}
+                  className="grid grid-cols-2 gap-4 border p-4 rounded mb-2 items-end"
+                >
+                  {/* Document Name */}
+                  <div>
+                    <label className="form-label">Document Name</label>
+                    <input
+                      type="text"
+                      name={`documentName_${index}`}
+                      value={doc?.name || ""}
+                      onChange={(e) => handleDocumentChange(e, index)}
+                      className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                      placeholder="Enter document name"
+                    />
+                  </div>
+
+                  {/* Document Number */}
+                  <div>
+                    <label className="form-label">Document Number</label>
+                    <input
+                      type="text"
+                      name={`documentNumber_${index}`}
+                      value={doc?.number || ""}
+                      onChange={(e) => handleDocumentChange(e, index)}
+                      className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                      placeholder="Enter document number"
+                    />
+                  </div>
+
+                  {/* Document Image Upload */}
+                  <div>
+                    <label className="form-label">Document Image</label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                      onChange={(e) => handleDocumentImageChange(e, index)}
+                    />
+                  </div>
+
+                  {/* Image Preview with Remove */}
+                  <div>
+                    {doc?.image && (
+                      <div className="relative inline-block mt-2">
+                        <img
+                          src={doc.image}
+                          alt={`doc-${index}`}
+                          className="w-16 h-16 object-cover rounded"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeDocumentImage(index)}
+                          className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center cursor-pointer"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Remove Document Button */}
+                  {formData?.documents?.length > 1 && (
+                    <div className="col-span-2 flex justify-end">
+                      <button
+                        type="button"
+                        className="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600 transition-all"
+                        onClick={() => removeDocument(index)}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))}
+
+              {/* Add More Button */}
+              <div className="col-span-2 mt-2">
+                <button
+                  type="button"
+                  className="bg-green-500 text-white px-4 py-2 rounded text-sm hover:bg-green-600 transition-all"
+                  onClick={addDocument}
+                >
+                  Add More
+                </button>
+              </div>
+            </div>
+
+            <hr className="m-0 p-0 my-3" />
+
+            <div className="grid grid-cols-2 gap-4">
+              {/* Adopted Status */}
+              <div>
+                <label className="form-label fw-bold">Adopted Status *</label>
+                <select
+                  className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                  name="isAdopted"
+                  value={formData?.isAdopted || "false"}
+                  onChange={handleChange}
+                >
+                  <option value="true">Adopted</option>
+                  <option value="false">Not Adopted</option>
+                </select>
+              </div>
+
+              {/* Verified Status */}
+              <div>
+                <label className="form-label fw-bold">Verified Status *</label>
+                <select
+                  className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                  name="isVerified"
+                  value={formData?.isVerified || "false"}
+                  onChange={handleChange}
+                >
+                  <option value="true">Verified</option>
+                  <option value="false">Not Verified</option>
+                </select>
+              </div>
+
+              {/* Approval Status */}
+              <div>
+                <label className="form-label fw-bold">Approval Status *</label>
+                <select
+                  className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                  name="approvalStatus"
+                  value={formData?.approvalStatus || "Pending"}
+                  onChange={handleChange}
+                >
+                  <option value="Pending">Pending</option>
+                  <option value="Published">Published</option>
+                  <option value="Rejected">Rejected</option>
+                </select>
+              </div>
+
+              {/* Property Status */}
+              <div>
+                <label className="form-label fw-bold">Property Status *</label>
+                <select
+                  className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                  name="status"
+                  value={formData?.status || "Available"}
+                  onChange={handleChange}
+                >
+                  <option value="Available">Available</option>
+                  <option value="Sold">Sold</option>
+                  <option value="Registered">Registered</option>
+                  <option value="Booked">Booked</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Buttons */}
+          <div className="flex justify-end gap-2 pt-4">
+            {/* Cancel Button */}
+            <button
+              type="button"
+              onClick={handleCancel}
+              className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-all"
+            >
+              Cancel
+            </button>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={loading}
+              className={`px-4 py-2 rounded text-white transition-all ${
                 loading
-                  ? "bg-gray-400 cursor-not-allowed"
+                  ? "bg-blue-300 cursor-not-allowed"
                   : "bg-blue-600 hover:bg-blue-700"
               }`}
-            disabled={loading}
-          >
-            {loading
-              ? modalData
-                ? "Updating..."
-                : "Saving..."
-              : modalData
-              ? "Update Property"
-              : "Save Property"}
-          </button>
-        </div>
-      </form>
+            >
+              {loading
+                ? "Saving..."
+                : modalData
+                ? "Update Property"
+                : "Create Property"}
+            </button>
+          </div>
+        </form>
+      </div>
     </Modal>
   );
 };

@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -23,6 +24,7 @@ import PropertySidebar from "./PropertySidebar";
 import { getRequest } from "../Helpers";
 import { formatDate } from "../Utils";
 import { PropertyContext } from "../context/propertyContext";
+import { Pagination } from "antd";
 const iconMap = {
   // Facilities
   Parking: Car,
@@ -138,7 +140,7 @@ const PropertyCard = ({ property }) => {
         <div className="flex flex-wrap items-center gap-4 sm:gap-6 md:gap-8 lg:gap-12 text-gray-600 text-sm mb-0">
           <div className="space-y-2">
             {/* Facilities + Services */}
-            <div className="flex flex-wrap items-center bg-gray-50 rounded-xl p-1 gap-x-6 gap-y-2">
+            {/* <div className="flex flex-wrap items-center bg-gray-50 rounded-xl p-1 gap-x-6 gap-y-2">
               {[
                 ...(property.facilities || []),
                 ...(property.services || []),
@@ -154,7 +156,7 @@ const PropertyCard = ({ property }) => {
                   </div>
                 );
               })}
-            </div>
+            </div> */}
 
             {/* Nearby */}
             <div className="flex flex-wrap items-center bg-gray-50 rounded-xl p-1 gap-x-6 gap-y-2">
@@ -208,13 +210,17 @@ const PropertyListings = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("recent");
   const [isPagination, setIsPagination] = useState(true);
+  const [propertyType, setPropertyType] = useState(() => {
+    const queryParams = new URLSearchParams(location.search);
+    return queryParams.get("propertyType") || "";
+  });
   const [loading, setLoading] = useState(true);
   const [properties, setProperties] = useState([]);
   const { search } = useContext(PropertyContext);
   useEffect(() => {
     setLoading(true);
     getRequest(
-      `properties?page=${page}&limit=${limit}&search=${searchTerm}&sortBy=${sortBy}&isPagination=${isPagination}`
+      `properties?page=${page}&limit=${limit}&search=${search}&sortBy=${sortBy}&isPagination=${isPagination}&propertyType=${propertyType}`
     )
       .then((res) => {
         setProperties(res?.data?.data?.properties || []);
@@ -222,7 +228,7 @@ const PropertyListings = () => {
       })
       .catch((err) => console.log("Api Error", err))
       .finally(() => setLoading(false));
-  }, [page, limit, searchTerm, sortBy, isPagination]);
+  }, [page, limit, search, sortBy, isPagination, propertyType]);
 
   const navigate = useNavigate();
   function handleClick() {
@@ -412,6 +418,18 @@ const PropertyListings = () => {
               <PropertyCard key={property.id} property={property} />
             ))}
           </div>
+          {properties.length > limit && (
+            <div className="flex justify-center mt-8">
+              <Pagination
+                current={page}
+                pageSize={limit}
+                total={properties.length} // total number of properties
+                onChange={(newPage) => setPage(newPage)}
+                showSizeChanger={false}
+                showQuickJumper
+              />
+            </div>
+          )}
         </div>
         <div className=" hidden md:block w-[20%] relative">
           <PropertySidebar />

@@ -93,8 +93,10 @@ export default function FeaturedPropertyType() {
   };
 
   const navigate = useNavigate();
-  function handleClick() {
-    navigate("/property-list");
+  function handleClick(name) {
+    console.log("categoryname", name);
+
+    navigate(`/property-list?propertyType=${name}`);
     // window.location.href = "/";
   }
   return (
@@ -119,8 +121,8 @@ export default function FeaturedPropertyType() {
           const IconComponent = iconMap[category?.icon] || Home;
           return (
             <div
-              onClick={handleClick}
-              key={category?.id}
+              key={category?._id}
+              onClick={() => handleClick(category?.name)}
               className="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden cursor-pointer"
             >
               {/* Image with overlay */}

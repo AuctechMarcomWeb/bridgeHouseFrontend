@@ -58,7 +58,11 @@ const RealEstatePopup = ({
   const closePopup = (timestamp) => {
     setPopups((prev) => prev.filter((popup) => popup.timestamp !== timestamp));
   };
+  const handleClick = (id) => {
+    console.log("id=====", id);
 
+    navigate(`/property-detail/${id}`);
+  };
   return (
     <div className="hidden md:block relative w-full h-full pointer-events-none z-50">
       {popups.map((popup, index) => (
@@ -77,7 +81,7 @@ const RealEstatePopup = ({
         >
           <div
             className="relative w-60 bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100 pointer-events-auto cursor-pointer"
-            onClick={() => navigate("/property-detail")}
+            onClick={() => handleClick(property?._id)}
           >
             {/* Close Button */}
             <button

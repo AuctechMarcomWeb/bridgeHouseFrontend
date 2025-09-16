@@ -59,8 +59,8 @@ export default function RentalListingApp() {
     maxSqft: "",
     propertyType: "",
     bhk: "",
-    minPrice: "100000",
-    maxPrice: "400000",
+    minPrice: "",
+    maxPrice: "",
   });
 
   // Decide which listings to show
@@ -72,17 +72,28 @@ export default function RentalListingApp() {
 
   useEffect(() => {
     setLoading(true);
-    getRequest(
-      `properties?search=${searchTerm}&page=${page}&limit=${limit}&approvalStatus=${approvalStatus}`
-    )
+    const query = new URLSearchParams({
+      search: filters.search,
+      page,
+      limit,
+      approvalStatus,
+      minSqft: filters.minSqft,
+      maxSqft: filters.maxSqft,
+      propertyType: filters.propertyType,
+      bhk: filters.bhk,
+      minPrice: filters.minPrice,
+      maxPrice: filters.maxPrice,
+    }).toString();
+
+    getRequest(`properties?${query}`)
       .then((res) => {
         setListing(res?.data?.data?.properties || []);
         setTotal(res?.totalProperties || res?.total || 0);
-        console.log("Property Lists Res", res?.data?.data || []);
+        console.log("Filtered Property List", res?.data?.data || []);
       })
       .catch((err) => console.log("Api Error", err))
       .finally(() => setLoading(false));
-  }, [searchTerm, page, limit, approvalStatus]);
+  }, []); // 👈 Now filters trigger refetch
 
   const handleClick = (id) => {
     console.log("id=====", id);
@@ -110,18 +121,17 @@ export default function RentalListingApp() {
   };
   const handleApplyFilters = () => {
     console.log("Selected Filters:", filters);
-    alert("Check console for selected filters!");
   };
 
   const handleResetFilters = () => {
     setFilters({
-      search: "",
-      minSqft: "",
-      maxSqft: "",
-      propertyType: "",
-      bhk: "",
-      minPrice: "",
-      maxPrice: "",
+     search: "",
+    minSqft: "",
+    maxSqft: "",
+    propertyType: "",
+    bhk: "",
+    minPrice: "100000",
+    maxPrice: "400000",
     });
   };
 
@@ -154,10 +164,12 @@ export default function RentalListingApp() {
               </div>
 
               <div className="p-6 space-y-6 max-h-[calc(100vh-200px)] overflow-y-auto">
-                <button className="text-red-500 text-sm font-medium hover:text-red-600 transition-colors">
+                <button
+                  onClick={handleResetFilters}
+                  className="text-red-500 text-sm font-medium hover:text-red-600 transition-colors"
+                >
                   Reset All Filters
                 </button>
-
                 {/* Enhanced Search */}
                 <div className="relative">
                   <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -177,14 +189,20 @@ export default function RentalListingApp() {
                     Minimum Square Feet
                   </label>
                   <input
-                    type="text"
-                    placeholder="e.g., 500"
-                    value={filters.minSqft}
+                    type="range"
+                    min="100"
+                    max="5000"
+                    step="50"
+                    value={filters.minSqft || 100}
                     onChange={(e) =>
                       setFilters({ ...filters, minSqft: e.target.value })
                     }
-                    className="w-full p-3 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 hover:bg-white transition-all"
+                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                   />
+                  <div className="flex justify-between text-xs text-gray-500">
+                    <span>{filters.minSqft || 100} sqft</span>
+                    <span>{filters.maxSqft || 5000} sqft</span>
+                  </div>
                 </div>
 
                 {/* Property Types */}
@@ -230,7 +248,6 @@ export default function RentalListingApp() {
                     </div>
                   )}
                 </div>
-
                 {/* BHK Types */}
                 <div className="space-y-3">
                   <button
@@ -269,24 +286,22 @@ export default function RentalListingApp() {
                     </div>
                   )}
                 </div>
-
                 {/* Price Range */}
                 <div className="space-y-3">
                   <label className="block text-sm font-semibold text-gray-700">
                     Price Range (₹)
                   </label>
+
                   <input
                     type="range"
-                    min="200"
-                    max="4999"
+                    min="100000"
+                    max="400000"
+                    step="5000"
                     value={filters.maxPrice}
                     onChange={(e) =>
                       setFilters({
                         ...filters,
-                        priceRange: [
-                          filters.priceRange[0],
-                          Number(e.target.value),
-                        ],
+                        maxPrice: Number(e.target.value),
                       })
                     }
                     className="w-full"
@@ -296,7 +311,6 @@ export default function RentalListingApp() {
                     <span>₹{filters.maxPrice}</span>
                   </div>
                 </div>
-
                 {/* Apply Filter Button */}
                 <button
                   onClick={handleApplyFilters}

@@ -63,6 +63,7 @@ export default function RentalListingApp() {
     bhkTypes: [],
     priceRange: [200, 4999],
   });
+
   // Decide which listings to show
   let displayListings = showAll
     ? listings.length > limit
@@ -108,6 +109,23 @@ export default function RentalListingApp() {
       return newFavorites;
     });
   };
+    const handleApplyFilters = () => {
+    console.log("Selected Filters:", filters);
+    alert("Check console for selected filters!");
+  };
+
+ const handleResetFilters = () => {
+    setFilters({
+      search: "",
+      location: "",
+      bedrooms: "",
+      bathrooms: "",
+      minSqft: "",
+      propertyTypes: [],
+      bhkTypes: [],
+      priceRange: [200, 4999],
+    });
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
@@ -144,17 +162,17 @@ export default function RentalListingApp() {
 
                 {/* Enhanced Search */}
                 <div className="relative">
-                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <input
-                    type="text"
-                    placeholder="Search properties..."
-                    value={filters.search}
-                    onChange={(e) =>
-                      setFilters({ ...filters, search: e.target.value })
-                    }
-                    className="w-full pl-11 pr-4 py-2 border ..."
-                  />
-                </div>
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search properties..."
+                  value={filters.search}
+                  onChange={(e) =>
+                    setFilters({ ...filters, search: e.target.value })
+                  }
+                  className="w-full pl-11 pr-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 hover:bg-white transition-all"
+                />
+              </div>
 
                 {/* Location */}
                 <div className="space-y-3">
@@ -179,185 +197,149 @@ export default function RentalListingApp() {
                 </div>
 
                 {/* Property Details */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-3">
-                    <label className="block text-sm font-semibold text-gray-700">
-                      Bedrooms
-                    </label>
-                    <select className="w-full p-3 border text-sm border-gray-200 rounded-xl appearance-none bg-gray-50 hover:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
-                      <option>Any</option>
-                      <option>1+</option>
-                      <option>2+</option>
-                      <option>3+</option>
-                      <option>4+</option>
-                    </select>
-                  </div>
-                  <div className="space-y-3">
-                    <label className="block text-sm font-semibold text-gray-700">
-                      Bathrooms
-                    </label>
-                    <select className="w-full p-3 text-sm border border-gray-200 rounded-xl appearance-none bg-gray-50 hover:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
-                      <option>Any</option>
-                      <option>1+</option>
-                      <option>2+</option>
-                      <option>3+</option>
-                    </select>
-                  </div>
-                </div>
-
-                {/* Min Sqft */}
+               {/* Bedrooms & Bathrooms */}
+              <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-3">
-                  <label className="block text-sm font-semibold text-gray-700">
-                    Minimum Square Feet
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g., 500"
-                    className="w-full p-3 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 hover:bg-white transition-all"
+                  <label className="block text-sm font-semibold text-gray-700">Bedrooms</label>
+                  <select
+                    value={filters.bedrooms}
+                    onChange={(e) =>
+                      setFilters({ ...filters, bedrooms: e.target.value })
+                    }
+                    className="w-full p-3 border text-sm border-gray-200 rounded-xl appearance-none bg-gray-50 hover:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                  >
+                    <option value="">Any</option>
+                    <option>1+</option>
+                    <option>2+</option>
+                    <option>3+</option>
+                    <option>4+</option>
+                  </select>
+                </div>
+                <div className="space-y-3">
+                  <label className="block text-sm font-semibold text-gray-700">Bathrooms</label>
+                  <select
+                    value={filters.bathrooms}
+                    onChange={(e) =>
+                      setFilters({ ...filters, bathrooms: e.target.value })
+                    }
+                    className="w-full p-3 text-sm border border-gray-200 rounded-xl appearance-none bg-gray-50 hover:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                  >
+                    <option value="">Any</option>
+                    <option>1+</option>
+                    <option>2+</option>
+                    <option>3+</option>
+                  </select>
+                </div>
+              </div>
+
+
+                {/* Minimum Sqft */}
+              <div className="space-y-3">
+                <label className="block text-sm font-semibold text-gray-700">Minimum Square Feet</label>
+                <input
+                  type="text"
+                  placeholder="e.g., 500"
+                  value={filters.minSqft}
+                  onChange={(e) =>
+                    setFilters({ ...filters, minSqft: e.target.value })
+                  }
+                  className="w-full p-3 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 hover:bg-white transition-all"
+                />
+              </div>
+
+                {/* Enhanced Categories */}
+               <div className="space-y-3">
+                <button
+                  className="flex items-center justify-between w-full text-left group"
+                  onClick={() => toggleDropdown("propertyType")}
+                >
+                  <span className="text-sm font-semibold text-gray-700 group-hover:text-blue-600 transition-colors">Property Types</span>
+                  <ChevronDown
+                    className={`w-4 h-4 text-gray-400 transition-transform ${openDropdowns?.propertyType ? "rotate-180" : ""}`}
                   />
-                </div>
-
-                {/* Enhanced Categories */}
-                <div className="space-y-3">
-                  <button
-                    className="flex items-center justify-between w-full text-left group"
-                    onClick={() => toggleDropdown("propertyType")}
-                  >
-                    <span className="text-sm font-semibold text-gray-700 group-hover:text-blue-600 transition-colors">
-                      Property Types
-                    </span>
-                    <ChevronDown
-                      className={`w-4 h-4 text-gray-400 transition-transform group-hover:text-blue-600 ${
-                        openDropdowns?.propertyType ? "rotate-180" : ""
-                      }`}
-                    />
-                  </button>
-                  {openDropdowns?.propertyType && (
-  <div className="space-y-3 pl-4 border-l-2 border-blue-100">
-    {[
-      { name: "Apartment", count: 45 },
-      { name: "Villa", count: 12 },
-      { name: "Residential", count: 18 },
-      { name: "Plot", count: 32 },
-    ].map((propertyType) => (
-      <label
-        key={propertyType?.name}
-        className="flex items-center justify-between group cursor-pointer"
-      >
-        <div className="flex items-center">
-          <input
-            type="radio"
-            name="propertyType" // 👈 give all the same name
-            value={propertyType?.name}
-            className="mr-3 w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
-          />
-          <span className="text-sm text-gray-700 group-hover:text-blue-600 transition-colors">
-            {propertyType?.name}
-          </span>
-        </div>
-        <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
-          {propertyType?.count}
-        </span>
-      </label>
-    ))}
-  </div>
-)}
-
-                </div>
-
-                {/* Enhanced Categories */}
-                <div className="space-y-3">
-                  <button
-                    className="flex items-center justify-between w-full text-left group"
-                    onClick={() => toggleDropdown("bhk")}
-                  >
-                    <span className="text-sm font-semibold text-gray-700 group-hover:text-blue-600 transition-colors">
-                      BHK Types
-                    </span>
-                    <ChevronDown
-                      className={`w-4 h-4 text-gray-400 transition-transform group-hover:text-blue-600 ${
-                        openDropdowns.bhk ? "rotate-180" : ""
-                      }`}
-                    />
-                  </button>
-                  {openDropdowns.bhk && (
-                    <div className="space-y-3 pl-4 border-l-2 border-blue-100">
-                      {[
-                        { name: "1 BHK", count: 45 },
-                        { name: "2 BHK", count: 12 },
-                        { name: "3 BHK", count: 18 },
-                        { name: "4 BHK", count: 32 },
-                      ].map((bhk) => (
-                        <label
-                          key={bhk.name}
-                          className="flex items-center justify-between group cursor-pointer"
-                        >
-                          <div className="flex items-center">
-                            <input
-                              type="radio"
-                              name="bhk" // 👈 important: same name for all
-                              value={bhk.name}
-                              className="mr-3 w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
-                            />
-                            <span className="text-sm text-gray-700 group-hover:text-blue-600 transition-colors">
-                              {bhk.name}
-                            </span>
-                          </div>
-                          <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
-                            {bhk.count}
-                          </span>
-                        </label>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* Enhanced Price Range */}
-                <div className="space-y-4">
-                  <button
-                    className="flex items-center justify-between w-full text-left group"
-                    onClick={() => toggleDropdown("price")}
-                  >
-                    <span className="text-sm font-semibold text-gray-700 group-hover:text-blue-600 transition-colors">
-                      Price Range
-                    </span>
-                    <ChevronDown
-                      className={`w-4 h-4 text-gray-400 transition-transform group-hover:text-blue-600 ${
-                        openDropdowns.price ? "rotate-180" : ""
-                      }`}
-                    />
-                  </button>
-                  {openDropdowns.price && (
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-medium">
-                          ₹200
-                        </span>
-                        <span className="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-medium">
-                          ₹4,999
-                        </span>
-                      </div>
-                      <div className="relative">
+                </button>
+                {openDropdowns?.propertyType && (
+                  <div className="space-y-3 pl-4 border-l-2 border-blue-100">
+                    {["Apartment", "Villa", "Residential", "Plot"].map((type) => (
+                      <label key={type} className="flex items-center gap-2 cursor-pointer">
                         <input
-                          type="range"
-                          min="200"
-                          max="4999"
-                          className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                          type="checkbox"
+                          checked={filters.propertyTypes.includes(type)}
+                          onChange={() => {
+                            const newTypes = filters.propertyTypes.includes(type)
+                              ? filters.propertyTypes.filter((t) => t !== type)
+                              : [...filters.propertyTypes, type];
+                            setFilters({ ...filters, propertyTypes: newTypes });
+                          }}
+                          className="w-4 h-4 text-blue-600"
                         />
-                      </div>
-                      <div className="text-center">
-                        <span className="text-xs text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
-                          Range: ₹200 - ₹4,999
-                        </span>
-                      </div>
-                    </div>
-                  )}
+                        <span className="text-sm">{type}</span>
+                      </label>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+
+                 {/* BHK Types */}
+              <div className="space-y-3">
+                <button
+                  className="flex items-center justify-between w-full text-left group"
+                  onClick={() => toggleDropdown("bhk")}
+                >
+                  <span className="text-sm font-semibold text-gray-700 group-hover:text-blue-600 transition-colors">BHK Types</span>
+                  <ChevronDown
+                    className={`w-4 h-4 text-gray-400 transition-transform ${openDropdowns.bhk ? "rotate-180" : ""}`}
+                  />
+                </button>
+                {openDropdowns.bhk && (
+                  <div className="space-y-3 pl-4 border-l-2 border-blue-100">
+                    {["1 BHK", "2 BHK", "3 BHK", "4 BHK"].map((bhk) => (
+                      <label key={bhk} className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={filters.bhkTypes.includes(bhk)}
+                          onChange={() => {
+                            const newBHK = filters.bhkTypes.includes(bhk)
+                              ? filters.bhkTypes.filter((b) => b !== bhk)
+                              : [...filters.bhkTypes, bhk];
+                            setFilters({ ...filters, bhkTypes: newBHK });
+                          }}
+                          className="w-4 h-4 text-blue-600"
+                        />
+                        <span className="text-sm">{bhk}</span>
+                      </label>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+               {/* Price Range */}
+              <div className="space-y-3">
+                <label className="block text-sm font-semibold text-gray-700">Price Range (₹)</label>
+                <input
+                  type="range"
+                  min="200"
+                  max="4999"
+                  value={filters.priceRange[1]}
+                  onChange={(e) =>
+                    setFilters({ ...filters, priceRange: [filters.priceRange[0], Number(e.target.value)] })
+                  }
+                  className="w-full"
+                />
+                <div className="flex justify-between text-xs text-gray-500">
+                  <span>₹{filters.priceRange[0]}</span>
+                  <span>₹{filters.priceRange[1]}</span>
                 </div>
+              </div>
 
                 {/* Apply Filter Button */}
-                <button className="w-full bg-teal-500 text-white py-4 rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
-                  Apply Filters
-                </button>
+              <button
+                onClick={handleApplyFilters}
+                className="w-full bg-teal-500 text-white py-4 rounded-xl font-semibold hover:bg-teal-600 transition-all"
+              >
+                Apply Filters
+              </button>
               </div>
             </div>
           </div>

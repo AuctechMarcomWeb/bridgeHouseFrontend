@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
+import { MdVerifiedUser } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import {
   ChevronDown,
@@ -40,38 +41,6 @@ export default function RentalListingApp() {
     Maintenance: Wrench,
   };
 
-  const [filters, setFilters] = useState({
-    location: "Chicago",
-    bedrooms: "Select",
-    bathrooms: "Select",
-    minSqFt: "",
-    priceRange: [200, 4999],
-    categories: {
-      apartments: true,
-      condos: true,
-      land: true,
-      office: true,
-    },
-    amenities: {
-      backyard: false,
-      centralAir: false,
-      chairAccessible: false,
-    },
-    reviews: {
-      fiveStar: false,
-      fourStar: false,
-      threeStar: false,
-      twoStar: false,
-      oneStar: false,
-    },
-    style: {
-      budget: false,
-      midrange: false,
-      luxury: false,
-      familyFriendly: false,
-    },
-  });
-
   const [openDropdowns, setOpenDropdowns] = useState({});
   const [favorites, setFavorites] = useState(new Set());
   const [loading, setLoading] = useState(false);
@@ -83,6 +52,17 @@ export default function RentalListingApp() {
   const [limit] = useState(10);
   const [searchTerm, setSearchTerm] = useState("");
   const [approvalStatus, setApprovalStatus] = useState("");
+
+  const [filters, setFilters] = useState({
+    search: "",
+    location: "",
+    bedrooms: "",
+    bathrooms: "",
+    minSqft: "",
+    propertyTypes: [],
+    bhkTypes: [],
+    priceRange: [200, 4999],
+  });
   // Decide which listings to show
   let displayListings = showAll
     ? listings.length > limit
@@ -168,7 +148,11 @@ export default function RentalListingApp() {
                   <input
                     type="text"
                     placeholder="Search properties..."
-                    className="w-full pl-11 pr-4 py-2 border border-gray-200 text-sm rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-gray-50 hover:bg-white"
+                    value={filters.search}
+                    onChange={(e) =>
+                      setFilters({ ...filters, search: e.target.value })
+                    }
+                    className="w-full pl-11 pr-4 py-2 border ..."
                   />
                 </div>
 
@@ -178,7 +162,13 @@ export default function RentalListingApp() {
                     Location
                   </label>
                   <div className="relative">
-                    <select className="w-full p-3 border text-sm border-gray-200 rounded-xl appearance-none bg-gray-50 hover:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                    <select
+                      value={filters.location}
+                      onChange={(e) =>
+                        setFilters({ ...filters, location: e.target.value })
+                      }
+                      className="w-full p-3 border text-sm border-gray-200 rounded-xl appearance-none bg-gray-50 hover:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    >
                       <option>Lucknow</option>
                       <option>Kanpur</option>
                       <option>Sitapur</option>
@@ -243,34 +233,36 @@ export default function RentalListingApp() {
                     />
                   </button>
                   {openDropdowns?.propertyType && (
-                    <div className="space-y-3 pl-4 border-l-2 border-blue-100">
-                      {[
-                        { name: "Apartment", count: 45 },
-                        { name: "Villa", count: 12 },
-                        { name: "Residential", count: 18 },
-                        { name: "Plot", count: 32 },
-                      ].map((propertyType) => (
-                        <label
-                          key={propertyType?.name}
-                          className="flex items-center justify-between group cursor-pointer"
-                        >
-                          <div className="flex items-center">
-                            <input
-                              type="checkbox"
-                              className="mr-3 w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
-                              defaultChecked
-                            />
-                            <span className="text-sm  text-gray-700 group-hover:text-blue-600 transition-colors">
-                              {propertyType?.name}
-                            </span>
-                          </div>
-                          <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
-                            {propertyType?.count}
-                          </span>
-                        </label>
-                      ))}
-                    </div>
-                  )}
+  <div className="space-y-3 pl-4 border-l-2 border-blue-100">
+    {[
+      { name: "Apartment", count: 45 },
+      { name: "Villa", count: 12 },
+      { name: "Residential", count: 18 },
+      { name: "Plot", count: 32 },
+    ].map((propertyType) => (
+      <label
+        key={propertyType?.name}
+        className="flex items-center justify-between group cursor-pointer"
+      >
+        <div className="flex items-center">
+          <input
+            type="radio"
+            name="propertyType" // 👈 give all the same name
+            value={propertyType?.name}
+            className="mr-3 w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+          />
+          <span className="text-sm text-gray-700 group-hover:text-blue-600 transition-colors">
+            {propertyType?.name}
+          </span>
+        </div>
+        <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
+          {propertyType?.count}
+        </span>
+      </label>
+    ))}
+  </div>
+)}
+
                 </div>
 
                 {/* Enhanced Categories */}
@@ -302,11 +294,12 @@ export default function RentalListingApp() {
                         >
                           <div className="flex items-center">
                             <input
-                              type="checkbox"
+                              type="radio"
+                              name="bhk" // 👈 important: same name for all
+                              value={bhk.name}
                               className="mr-3 w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
-                              defaultChecked
                             />
-                            <span className="text-sm  text-gray-700 group-hover:text-blue-600 transition-colors">
+                            <span className="text-sm text-gray-700 group-hover:text-blue-600 transition-colors">
                               {bhk.name}
                             </span>
                           </div>
@@ -425,28 +418,15 @@ export default function RentalListingApp() {
                         >
                           {listing?.status}
                         </div>
-
-                        {/* Verified Badge just below status */}
-                        {listing?.isVerified && (
-                          <div className="px-3 py-1 rounded-full text-xs bg-green-500 text-white shadow-lg backdrop-blur-sm">
-                            Verified
-                          </div>
-                        )}
                       </div>
                     )}
 
-                    <button
-                      onClick={() => toggleFavorite(listing?.id)}
-                      className="absolute top-4 right-4 p-1 bg-white/90 backdrop-blur-sm rounded-full shadow-md hover:shadow-lg transition-all duration-200 group"
-                    >
-                      <Heart
-                        className={`w-4 h-4 transition-colors ${
-                          favorites.has(listing?.id)
-                            ? "fill-red-500 text-red-500"
-                            : "text-gray-600 hover:text-red-500"
-                        }`}
-                      />
-                    </button>
+                    {/* Verified Badge */}
+                    {listing?.isVerified && (
+                      <div className="absolute top-4 right-4 p-1 bg-white rounded-full shadow">
+                        <MdVerifiedUser className="text-blue-500 text-3xl" />
+                      </div>
+                    )}
 
                     <div className="absolute bottom-4 left-4">
                       <div className="bg-black/70 backdrop-blur-sm text-white px-4 py-2 rounded-xl font-bold text-base shadow-lg">

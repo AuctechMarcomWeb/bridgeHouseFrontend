@@ -55,14 +55,14 @@ export default function RentalListingApp() {
 
   const [filters, setFilters] = useState({
     search: "",
-    location: "",
-    bedrooms: "",
-    bathrooms: "",
     minSqft: "",
-    propertyTypes: [],
-    bhkTypes: [],
-    priceRange: [200, 4999],
+    maxSqft: "",
+    propertyType: "",
+    bhk: "",
+    minPrice: "",
+    maxPrice: "",
   });
+
   // Decide which listings to show
   let displayListings = showAll
     ? listings.length > limit
@@ -72,17 +72,28 @@ export default function RentalListingApp() {
 
   useEffect(() => {
     setLoading(true);
-    getRequest(
-      `properties?search=${searchTerm}&page=${page}&limit=${limit}&approvalStatus=${approvalStatus}`
-    )
+    const query = new URLSearchParams({
+      search: filters.search,
+      page,
+      limit,
+      approvalStatus,
+      minSqft: filters.minSqft,
+      maxSqft: filters.maxSqft,
+      propertyType: filters.propertyType,
+      bhk: filters.bhk,
+      minPrice: filters.minPrice,
+      maxPrice: filters.maxPrice,
+    }).toString();
+
+    getRequest(`properties?${query}`)
       .then((res) => {
         setListing(res?.data?.data?.properties || []);
         setTotal(res?.totalProperties || res?.total || 0);
-        console.log("Property Lists Res", res?.data?.data || []);
+        console.log("Filtered Property List", res?.data?.data || []);
       })
       .catch((err) => console.log("Api Error", err))
       .finally(() => setLoading(false));
-  }, [searchTerm, page, limit, approvalStatus]);
+  }, []); // 👈 Now filters trigger refetch
 
   const handleClick = (id) => {
     console.log("id=====", id);
@@ -106,6 +117,21 @@ export default function RentalListingApp() {
         newFavorites.add(id);
       }
       return newFavorites;
+    });
+  };
+  const handleApplyFilters = () => {
+    console.log("Selected Filters:", filters);
+  };
+
+  const handleResetFilters = () => {
+    setFilters({
+     search: "",
+    minSqft: "",
+    maxSqft: "",
+    propertyType: "",
+    bhk: "",
+    minPrice: "100000",
+    maxPrice: "400000",
     });
   };
 
@@ -138,10 +164,12 @@ export default function RentalListingApp() {
               </div>
 
               <div className="p-6 space-y-6 max-h-[calc(100vh-200px)] overflow-y-auto">
-                <button className="text-red-500 text-sm font-medium hover:text-red-600 transition-colors">
+                <button
+                  onClick={handleResetFilters}
+                  className="text-red-500 text-sm font-medium hover:text-red-600 transition-colors"
+                >
                   Reset All Filters
                 </button>
-
                 {/* Enhanced Search */}
                 <div className="relative">
                   <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -152,72 +180,32 @@ export default function RentalListingApp() {
                     onChange={(e) =>
                       setFilters({ ...filters, search: e.target.value })
                     }
-                    className="w-full pl-11 pr-4 py-2 border ..."
+                    className="w-full pl-11 pr-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 hover:bg-white transition-all"
                   />
                 </div>
-
-                {/* Location */}
-                <div className="space-y-3">
-                  <label className="block text-sm font-semibold text-gray-700">
-                    Location
-                  </label>
-                  <div className="relative">
-                    <select
-                      value={filters.location}
-                      onChange={(e) =>
-                        setFilters({ ...filters, location: e.target.value })
-                      }
-                      className="w-full p-3 border text-sm border-gray-200 rounded-xl appearance-none bg-gray-50 hover:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    >
-                      <option>Lucknow</option>
-                      <option>Kanpur</option>
-                      <option>Sitapur</option>
-                      <option>Barabanki</option>
-                    </select>
-                    <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-                  </div>
-                </div>
-
-                {/* Property Details */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-3">
-                    <label className="block text-sm font-semibold text-gray-700">
-                      Bedrooms
-                    </label>
-                    <select className="w-full p-3 border text-sm border-gray-200 rounded-xl appearance-none bg-gray-50 hover:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
-                      <option>Any</option>
-                      <option>1+</option>
-                      <option>2+</option>
-                      <option>3+</option>
-                      <option>4+</option>
-                    </select>
-                  </div>
-                  <div className="space-y-3">
-                    <label className="block text-sm font-semibold text-gray-700">
-                      Bathrooms
-                    </label>
-                    <select className="w-full p-3 text-sm border border-gray-200 rounded-xl appearance-none bg-gray-50 hover:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
-                      <option>Any</option>
-                      <option>1+</option>
-                      <option>2+</option>
-                      <option>3+</option>
-                    </select>
-                  </div>
-                </div>
-
-                {/* Min Sqft */}
+                {/* Minimum Sqft */}
                 <div className="space-y-3">
                   <label className="block text-sm font-semibold text-gray-700">
                     Minimum Square Feet
                   </label>
                   <input
-                    type="text"
-                    placeholder="e.g., 500"
-                    className="w-full p-3 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 hover:bg-white transition-all"
+                    type="range"
+                    min="100"
+                    max="5000"
+                    step="50"
+                    value={filters.minSqft || 100}
+                    onChange={(e) =>
+                      setFilters({ ...filters, minSqft: e.target.value })
+                    }
+                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                   />
+                  <div className="flex justify-between text-xs text-gray-500">
+                    <span>{filters.minSqft || 100} sqft</span>
+                    <span>{filters.maxSqft || 5000} sqft</span>
+                  </div>
                 </div>
 
-                {/* Enhanced Categories */}
+                {/* Property Types */}
                 <div className="space-y-3">
                   <button
                     className="flex items-center justify-between w-full text-left group"
@@ -227,45 +215,40 @@ export default function RentalListingApp() {
                       Property Types
                     </span>
                     <ChevronDown
-                      className={`w-4 h-4 text-gray-400 transition-transform group-hover:text-blue-600 ${
-                        openDropdowns?.propertyType ? "rotate-180" : ""
+                      className={`w-4 h-4 text-gray-400 transition-transform ${
+                        openDropdowns.propertyType ? "rotate-180" : ""
                       }`}
                     />
                   </button>
-                  {openDropdowns?.propertyType && (
-  <div className="space-y-3 pl-4 border-l-2 border-blue-100">
-    {[
-      { name: "Apartment", count: 45 },
-      { name: "Villa", count: 12 },
-      { name: "Residential", count: 18 },
-      { name: "Plot", count: 32 },
-    ].map((propertyType) => (
-      <label
-        key={propertyType?.name}
-        className="flex items-center justify-between group cursor-pointer"
-      >
-        <div className="flex items-center">
-          <input
-            type="radio"
-            name="propertyType" // 👈 give all the same name
-            value={propertyType?.name}
-            className="mr-3 w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
-          />
-          <span className="text-sm text-gray-700 group-hover:text-blue-600 transition-colors">
-            {propertyType?.name}
-          </span>
-        </div>
-        <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
-          {propertyType?.count}
-        </span>
-      </label>
-    ))}
-  </div>
-)}
-
+                  {openDropdowns.propertyType && (
+                    <div className="space-y-3 pl-4 border-l-2 border-blue-100">
+                      {["Apartment", "Villa", "Residential", "Plot"].map(
+                        (type) => (
+                          <label
+                            key={type}
+                            className="flex items-center gap-2 cursor-pointer"
+                          >
+                            <input
+                              type="radio"
+                              name="propertyType" // single selection group
+                              value={type}
+                              checked={filters.propertyType === type}
+                              onChange={(e) =>
+                                setFilters({
+                                  ...filters,
+                                  propertyType: e.target.value,
+                                })
+                              }
+                              className="w-4 h-4 text-blue-600"
+                            />
+                            <span className="text-sm">{type}</span>
+                          </label>
+                        )
+                      )}
+                    </div>
+                  )}
                 </div>
-
-                {/* Enhanced Categories */}
+                {/* BHK Types */}
                 <div className="space-y-3">
                   <button
                     className="flex items-center justify-between w-full text-left group"
@@ -275,87 +258,64 @@ export default function RentalListingApp() {
                       BHK Types
                     </span>
                     <ChevronDown
-                      className={`w-4 h-4 text-gray-400 transition-transform group-hover:text-blue-600 ${
+                      className={`w-4 h-4 text-gray-400 transition-transform ${
                         openDropdowns.bhk ? "rotate-180" : ""
                       }`}
                     />
                   </button>
                   {openDropdowns.bhk && (
                     <div className="space-y-3 pl-4 border-l-2 border-blue-100">
-                      {[
-                        { name: "1 BHK", count: 45 },
-                        { name: "2 BHK", count: 12 },
-                        { name: "3 BHK", count: 18 },
-                        { name: "4 BHK", count: 32 },
-                      ].map((bhk) => (
+                      {["1 BHK", "2 BHK", "3 BHK", "4 BHK"].map((bhkOption) => (
                         <label
-                          key={bhk.name}
-                          className="flex items-center justify-between group cursor-pointer"
+                          key={bhkOption}
+                          className="flex items-center gap-2 cursor-pointer"
                         >
-                          <div className="flex items-center">
-                            <input
-                              type="radio"
-                              name="bhk" // 👈 important: same name for all
-                              value={bhk.name}
-                              className="mr-3 w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
-                            />
-                            <span className="text-sm text-gray-700 group-hover:text-blue-600 transition-colors">
-                              {bhk.name}
-                            </span>
-                          </div>
-                          <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
-                            {bhk.count}
-                          </span>
+                          <input
+                            type="radio"
+                            name="bhk" // all radios share the same name
+                            value={bhkOption}
+                            checked={filters.bhk === bhkOption}
+                            onChange={(e) =>
+                              setFilters({ ...filters, bhk: e.target.value })
+                            }
+                            className="w-4 h-4 text-blue-600"
+                          />
+                          <span className="text-sm">{bhkOption}</span>
                         </label>
                       ))}
                     </div>
                   )}
                 </div>
+                {/* Price Range */}
+                <div className="space-y-3">
+                  <label className="block text-sm font-semibold text-gray-700">
+                    Price Range (₹)
+                  </label>
 
-                {/* Enhanced Price Range */}
-                <div className="space-y-4">
-                  <button
-                    className="flex items-center justify-between w-full text-left group"
-                    onClick={() => toggleDropdown("price")}
-                  >
-                    <span className="text-sm font-semibold text-gray-700 group-hover:text-blue-600 transition-colors">
-                      Price Range
-                    </span>
-                    <ChevronDown
-                      className={`w-4 h-4 text-gray-400 transition-transform group-hover:text-blue-600 ${
-                        openDropdowns.price ? "rotate-180" : ""
-                      }`}
-                    />
-                  </button>
-                  {openDropdowns.price && (
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-medium">
-                          ₹200
-                        </span>
-                        <span className="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-medium">
-                          ₹4,999
-                        </span>
-                      </div>
-                      <div className="relative">
-                        <input
-                          type="range"
-                          min="200"
-                          max="4999"
-                          className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
-                        />
-                      </div>
-                      <div className="text-center">
-                        <span className="text-xs text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
-                          Range: ₹200 - ₹4,999
-                        </span>
-                      </div>
-                    </div>
-                  )}
+                  <input
+                    type="range"
+                    min="100000"
+                    max="400000"
+                    step="5000"
+                    value={filters.maxPrice}
+                    onChange={(e) =>
+                      setFilters({
+                        ...filters,
+                        maxPrice: Number(e.target.value),
+                      })
+                    }
+                    className="w-full"
+                  />
+                  <div className="flex justify-between text-xs text-gray-500">
+                    <span>₹{filters.minPrice}</span>
+                    <span>₹{filters.maxPrice}</span>
+                  </div>
                 </div>
-
                 {/* Apply Filter Button */}
-                <button className="w-full bg-teal-500 text-white py-4 rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                <button
+                  onClick={handleApplyFilters}
+                  className="w-full bg-teal-500 text-white py-4 rounded-xl font-semibold hover:bg-teal-600 transition-all"
+                >
                   Apply Filters
                 </button>
               </div>

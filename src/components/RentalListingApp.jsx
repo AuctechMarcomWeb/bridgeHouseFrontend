@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { MdVerifiedUser } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
+import { Slider, Switch } from "antd";
 import {
   ChevronDown,
   Search,
@@ -125,13 +126,13 @@ export default function RentalListingApp() {
 
   const handleResetFilters = () => {
     setFilters({
-     search: "",
-    minSqft: "",
-    maxSqft: "",
-    propertyType: "",
-    bhk: "",
-    minPrice: "100000",
-    maxPrice: "400000",
+      search: "",
+      minSqft: "",
+      maxSqft: "",
+      propertyType: "",
+      bhk: "",
+      minPrice: "100000",
+      maxPrice: "400000",
     });
   };
 
@@ -183,21 +184,25 @@ export default function RentalListingApp() {
                     className="w-full pl-11 pr-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 hover:bg-white transition-all"
                   />
                 </div>
-                {/* Minimum Sqft */}
+                {/* Sqft Range */}
+                {/* Sqft Range */}
                 <div className="space-y-3">
                   <label className="block text-sm font-semibold text-gray-700">
-                    Minimum Square Feet
+                    Square Feet Range
                   </label>
-                  <input
-                    type="range"
-                    min="100"
-                    max="5000"
-                    step="50"
-                    value={filters.minSqft || 100}
-                    onChange={(e) =>
-                      setFilters({ ...filters, minSqft: e.target.value })
+                  <Slider
+                    range
+                    min={100}
+                    max={5000}
+                    step={50}
+                    value={[filters.minSqft || 100, filters.maxSqft || 5000]}
+                    onChange={(value) =>
+                      setFilters({
+                        ...filters,
+                        minSqft: value[0],
+                        maxSqft: value[1],
+                      })
                     }
-                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                   />
                   <div className="flex justify-between text-xs text-gray-500">
                     <span>{filters.minSqft || 100} sqft</span>
@@ -286,31 +291,35 @@ export default function RentalListingApp() {
                     </div>
                   )}
                 </div>
+
                 {/* Price Range */}
                 <div className="space-y-3">
                   <label className="block text-sm font-semibold text-gray-700">
                     Price Range (₹)
                   </label>
-
-                  <input
-                    type="range"
-                    min="100000"
-                    max="400000"
-                    step="5000"
-                    value={filters.maxPrice}
-                    onChange={(e) =>
+                  <Slider
+                    range
+                    min={30000}
+                    max={50000000000}
+                    step={5000}
+                    value={[
+                      filters.minPrice || 30000,
+                      filters.maxPrice || 50000000000,
+                    ]}
+                    onChange={(value) =>
                       setFilters({
                         ...filters,
-                        maxPrice: Number(e.target.value),
+                        minPrice: value[0],
+                        maxPrice: value[1],
                       })
                     }
-                    className="w-full"
                   />
                   <div className="flex justify-between text-xs text-gray-500">
-                    <span>₹{filters.minPrice}</span>
-                    <span>₹{filters.maxPrice}</span>
+                    <span>₹{filters.minPrice || 30000}</span>
+                    <span>₹{filters.maxPrice || 50000000000}</span>
                   </div>
                 </div>
+
                 {/* Apply Filter Button */}
                 <button
                   onClick={handleApplyFilters}

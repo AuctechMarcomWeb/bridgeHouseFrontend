@@ -12,7 +12,6 @@ import Login from "./pages/Login";
 import AboutUs from "./pages/AboutUs";
 import RealEstateGallery from "./components/RealEstateGallery";
 import RealEstateProfile from "./pages/RealEstateProfile";
-import { ProfileProvider } from "./context/ProfileContext";
 import { Toaster } from "react-hot-toast";
 // import Signup from "./components/Signup";
 

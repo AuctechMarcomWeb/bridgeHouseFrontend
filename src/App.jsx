@@ -13,11 +13,21 @@ import AboutUs from "./pages/AboutUs";
 import RealEstateGallery from "./components/RealEstateGallery";
 import RealEstateProfile from "./pages/RealEstateProfile";
 import { ProfileProvider } from "./context/ProfileContext";
+import { Toaster } from "react-hot-toast";
 // import Signup from "./components/Signup";
 
 function App() {
   return (
     <>
+      <Toaster
+        position="top-right"
+        reverseOrder={false}
+        toastOptions={{
+          style: {
+            marginTop: "60px",
+          },
+        }}
+      />
       <Router>
         {/* <ProfileProvider> */}
         <Navbar />

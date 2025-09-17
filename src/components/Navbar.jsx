@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect, useContext, useRef } from "react";
-import { Menu, X, Stethoscope, User, LogOut } from "lucide-react";
+import { Menu, X, Stethoscope, User, LogOut, HelpCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
@@ -23,7 +23,6 @@ const Navbar = () => {
     console.log("User data in Navbar:", user);
   }, [user]);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -137,6 +136,17 @@ const Navbar = () => {
                       <button className="flex items-center gap-2 w-full  py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer">
                         <User className="w-5 h-5 " />
                         Profile
+                      </button>
+                    </Link>
+
+                    <Link
+                      to="/enquiry"
+                      className="block px-4 py-1.5 text-sm text-gray-700 hover:bg-gray-100 transition flex-start"
+                      onClick={() => setDropdownOpen(false)}
+                    >
+                      <button className="flex items-center gap-2 w-full  py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer">
+                        <HelpCircle className="w-4 h-4" />
+                        Enquiry
                       </button>
                     </Link>
 

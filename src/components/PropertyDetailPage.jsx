@@ -37,6 +37,7 @@ import {
 } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { getRequest } from "../Helpers";
+import EnquiryForm from "./EnquiryForm";
 
 export default function PropertyDetailPage() {
   useEffect(() => {
@@ -484,70 +485,7 @@ export default function PropertyDetailPage() {
           {/* Right Column */}
           <div className="w-full xl:w-96 space-y-6">
             {/* Enquiry Form */}
-            <div className="bg-white rounded-2xl shadow-lg p-6  top-4">
-              <h3 className="text-xl font-bold text-gray-800 mb-6">Enquiry</h3>
-
-              <div className="flex gap-2 mb-6">
-                <button className="flex-1 bg-gradient-to-r from-teal-500 to-cyan-600 text-white py-3 px-4 rounded-xl font-medium hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2">
-                  <Phone className="w-4 h-4" />
-                  Get In Touch With Us
-                </button>
-                {/* <button className="flex-1 bg-gradient-to-r from-gray-600 to-gray-700 text-white py-3 px-4 rounded-xl font-medium hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2">
-                  <Calendar className="w-4 h-4" />
-                  Schedule Visit
-                </button> */}
-              </div>
-
-              {/* Agent Info */}
-              {/* <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl mb-6">
-                <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg">
-                  AH
-                </div>
-                <div>
-                  <div className="font-bold text-gray-900">
-                    Adrian Henriques
-                  </div>
-                  <div className="text-sm text-gray-600">Company Agent</div>
-                  <div className="flex items-center gap-1 mt-1">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className="w-3 h-3 fill-yellow-400 text-yellow-400"
-                      />
-                    ))}
-                    <span className="text-xs text-gray-500 ml-1">
-                      4.9 (127)
-                    </span>
-                  </div>
-                </div>
-              </div> */}
-
-              <div className="space-y-4">
-                <input
-                  type="text"
-                  placeholder="Your Name"
-                  className="w-full text-sm p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                />
-                <input
-                  type="email"
-                  placeholder="Your Email"
-                  className="w-full text-sm p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                />
-                <input
-                  type="tel"
-                  placeholder="Your Phone Number"
-                  className="w-full text-sm p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                />
-                <textarea
-                  placeholder="Your Message"
-                  rows="4"
-                  className="w-full text-sm p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
-                ></textarea>
-                <button className="w-full bg-gradient-to-r from-gray-800 to-black text-white py-4 rounded-xl font-bold hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5">
-                  Send Message
-                </button>
-              </div>
-            </div>
+            <EnquiryForm propertyId={properties?._id} />
 
             {/* Listing Owner */}
             <div className="bg-white rounded-2xl shadow-lg p-6">

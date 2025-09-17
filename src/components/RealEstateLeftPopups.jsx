@@ -31,7 +31,14 @@ const RealEstateLeftPopups = () => {
   }, []);
 
   const closePopup = (timestamp) => {
-    setPopups((prev) => prev.filter((popup) => popup.timestamp !== timestamp));
+    // 1. Mark the popup as hidden
+    setPopups((prev) =>
+      prev.map((p) => (p.timestamp === timestamp ? { ...p, show: false } : p))
+    );
+
+    setTimeout(() => {
+      setPopups((prev) => prev.filter((p) => p.timestamp !== timestamp));
+    }, 100);
   };
 
   return (

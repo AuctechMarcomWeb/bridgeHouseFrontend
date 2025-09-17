@@ -9,7 +9,6 @@ const RealEstatePopups = () => {
   const [bannerType, setBannerType] = useState("rightside");
   const navigate = useNavigate();
 
-  // Gradient colors cycle
   const COLORS = [
     "from-green-600 to-emerald-400",
     "from-purple-600 to-indigo-400",
@@ -22,6 +21,8 @@ const RealEstatePopups = () => {
       .then((res) => {
         const data = res?.data?.data?.banners || [];
         const formatted = data.map((banner, index) => ({
+          // यहाँ `_id` को id के रूप में स्टोर किया
+          id: banner._id,
           ...banner,
           timestamp: Date.now() + index,
           show: true,
@@ -31,8 +32,8 @@ const RealEstatePopups = () => {
       .catch((err) => console.error("Error fetching rightside banners:", err));
   }, [bannerType]);
 
-  const closePopup = (timestamp) => {
-    setPopups((prev) => prev.filter((popup) => popup.timestamp !== timestamp));
+  const closePopup = (id) => {
+    setPopups((prev) => prev.filter((popup) => popup.id !== id));
   };
 
   return (
@@ -40,11 +41,11 @@ const RealEstatePopups = () => {
       <div className="absolute right-4 top-4 space-y-4 pointer-events-auto cursor-pointer">
         {popups.map((popup, index) => {
           const property = popup?.propertyId;
-          const gradient = COLORS[index % COLORS.length]; // pick color by index
+          const gradient = COLORS[index % COLORS.length];
 
           return (
             <div
-              key={`${popup._id}-${popup.timestamp}`}
+              key={`${popup.id}-${popup.timestamp}`}
               className={`transition-all duration-500 ease-out ${
                 popup.show
                   ? "translate-x-0 opacity-100"
@@ -58,7 +59,7 @@ const RealEstatePopups = () => {
               <div className="relative w-60 bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100">
                 {/* Close Button */}
                 <button
-                  onClick={() => closePopup(popup.timestamp)}
+                  onClick={() => closePopup(popup.id)}
                   className="absolute top-3 right-3 z-10 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:bg-white transition-all duration-200 hover:scale-110"
                 >
                   <X size={16} className="text-gray-600" />
@@ -69,13 +70,9 @@ const RealEstatePopups = () => {
                   className={`bg-gradient-to-r ${gradient} p-4 text-white relative overflow-hidden`}
                 >
                   <div className="absolute inset-0 bg-black/10"></div>
-                  <div className="relative z-10">
-                    <div className="flex items-center gap-2">
-                      <Star className="w-4 h-4 fill-yellow-300 text-yellow-300" />
-                      <span className="text-sm font-medium">
-                        Premium Listing
-                      </span>
-                    </div>
+                  <div className="relative z-10 flex items-center gap-2">
+                    <Star className="w-4 h-4 fill-yellow-300 text-yellow-300" />
+                    <span className="text-sm font-medium">Premium Listing</span>
                   </div>
                 </div>
 
@@ -115,7 +112,6 @@ const RealEstatePopups = () => {
                     </div>
                   </div>
 
-                  {/* Action Buttons */}
                   <div className="flex gap-2">
                     <button
                       onClick={() =>
@@ -131,7 +127,6 @@ const RealEstatePopups = () => {
                   </div>
                 </div>
 
-                {/* Bottom accent */}
                 <div className={`h-1 bg-gradient-to-r ${gradient}`}></div>
               </div>
             </div>

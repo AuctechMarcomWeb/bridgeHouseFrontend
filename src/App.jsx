@@ -12,6 +12,8 @@ import Login from "./pages/Login";
 import AboutUs from "./pages/AboutUs";
 import RealEstateGallery from "./components/RealEstateGallery";
 import RealEstateProfile from "./pages/RealEstateProfile";
+import { ProfileProvider } from "./context/ProfileContext";
+import EnquiryPage from "./pages/EnquiryPage";
 import { Toaster } from "react-hot-toast";
 // import Signup from "./components/Signup";
 
@@ -38,6 +40,7 @@ function App() {
           <Route path="/gallery" element={<RealEstateGallery />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/profile" element={<RealEstateProfile />} />
+          <Route path="/enquiry" element={<EnquiryPage />} />
           <Route
             path="/terms-and-conditions"
             element={<TermsAndConditions />}

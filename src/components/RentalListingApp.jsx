@@ -72,6 +72,10 @@ export default function RentalListingApp() {
     : listings.slice(0, 4);
 
   useEffect(() => {
+    fetchProperties();
+  }, [page]); // only re-fetch when page changes, not filters
+
+  const fetchProperties = () => {
     setLoading(true);
     const query = new URLSearchParams({
       search: filters.search,
@@ -94,7 +98,7 @@ export default function RentalListingApp() {
       })
       .catch((err) => console.log("Api Error", err))
       .finally(() => setLoading(false));
-  }, []); // 👈 Now filters trigger refetch
+  };
 
   const handleClick = (id) => {
     console.log("id=====", id);
@@ -122,6 +126,8 @@ export default function RentalListingApp() {
   };
   const handleApplyFilters = () => {
     console.log("Selected Filters:", filters);
+    setPage(1); // reset pagination to page 1 when applying filters
+    fetchProperties();
   };
 
   const handleResetFilters = () => {
@@ -131,11 +137,12 @@ export default function RentalListingApp() {
       maxSqft: "",
       propertyType: "",
       bhk: "",
-      minPrice: "100000",
-      maxPrice: "400000",
+      minPrice: "",
+      maxPrice: "",
     });
+    setPage(1);
+    fetchProperties(); // ✅ refetch after reset
   };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       <div className="w-full lg:w-[80%] xl:w-[75%] 2xl:w-[70%] mx-auto px-4 md:px-0 py-4 md:py-8">

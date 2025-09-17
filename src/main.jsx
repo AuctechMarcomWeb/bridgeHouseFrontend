@@ -4,24 +4,14 @@ import "./index.css";
 import App from "./App.jsx";
 import { Toaster } from "react-hot-toast";
 import { ProfileProvider } from "./context/ProfileContext.jsx";
-import { PropertyProvider } from "./context/propertyContext.jsx";
+// import { PropertyProvider } from "./context/PropertyContext.jsx";
 
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
+  <>
     <ProfileProvider>
-      <PropertyProvider>
-        <App />
-      </PropertyProvider>
+      {/* <PropertyProvider> */}
+      <App />
+      {/* </PropertyProvider> */}
     </ProfileProvider>
-
-    <Toaster
-      position="top-right"
-      reverseOrder={false}
-      toastOptions={{
-        style: {
-          marginTop: "60px",
-        },
-      }}
-    />
-  </StrictMode>
+  </>
 );

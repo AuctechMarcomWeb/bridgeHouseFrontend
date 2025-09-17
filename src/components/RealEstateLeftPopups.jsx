@@ -4,21 +4,20 @@ import { useNavigate } from "react-router-dom";
 import { X, MapPin, Star, Phone, IndianRupee } from "lucide-react";
 import { getRequest } from "../Helpers";
 
-const RealEstatePopups = () => {
+const RealEstateLeftPopups = () => {
   const [popups, setPopups] = useState([]);
-  const [bannerType, setBannerType] = useState("rightside");
   const navigate = useNavigate();
 
   // Gradient colors cycle
   const COLORS = [
-    "from-green-600 to-emerald-400",
-    "from-purple-600 to-indigo-400",
     "from-orange-500 to-red-400",
     "from-blue-600 to-cyan-400",
+    "from-green-600 to-emerald-400",
+    "from-purple-600 to-indigo-400",
   ];
 
   useEffect(() => {
-    getRequest(`banner?bannerType=${bannerType}`)
+    getRequest(`banner?bannerType=leftside`)
       .then((res) => {
         const data = res?.data?.data?.banners || [];
         const formatted = data.map((banner, index) => ({
@@ -28,8 +27,8 @@ const RealEstatePopups = () => {
         }));
         setPopups(formatted);
       })
-      .catch((err) => console.error("Error fetching rightside banners:", err));
-  }, [bannerType]);
+      .catch((err) => console.error("Error fetching leftside banners:", err));
+  }, []);
 
   const closePopup = (timestamp) => {
     setPopups((prev) => prev.filter((popup) => popup.timestamp !== timestamp));
@@ -37,7 +36,7 @@ const RealEstatePopups = () => {
 
   return (
     <div className="hidden md:block absolute left-0 w-full h-full pointer-events-none z-50">
-      <div className="absolute right-4 top-4 space-y-4 pointer-events-auto cursor-pointer">
+      <div className="absolute left-4 top-4 space-y-4 pointer-events-auto cursor-pointer">
         {popups.map((popup, index) => {
           const property = popup?.propertyId;
           const gradient = COLORS[index % COLORS.length]; // pick color by index
@@ -48,7 +47,7 @@ const RealEstatePopups = () => {
               className={`transition-all duration-500 ease-out ${
                 popup.show
                   ? "translate-x-0 opacity-100"
-                  : "translate-x-full opacity-0"
+                  : "-translate-x-full opacity-0"
               }`}
               style={{
                 animationDelay: `${index * 200}ms`,
@@ -142,4 +141,4 @@ const RealEstatePopups = () => {
   );
 };
 
-export default RealEstatePopups;
+export default RealEstateLeftPopups;

@@ -7,21 +7,11 @@ import { ProfileProvider } from "./context/ProfileContext.jsx";
 import { PropertyProvider } from "./context/propertyContext.jsx";
 
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
+  <>
     <ProfileProvider>
       <PropertyProvider>
         <App />
       </PropertyProvider>
     </ProfileProvider>
-
-    <Toaster
-      position="top-right"
-      reverseOrder={false}
-      toastOptions={{
-        style: {
-          marginTop: "60px",
-        },
-      }}
-    />
-  </StrictMode>
+  </>
 );

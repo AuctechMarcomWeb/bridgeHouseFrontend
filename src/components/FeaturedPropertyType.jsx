@@ -11,6 +11,7 @@ import {
   Copy,
 } from "lucide-react";
 import { getRequest } from "../Helpers";
+import RealEstateLeftPopups from "./RealEstateLeftPopups";
 //import RealEstatePopup from "./RealEstatePopup";
 
 // const propertyTypes = [
@@ -155,7 +156,7 @@ export default function FeaturedPropertyType() {
         })}
       </div>
       <RealEstatePopups />
-      {/* <RealEstatePopup /> */}
+      <RealEstateLeftPopups />
     </div>
   );
 }

@@ -6,21 +6,18 @@ import RentalListingApp from "../components/RentalListingApp";
 import PropertySliderTwo from "../components/PropertySliderTwo";
 import PricingSection from "../components/PricingSection";
 
-
 const Home = () => {
-    useEffect(() => {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      
-    }, []);
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
   return (
-    <>     
-     <RealEstateBanner />
+    <>
+      <RealEstateBanner />
       <FeaturedPropertyType />
       <PropertySlider />
       <RentalListingApp />
       <PropertySliderTwo />
-      <PricingSection />
-      
+      {/* <PricingSection /> */}
     </>
   );
 };

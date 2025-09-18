@@ -13,11 +13,12 @@ const AddPropertyModal = ({
   setIsModalOpen,
   modalData,
   setModalData,
-  setUpdateStatus,
+  setPropertyStatus,
   show,
   onClose,
 }) => {
-  const { user, setUser } = useContext(ProfileContext);
+  const { user, setUser,setUpdateStatus } = useContext(ProfileContext);
+
   console.log("modalData===", modalData);
 
   const [formData, setFormData] = useState(
@@ -39,7 +40,6 @@ const AddPropertyModal = ({
             builtYear: "",
           },
           status: "Available",
-          approvalStatus: "Published",
           isVerified: false,
           isAdopted: false,
           actualPrice: "",
@@ -294,6 +294,7 @@ const AddPropertyModal = ({
       .then((res) => {
         toast.success(res?.data?.message || "Property updated successfully");
         setUpdateStatus((prev) => !prev);
+        setPropertyStatus((prev) => !prev);
         handleCancel();
       })
       .catch((error) => {
@@ -315,6 +316,7 @@ const AddPropertyModal = ({
       .then((res) => {
         toast.success(res?.data?.message || "Property added successfully");
         setUpdateStatus((prev) => !prev);
+        setPropertyStatus((prev) => !prev);
         handleCancel();
       })
       .catch((error) => {
@@ -896,7 +898,13 @@ const AddPropertyModal = ({
         </form>
       </div>
     </Modal>
+
   );
 };
+
+
+
+
+
 
 export default AddPropertyModal;

@@ -18,7 +18,7 @@ const Navbar = () => {
   const { getCookie } = useCookie();
 
   //const userID = getCookie("userID", 30);
-
+  
   useEffect(() => {
     console.log("User data in Navbar:", user);
   }, [user]);
@@ -138,17 +138,22 @@ const Navbar = () => {
                         Profile
                       </button>
                     </Link>
+                  
+              {user?.accountType !== "Buyer" && (
+     <Link
+    to="/enquiry"
+    className="block px-4 py-1.5 text-sm text-gray-700 hover:bg-gray-100 transition flex-start"
+    onClick={() => setDropdownOpen(false)}
+  >
+    <button className="flex items-center gap-2 w-full py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer">
+      <HelpCircle className="w-4 h-4" />
+      Enquiry
+    </button>
+  </Link>
+              )}
 
-                    <Link
-                      to="/enquiry"
-                      className="block px-4 py-1.5 text-sm text-gray-700 hover:bg-gray-100 transition flex-start"
-                      onClick={() => setDropdownOpen(false)}
-                    >
-                      <button className="flex items-center gap-2 w-full  py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer">
-                        <HelpCircle className="w-4 h-4" />
-                        Enquiry
-                      </button>
-                    </Link>
+
+
 
                     <button
                       onClick={() => {

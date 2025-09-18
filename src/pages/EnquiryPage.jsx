@@ -54,8 +54,8 @@ const EnquiryPage = () => {
     },
     {
       title: "message",
-      dataIndex: "message",
-      key: "message",
+      dataIndex: "notes",
+      key: "notes",
       responsive: ["md", "lg"],
       render: (text) => <span className="line-clamp-2">{text}</span>,
     },
@@ -84,9 +84,9 @@ const EnquiryPage = () => {
       })
     },
     {
-      title: "Status",
-      dataIndex: "property",
-      key: "property",
+      title: "status",
+      dataIndex: "status",
+      key: "status",
       responsive: ["lg"],
       render: ((_, item) => {
 
@@ -141,9 +141,9 @@ const EnquiryPage = () => {
 
   useEffect(() => {
 
-    getRequest(`enquiry?addedBy=${user?._id}`).then((res) => {
+      getRequest(`enquiry?addedBy=${user?._id}`).then((res) => {
       setEnquiries(res?.data?.data?.enquiries)
-
+   
     }).catch((error) => {
       console.log("error", error);
 

@@ -30,6 +30,7 @@ const EnquiryEditModal = ({ openModal, modalData, setModal }) => {
         status: modalData?.status || STATUS_ENUM.NEW,
       });
     }
+    
   }, [modalData]);
 
   const handleChange = (e) => {
@@ -46,7 +47,7 @@ const EnquiryEditModal = ({ openModal, modalData, setModal }) => {
 
     try {
       const res = await putRequest({
-        url: `enquiry?addedBy=${user._id}`,
+        url:`enquiry/${modalData._id}`,
         cred: {
           notes: formData.notes,
           status: formData.status,
@@ -107,4 +108,4 @@ const EnquiryEditModal = ({ openModal, modalData, setModal }) => {
   );
 };
 
-export default EnquiryEditModal;
+export default EnquiryEditModal

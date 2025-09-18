@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { MapPin, Check, Star, Home, Calendar } from "lucide-react";
+import { MapPin, Check, Star, Home, Calendar, IndianRupee } from "lucide-react";
 import { getRequest } from "../Helpers";
+import { useNavigate } from "react-router-dom";
 
 const PropertySidebar = () => {
   const agents = [
@@ -35,6 +36,8 @@ const PropertySidebar = () => {
   ];
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
   // const properties = [
   //   {
   //     id: 1,
@@ -67,6 +70,10 @@ const PropertySidebar = () => {
       .catch((err) => console.error("Error fetching banners:", err))
       .finally(() => setLoading(false));
   }, []);
+  const handleClick = (id) => {
+    console.log("id=====", id);
+    navigate(`/property-detail/${id}`);
+  };
 
   const AgentCard = ({ agent }) => (
     <div className="bg-white rounded-lg shadow-lg p-4 mb-4 border border-gray-200 relative overflow-hidden">
@@ -119,7 +126,7 @@ const PropertySidebar = () => {
   );
 
   const PropertyCard = ({ property }) => (
-    <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-4 border border-gray-200">
+    <div className="bg-white rounded-lg shadow-lg  mb-4 border border-gray-200">
       <div className="relative">
         <img
           src={property?.bannerImage}
@@ -128,7 +135,7 @@ const PropertySidebar = () => {
         />
         <div className="absolute top-3 left-3">
           <span className="bg-green-500 text-white px-2 py-1 rounded text-xs font-semibold">
-            NEW
+            {property?.propertyId?.status}
           </span>
         </div>
       </div>
@@ -154,17 +161,21 @@ const PropertySidebar = () => {
             </span>
           </div>
           <div className="text-lg font-bold text-green-600">
+            <IndianRupee size={18} className="inline-block" />
             {property?.propertyId?.sellingPrice}
           </div>
           <div className="text-xs text-gray-500">
-            Marketed by{" "}
+            {/* Marketed by{" "} */}
             <span className="font-semibold">
               {property?.propertyId?.accountType}
             </span>
           </div>
         </div>
 
-        <button className="w-full bg-blue-600 text-white py-2 px-4 rounded-md font-semibold hover:bg-blue-700 transition-colors">
+        <button
+          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md font-semibold hover:bg-blue-700 transition-colors"
+          onClick={() => handleClick(property?.propertyId?._id)}
+        >
           View Details
         </button>
       </div>

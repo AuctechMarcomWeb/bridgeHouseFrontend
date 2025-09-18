@@ -14,6 +14,7 @@ import {
   Droplet,
   Wrench,
   Star,
+  IndianRupee,
 } from "lucide-react";
 import { getRequest } from "../Helpers";
 import { Navigate, useNavigate } from "react-router-dom";
@@ -32,17 +33,19 @@ const PropertySliderTwo = () => {
     search: "",
     sortBy: "recent",
     isPagination: true,
+    isVerified: true,
   });
   const navigate = useNavigate();
 
   useEffect(() => {
-    const { page, limit, search, sortBy, isPagination } = fiters;
+    const { page, limit, search, sortBy, isPagination, isVerified } = fiters;
     const queryParams = new URLSearchParams({
       page,
       limit,
       search,
       sortBy,
       isPagination,
+      isVerified,
     }).toString();
 
     setLoading(true);
@@ -290,7 +293,8 @@ const PropertySliderTwo = () => {
             {property?.name}
           </h3>
           <span className="text-sm sm:text-xl font-bold text-green-600">
-            {property?.actualprice}
+            <IndianRupee size={18} className="inline-block" />
+            {property?.actualPrice}
           </span>
         </div>
 

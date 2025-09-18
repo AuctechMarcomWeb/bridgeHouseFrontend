@@ -102,9 +102,22 @@ const PropertyCard = ({ property, onClick }) => {
         </div>
 
         {/* Heart icon */}
-        <button className="absolute top-3 right-3 p-2 bg-white rounded-full shadow-md hover:bg-gray-50">
+        {/* <button className="absolute top-3 right-3 p-2 bg-white rounded-full shadow-md hover:bg-gray-50">
           <Heart className="w-4 h-4 text-gray-400" />
-        </button>
+        </button> */}
+        {property?.status && (
+          <div className="absolute top-3 right-3 p-2 ">
+            <div
+              className={`px-3 py-1 rounded-full text-xs backdrop-blur-sm ${
+                property?.status === "Featured"
+                  ? "bg-amber-500/90 text-white shadow-lg"
+                  : "bg-blue-500/90 text-white shadow-lg"
+              }`}
+            >
+              {property?.status}
+            </div>
+          </div>
+        )}
 
         {/* Host avatar */}
         <div className="absolute bottom-3 left-3 w-8 h-8 bg-white rounded-full p-0.5">

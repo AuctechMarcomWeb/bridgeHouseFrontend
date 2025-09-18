@@ -36,7 +36,7 @@ const iconMap = {
   Maintenance: Wrench,
 };
 
-const PropertyCard = ({ property }) => {
+const PropertyCard = ({ property, onClick }) => {
   const renderStars = (rating) => {
     return Array.from({ length: 5 }, (_, i) => (
       <span
@@ -51,7 +51,10 @@ const PropertyCard = ({ property }) => {
   };
 
   return (
-    <div className="bg-white flex-row md:flex  rounded-lg items-center shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+    <div
+      onClick={onClick}
+      className="bg-white flex-row md:flex  rounded-lg items-center shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
+    >
       <div className="relative">
         <div className="relative h-56 bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center overflow-hidden group rounded-xl">
           {Array.isArray(property?.gallery) && property.gallery.length > 0 ? (
@@ -231,10 +234,11 @@ const PropertyListings = () => {
   }, [page, limit, search, sortBy, isPagination, propertyType]);
 
   const navigate = useNavigate();
-  function handleClick() {
-    navigate("/property-detail");
-    // window.location.href = "/";
-  }
+  const handleClick = (id) => {
+    console.log("id=====", id);
+    navigate(`/property-detail/${id}`);
+  };
+
   // const properties = [
   //   {
   //     id: 1,
@@ -410,12 +414,13 @@ const PropertyListings = () => {
           </div>
 
           {/* Property Grid */}
-          <div
-            onClick={handleClick}
-            className=" grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-6 cursor-pointer"
-          >
+          <div className=" grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-6 cursor-pointer">
             {properties.map((property) => (
-              <PropertyCard key={property.id} property={property} />
+              <PropertyCard
+                key={property._id}
+                property={property}
+                onClick={() => handleClick(property?._id)}
+              />
             ))}
           </div>
           {properties.length > limit && (

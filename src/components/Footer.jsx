@@ -35,18 +35,16 @@ const Footer = () => {
     <>
       {/* Footer */}
       <footer id="contact" className="bg-gray-900 text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="sm:w-full lg:w-[80%]  xl:w-[80%] 2xl:w-[70%] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center space-x-2 mb-6">
                 <div className="w-30 h-30  from-blue-600 to-cyan-600 rounded-lg flex items-center justify-center">
-                 
-                   <img src={logo} alt="" />
+                  <img src={logo} alt="" />
                 </div>
-                
               </div>
               <p className="text-gray-400 leading-relaxed">
-                A Trusted  Realstate In Lucknow
+                A Trusted Realstate In Lucknow
               </p>
             </div>
 
@@ -65,7 +63,7 @@ const Footer = () => {
                 >
                   Services
                 </Link>
-               
+
                 <Link
                   to="/contact"
                   className="block text-gray-400 hover:text-white transition-colors"
@@ -99,7 +97,7 @@ const Footer = () => {
                 <div className="flex items-center space-x-3">
                   <MapPin className="w-5 h-5 fs-6 text-blue-400" />
                   <span className="text-gray-400">
-                    1090, <br />  Gomti Nagar, Lucknow, Uttar Pradesh 20001
+                    1090, <br /> Gomti Nagar, Lucknow, Uttar Pradesh 20001
                   </span>
                 </div>
               </div>
@@ -108,9 +106,9 @@ const Footer = () => {
 
           <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
             <p>
-              &copy; 2025 Bridge House. All rights reserved. Made by Auctech MarCom
+              &copy; 2025 Bridge House. All rights reserved. Made by Auctech
+              MarCom
             </p>
-            
           </div>
         </div>
       </footer>

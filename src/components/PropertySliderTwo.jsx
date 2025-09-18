@@ -16,6 +16,7 @@ import {
   Star,
 } from "lucide-react";
 import { getRequest } from "../Helpers";
+import { Navigate, useNavigate } from "react-router-dom";
 
 const PropertySliderTwo = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -32,6 +33,7 @@ const PropertySliderTwo = () => {
     sortBy: "recent",
     isPagination: true,
   });
+  const navigate = useNavigate();
 
   useEffect(() => {
     const { page, limit, search, sortBy, isPagination } = fiters;
@@ -222,9 +224,15 @@ const PropertySliderTwo = () => {
     setCurrentIndex(index);
     resumeScrolling();
   };
+  const handleClick = (id) => {
+    navigate(`/property-detail/${id}`);
+  };
 
   const PropertyCard = ({ property }) => (
-    <div className="w-full sm:w-sm md:w-md lg:max-w-lg bg-white rounded-xl shadow-md overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-2xl group">
+    <div
+      onClick={() => handleClick(property?._id)}
+      className="w-full sm:w-sm md:w-md lg:max-w-lg bg-white rounded-xl shadow-md overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-2xl group"
+    >
       <div className="relative overflow-hidden">
         {Array.isArray(property?.gallery) && property.gallery.length > 0 ? (
           <>
@@ -257,9 +265,23 @@ const PropertySliderTwo = () => {
         <div className="absolute top-2 sm:top-4 left-2 sm:left-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-semibold">
           {property?.propertyType}
         </div>
-        <button className="absolute top-2 sm:top-4 right-2 sm:right-4 p-1.5 sm:p-2 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white group-hover:text-red-500 transition-colors">
+        {/* <button className="absolute top-2 sm:top-4 right-2 sm:right-4 p-1.5 sm:p-2 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white group-hover:text-red-500 transition-colors">
           <Heart size={16} className="sm:w-[18px]" />
-        </button>
+        </button> */}
+
+        {/* Verified Badge */}
+        {property?.isVerified && (
+          <div className="absolute top-4 right-4 w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
+            <div className="w-6 h-6 bg-white/80 rounded">
+              <img
+                width="48"
+                height="48"
+                src="https://img.icons8.com/color/48/verified-account--v1.png"
+                alt="verified-account"
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="p-4 sm:p-6">
@@ -278,19 +300,6 @@ const PropertySliderTwo = () => {
         </div>
 
         <div className="flex justify-between items-center text-gray-700 mb-3 sm:mb-4 text-xs sm:text-sm">
-          {/* <div className="flex items-center">
-            <Bed size={14} className="mr-1 text-blue-500" />
-            {property.beds}
-          </div>
-          <div className="flex items-center">
-            <Bath size={14} className="mr-1 text-teal-500" />
-            {property.baths}
-          </div>
-          <div className="flex items-center">
-            <Square size={14} className="mr-1 text-purple-500" />
-            {property.area}
-          </div>
-        </div> */}
           <div className="flex flex-wrap items-center bg-gray-50 rounded-xl p-4 gap-x-6 gap-y-2">
             {[...(property.facilities || []), ...(property.services || [])].map(
               (item, index) => {
@@ -307,22 +316,11 @@ const PropertySliderTwo = () => {
               }
             )}
           </div>
-
-          {/* <div className="flex flex-wrap items-center bg-gray-50 rounded-xl p-4 gap-x-3 gap-y-1">
-            {property.nearby?.map((place, index) => (
-              <div
-                key={index}
-                className="flex items-center gap-1 text-sm text-gray-600"
-              >
-                <MapPin className="w-4 h-4 text-red-500" />
-                <span className="font-medium capitalize">
-                  {place.name}
-                </span> - <span>{place.distance}</span>
-              </div>
-            ))}
-          </div> */}
         </div>
-        <button className="w-full bg-teal-500 text-white py-2 sm:py-3 rounded-lg sm:rounded-xl text-sm sm:text-base font-semibold transition-all duration-300 hover:bg-gradient-to-r hover:from-blue-700 hover:to-purple-700 hover:shadow-lg transform hover:-translate-y-1">
+        <button
+          onClick={() => handleClick(property?._id)}
+          className="w-full bg-teal-500 text-white py-2 sm:py-3 rounded-lg sm:rounded-xl text-sm sm:text-base font-semibold transition-all duration-300 hover:bg-gradient-to-r hover:from-blue-700 hover:to-purple-700 hover:shadow-lg transform hover:-translate-y-1"
+        >
           View Details
         </button>
       </div>
@@ -333,7 +331,7 @@ const PropertySliderTwo = () => {
     <div className="w-full lg:w-[80%] xl:w-[75%] 2xl:w-[70%] mx-auto px-2 sm:px-4 lg:px-0 py-8 sm:py-12">
       <div className="text-center mb-8 sm:mb-12">
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2 sm:mb-4">
-          Featured{" "}
+          Verified{" "}
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
             Properties
           </span>

@@ -31,16 +31,6 @@ import { Pagination } from "antd";
 
 export default function RentalListingApp() {
   const navigate = useNavigate();
-  const iconMap = {
-    // Facilities
-    Parking: Car,
-    Lift: Building2,
-    "Power Backup": Zap,
-
-    // Services
-    "Water Supply": Droplet,
-    Maintenance: Wrench,
-  };
 
   const [openDropdowns, setOpenDropdowns] = useState({});
   const [favorites, setFavorites] = useState(new Set());
@@ -399,8 +389,15 @@ export default function RentalListingApp() {
 
                     {/* Verified Badge */}
                     {listing?.isVerified && (
-                      <div className="absolute top-4 right-4 p-1 bg-white rounded-full shadow">
-                        <MdVerifiedUser className="text-blue-500 text-3xl" />
+                      <div className="absolute top-4 right-4 w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
+                        <div className="w-6 h-6 bg-white/80 rounded">
+                          <img
+                            width="48"
+                            height="48"
+                            src="https://img.icons8.com/color/48/verified-account--v1.png"
+                            alt="verified-account"
+                          />
+                        </div>
                       </div>
                     )}
 
@@ -427,78 +424,100 @@ export default function RentalListingApp() {
                     </div>
 
                     <div className="space-y-2">
-                      {/* <div className="flex flex-wrap items-center bg-gray-50 rounded-xl p-4 gap-x-6 gap-y-2">
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <LucideRuler className="w-4 h-4 text-blue-500" />
-                          <span className="font-medium">
-                            {listing?.propertyDetails?.area ?? "—"} sq ft
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <Bed className="w-4 h-4 text-blue-500" />
-                          <span className="font-medium">
-                            {listing?.propertyDetails?.bedrooms ?? "—"} Bedrooms
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <Bath className="w-4 h-4 text-blue-500" />
-                          <span className="font-medium">
-                            {listing?.propertyDetails?.bathrooms ?? "—"}{" "}
-                            Bathrooms
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <Layers className="w-4 h-4 text-blue-500" />
-                          <span className="font-medium">
-                            {listing?.propertyDetails?.floors ?? "—"} Floors
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 capitalize">
-                          <Compass className="w-4 h-4 text-blue-500" />
-                          <span className="font-medium">
-                            Facing {listing?.propertyDetails?.facing ?? "—"}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <Calendar className="w-4 h-4 text-blue-500" />
-                          <span className="font-medium">
-                            Built {listing?.propertyDetails?.builtYear ?? "—"}
-                          </span>
-                        </div>
-                      </div> */}
                       {/* Facilities + Services */}
-                      <div className="flex flex-wrap items-center bg-gray-50 rounded-xl p-4 gap-x-6 gap-y-2">
-                        {[
-                          ...(listing.facilities || []),
-                          ...(listing.services || []),
-                        ].map((item, index) => {
-                          const Icon = iconMap[item] || Star;
+                      <div className="flex flex-wrap items-center bg-gray-50 rounded-xl p-4 gap-x-4 gap-y-1">
+                        {(() => {
+                          const facilities = listing.facilities || [];
+                          const services = listing.services || [];
+                          const firstFacility = facilities[0];
+                          const firstService = services[0];
+                          const iconMap = {
+                            // Facilities
+                            Parking: Car,
+                            Lift: Building2,
+                            "Power Backup": Zap,
+
+                            // Services
+                            "Water Supply": Droplet,
+                            Maintenance: Wrench,
+                          };
                           return (
-                            <div
-                              key={index}
-                              className="flex items-center gap-2 text-sm text-gray-600"
-                            >
-                              <Icon className="w-4 h-4 text-blue-500" />
-                              <span className="font-medium">{item}</span>
-                            </div>
+                            <>
+                              {/* ---- Facility ---- */}
+                              {firstFacility && (
+                                <div className="flex items-center gap-2 text-sm text-gray-600">
+                                  {(iconMap[firstFacility] || Star) &&
+                                    React.createElement(
+                                      iconMap[firstFacility] || Star,
+                                      {
+                                        className: "w-4 h-4 text-blue-500",
+                                      }
+                                    )}
+                                  <span className="font-medium">
+                                    {firstFacility}
+                                  </span>
+                                  {facilities.length > 1 && (
+                                    <span className="text-gray-600 font-medium">
+                                      ...
+                                    </span>
+                                  )}
+                                </div>
+                              )}
+
+                              {/* ---- Service ---- */}
+                              {firstService && (
+                                <div className="flex items-center gap-2 text-sm text-gray-600">
+                                  {(iconMap[firstService] || Star) &&
+                                    React.createElement(
+                                      iconMap[firstService] || Star,
+                                      {
+                                        className: "w-4 h-4 text-blue-500",
+                                      }
+                                    )}
+                                  <span className="font-medium">
+                                    {firstService}
+                                  </span>
+                                  {services.length > 1 && (
+                                    <span className="text-gray-600 font-medium">
+                                      ...
+                                    </span>
+                                  )}
+                                </div>
+                              )}
+                            </>
                           );
-                        })}
+                        })()}
                       </div>
 
                       {/* Nearby */}
-                      <div className="flex flex-wrap items-center bg-gray-50 rounded-xl p-4 gap-x-6 gap-y-2">
-                        {listing.nearby?.map((place, index) => (
-                          <div
-                            key={index}
-                            className="flex items-center gap-2 text-sm text-gray-600"
-                          >
-                            <MapPin className="w-4 h-4 text-red-500" />
-                            <span className="font-medium capitalize">
-                              {place.name}
-                            </span>{" "}
-                            - <span>{place.distance}</span>
-                          </div>
-                        ))}
+                      <div className="flex flex-wrap items-center bg-gray-50 rounded-xl p-4 gap-x-4 gap-y-1">
+                        {(() => {
+                          const nearbyPlaces = listing.nearby || [];
+                          const firstTwo = nearbyPlaces.slice(0, 1);
+
+                          return (
+                            <>
+                              {firstTwo.map((place, index) => (
+                                <div
+                                  key={index}
+                                  className="flex items-center gap-2 text-sm text-gray-600"
+                                >
+                                  <MapPin className="w-4 h-4 text-red-500" />
+                                  <span className="font-medium capitalize">
+                                    {place.name}
+                                  </span>
+                                  - <span>{place.distance}Km</span>
+                                </div>
+                              ))}
+
+                              {nearbyPlaces.length > 1 && (
+                                <span className="text-sm text-gray-600 font-medium">
+                                  ...
+                                </span>
+                              )}
+                            </>
+                          );
+                        })()}
                       </div>
                     </div>
 
@@ -527,6 +546,7 @@ export default function RentalListingApp() {
               </div>
             )}
           </div>
+
           {/* Pagination */}
           {showAll && listings.length > limit && (
             <div className="flex justify-center mt-8">

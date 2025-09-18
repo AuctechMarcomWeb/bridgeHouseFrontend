@@ -1,5 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { useContext, useEffect, useState } from "react";
+import { Modal, Button } from "antd";
+
 import {
   User,
   MapPin,
@@ -31,6 +33,7 @@ import {
 import Swal from "sweetalert2";
 import AddPropertyModal from "../components/AddPropertyModal";
 import EditProfileModal from "../components/EditProfileModal";
+import UpgradeModal from "../components/UpgradeModal";
 import { deleteRequest, getRequest } from "../Helpers";
 import toast from "react-hot-toast";
 import { ProfileContext } from "../context/ProfileContext";
@@ -47,6 +50,8 @@ export default function RealEstateProfile() {
   const [showEdit, setShowEdit] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [update, setUpdate] = useState(false);
+   const [upgradeModal, setUpgradeModal] = useState(false); 
+
   // Redirect if not logged in
   useEffect(() => {
     if (isLoggedIn === false) {
@@ -74,10 +79,14 @@ export default function RealEstateProfile() {
     setShowEdit(false);
   };
 
+        console.log("Account Type ===>", user?.accountType);
+
   const [properties, setProperties] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [updateStatus, setUpdateStatus] = useState(false);
+
+
   const iconMap = {
     // Facilities
     Parking: Car,
@@ -133,6 +142,19 @@ export default function RealEstateProfile() {
       }
     });
   };
+
+  const handleAddProperty = () => {
+    if (
+      user?.accountType !== "Buyer" &&
+      user?.consumeListing >= user?.PropertyListing
+    ) {
+      setUpgradeModal(true); // Show upgrade popup
+    } else {
+      setSelectedProperty(null);
+      setIsModalOpen(true); // Show AddProperty modal
+    }
+  };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
@@ -221,6 +243,8 @@ export default function RealEstateProfile() {
         </div>
 
         {/* Enhanced Properties Section */}
+
+           {user?.accountType !== "Buyer" && (
         <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
             <div>
@@ -231,16 +255,14 @@ export default function RealEstateProfile() {
                 Manage your real estate listings
               </p>
             </div>
-            <button
-              onClick={() => {
-                setSelectedProperty(null);
-                setIsModalOpen(true);
-              }}
-              className="flex items-center gap-2 px-6 py-3 bg-[#059669] text-white font-semibold rounded-xl hover:from-green-700 hover:to-green-600 transition-all duration-300 shadow-lg transform hover:scale-105"
-            >
-              <Plus size={20} />
-              Add Property
-            </button>
+       <button
+  onClick={handleAddProperty}   
+  className="flex items-center gap-2 px-6 py-3 bg-[#059669] text-white font-semibold rounded-xl hover:from-green-700 hover:to-green-600 transition-all duration-300 shadow-lg transform hover:scale-105"
+>
+  <Plus size={20} />
+  Add Property
+</button>
+
           </div>
 
           {properties.length === 0 ? (
@@ -455,14 +477,25 @@ export default function RealEstateProfile() {
             </div>
           )}
         </div>
+           )}
+  
 
-        <AddPropertyModal
-          isModalOpen={isModalOpen}
-          setIsModalOpen={setIsModalOpen}
-          modalData={selectedProperty}
-          setModalData={setSelectedProperty}
-          setUpdateStatus={setUpdateStatus}
-        />
+        {/* ✅ Add Property Modal (only open if limit not exceeded) */}
+        {user?.accountType !== "Buyer" &&
+          user?.consumeListing < user?.PropertyListing && (
+            <AddPropertyModal
+              isModalOpen={isModalOpen}
+              setIsModalOpen={setIsModalOpen}
+              modalData={selectedProperty}
+              setModalData={setSelectedProperty}
+              setPropertyStatus={setUpdateStatus}
+            />
+          )}
+
+        {/* ✅ Upgrade Popup */}
+
+   <UpgradeModal open={upgradeModal} onClose={() => setUpgradeModal(false)} />
+
 
         {showEdit && (
           <EditProfileModal
@@ -481,7 +514,11 @@ export default function RealEstateProfile() {
             setUpdate={setUpdate}
           />
         )}
+
+        
       </div>
+      
     </div>
+      
   );
 }

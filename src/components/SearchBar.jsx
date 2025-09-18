@@ -2,7 +2,7 @@ import { State } from "country-state-city";
 import React, { useState, useRef, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import Locationform from "./Locationform";
-import { PropertyContext } from "../context/propertyContext";
+import { PropertyContext } from "../context/PropertyContext.jsx";
 
 const SearchBar = () => {
   const [selectedLocation, setSelectedLocation] = useState("Select State");

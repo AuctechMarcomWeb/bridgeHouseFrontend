@@ -23,7 +23,7 @@ import {
 import PropertySidebar from "./PropertySidebar";
 import { getRequest } from "../Helpers";
 import { formatDate } from "../Utils";
-import { PropertyContext } from "../context/propertyContext";
+import { PropertyContext } from "../context/PropertyContext.jsx";
 import { Pagination } from "antd";
 const iconMap = {
   // Facilities

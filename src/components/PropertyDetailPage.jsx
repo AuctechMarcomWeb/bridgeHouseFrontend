@@ -34,6 +34,7 @@ import {
   LucideRuler,
   Layers,
   Compass,
+  IndianRupee,
 } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { getRequest } from "../Helpers";
@@ -191,11 +192,12 @@ export default function PropertyDetailPage() {
             <div className="flex items-center gap-4">
               <div className="text-right">
                 <div className="text-2xl font-extrabold text-yellow-400 drop-shadow-md">
+                  <IndianRupee size={18} className="inline-block" />
                   {properties?.actualPrice}
                 </div>
-                <div className="text-sm text-gray-300">Total Visits: 45</div>
+                {/* <div className="text-sm text-gray-300">Total Visits: 45</div> */}
               </div>
-
+              {/* 
               <button
                 onClick={() => setIsFavorite(!isFavorite)}
                 className={`p-2 rounded-full shadow-lg transition-all ${
@@ -209,7 +211,7 @@ export default function PropertyDetailPage() {
                     isFavorite ? "fill-current" : ""
                   } transition-transform`}
                 />
-              </button>
+              </button> */}
             </div>
           </div>
         </div>
@@ -217,13 +219,13 @@ export default function PropertyDetailPage() {
 
       <div className="max-w-7xl mx-auto py-12 p-4">
         <div className="flex items-center gap-3 mb-2">
-          <span className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-3 py-1 rounded-full text-sm  flex items-center gap-1">
+          {/* <span className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-3 py-1 rounded-full text-sm  flex items-center gap-1">
             <TrendingUp className="w-4 h-4" />
             Trending
-          </span>
+          </span> */}
           <span className="bg-gradient-to-r from-amber-400 to-orange-400 text-white px-3 py-1 rounded-full text-sm  flex items-center gap-1">
             <Sparkles className="w-4 h-4" />
-            Fresh List
+            {properties?.status}
           </span>
         </div>
         <div className="flex flex-col xl:flex-row gap-8">
@@ -494,15 +496,25 @@ export default function PropertyDetailPage() {
               </h3>
 
               <div className="flex items-center gap-4 mb-6">
-                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg">
-                  AS
+                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg overflow-hidden">
+                  {properties?.addedBy?.profilepic ? (
+                    <img
+                      src={properties.addedBy.profilepic}
+                      alt="Profile"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    // Fallback to first letter of name
+                    properties?.addedBy?.name?.[0]?.toUpperCase() || "U"
+                  )}
                 </div>
+
                 <div className="flex-1">
                   <div className="font-bold text-gray-900 flex items-center gap-2">
-                    Ali Sir
+                    {properties?.addedBy?.name}
                     <Verified className="w-5 h-5 text-blue-500" />
                   </div>
-                  <div className="flex items-center gap-1">
+                  {/* <div className="flex items-center gap-1">
                     {[...Array(5)].map((_, i) => (
                       <Star
                         key={i}
@@ -512,17 +524,14 @@ export default function PropertyDetailPage() {
                     <span className="text-gray-500 ml-2 text-sm">
                       (32 Reviews)
                     </span>
-                  </div>
+                  </div> */}
                 </div>
               </div>
 
               <div className="space-y-3 mb-6">
                 {[
-                  { label: "Phone", value: "+1 12545 45548" },
-                  { label: "Email", value: "info@example.com" },
-                  { label: "Listings", value: "05 Active" },
-                  { label: "Bookings", value: "225 Total" },
-                  { label: "Member Since", value: "Jan 2014" },
+                  { label: "Phone", value: properties?.addedBy?.phone },
+                  { label: "Email", value: properties?.addedBy?.email },
                 ].map((item, index) => (
                   <div
                     key={index}
@@ -536,14 +545,14 @@ export default function PropertyDetailPage() {
                 ))}
               </div>
 
-              <div className="flex gap-2">
+              {/* <div className="flex gap-2">
                 <button className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 rounded-xl font-medium hover:shadow-lg transition-all duration-300">
                   WhatsApp
                 </button>
                 <button className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-3 rounded-xl font-medium hover:shadow-lg transition-all duration-300">
                   Chat Now
                 </button>
-              </div>
+              </div> */}
             </div>
 
             {/* Mortgage Calculator */}
@@ -613,7 +622,7 @@ export default function PropertyDetailPage() {
             </div>
 
             {/* Share Property */}
-            <div className="bg-white rounded-2xl shadow-lg p-6">
+            {/* <div className="bg-white rounded-2xl shadow-lg p-6">
               <h3 className="text-xl font-bold text-gray-800 mb-6">
                 Share Property
               </h3>
@@ -637,7 +646,7 @@ export default function PropertyDetailPage() {
                   </button>
                 ))}
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

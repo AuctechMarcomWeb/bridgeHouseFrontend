@@ -25,6 +25,8 @@ import {
   Compass,
   LucideRuler,
   Calendar,
+  IndianRupee,
+  DropletIcon,
 } from "lucide-react";
 import { getRequest } from "../Helpers";
 import { Pagination } from "antd";
@@ -40,7 +42,7 @@ export default function RentalListingApp() {
   const [imageError, setImageError] = useState(false);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
-  const [limit] = useState(10);
+  const [limit] = useState(5);
   const [searchTerm, setSearchTerm] = useState("");
   const [approvalStatus, setApprovalStatus] = useState("");
 
@@ -54,16 +56,12 @@ export default function RentalListingApp() {
     maxPrice: "",
   });
 
-  // Decide which listings to show
-  let displayListings = showAll
-    ? listings.length > limit
-      ? listings.slice((page - 1) * limit, page * limit)
-      : listings
-    : listings.slice(0, 4);
+  const displayListings = listings.slice((page - 1) * limit, page * limit);
 
   useEffect(() => {
     fetchProperties();
-  }, [page]); // only re-fetch when page changes, not filters
+  }, [page, filters, approvalStatus]);
+  console.log("Pagination State:", { page, total });
 
   const fetchProperties = () => {
     setLoading(true);
@@ -83,7 +81,7 @@ export default function RentalListingApp() {
     getRequest(`properties?${query}`)
       .then((res) => {
         setListing(res?.data?.data?.properties || []);
-        setTotal(res?.totalProperties || res?.total || 0);
+        setTotal(res?.totalPages || 0);
         console.log("Filtered Property List", res?.data?.data || []);
       })
       .catch((err) => console.log("Api Error", err))
@@ -103,17 +101,6 @@ export default function RentalListingApp() {
     }));
   };
 
-  const toggleFavorite = (id) => {
-    setFavorites((prev) => {
-      const newFavorites = new Set(prev);
-      if (newFavorites.has(id)) {
-        newFavorites.delete(id);
-      } else {
-        newFavorites.add(id);
-      }
-      return newFavorites;
-    });
-  };
   const handleApplyFilters = () => {
     console.log("Selected Filters:", filters);
     setPage(1); // reset pagination to page 1 when applying filters
@@ -331,50 +318,48 @@ export default function RentalListingApp() {
           {/* Enhanced Main Content */}
           <div className="flex-1 min-w-0">
             {/* Enhanced Listing Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 px-4">
               {displayListings.map((listing) => (
                 <div
-                  onClick={() => handleClick(listing?._id)}
                   key={listing?._id}
-                  className="group bg-white rounded-2xl shadow-lg  overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 cursor-pointer"
+                  onClick={() => handleClick(listing?._id)}
+                  className="group bg-white rounded-2xl shadow-lg overflow-hidden
+                 hover:shadow-2xl transition-all duration-300
+                 transform hover:-translate-y-1 border border-gray-100
+                 cursor-pointer h-full flex flex-col"
                 >
-                  <div className="relative overflow-hidden">
-                    <div className="relative h-56 bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center overflow-hidden group rounded-xl">
-                      {Array.isArray(listing?.gallery) &&
-                      listing.gallery.length > 0 ? (
-                        <>
-                          <img
-                            src={listing?.gallery[0]}
-                            alt={`${listing?.title || "Listing"} image`}
-                            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                            onError={(e) => {
-                              // Fallback if image fails to load
-                              e.target.style.display = "none";
-                              e.target.nextElementSibling.style.display =
-                                "flex";
-                            }}
-                          />
-                          {/* Hidden fallback that shows if image fails to load */}
-                          <div className="hidden absolute inset-0 items-center justify-center">
-                            <Home size={50} className="text-blue-400" />
-                          </div>
-                          <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
-                        </>
-                      ) : (
-                        <>
-                          {/* Default fallback when no gallery images */}
-                          <Home
-                            size={50}
-                            className="text-blue-400 transition-transform duration-300 group-hover:scale-110"
-                          />
-                          <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
-                        </>
-                      )}
-                    </div>
+                  <div className="relative aspect-[4/3] overflow-hidden">
+                    {Array.isArray(listing?.gallery) &&
+                    listing.gallery.length > 0 ? (
+                      <>
+                        <img
+                          src={listing?.gallery[0]}
+                          alt={`${listing?.title || "Listing"} image`}
+                          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                          onError={(e) => {
+                            e.target.style.display = "none";
+                            e.target.nextElementSibling.style.display = "flex";
+                          }}
+                        />
+                        {/* Hidden fallback when image fails */}
+                        <div className="hidden absolute inset-0 items-center justify-center">
+                          <Home size={50} className="text-blue-400" />
+                        </div>
+                        <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+                      </>
+                    ) : (
+                      <>
+                        {/* Default fallback when no gallery */}
+                        <Home
+                          size={50}
+                          className="text-blue-400 transition-transform duration-300 group-hover:scale-110"
+                        />
+                        <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+                      </>
+                    )}
 
                     {listing?.status && (
                       <div className="absolute top-4 left-4 space-y-2">
-                        {/* Status Badge */}
                         <div
                           className={`px-3 py-1 rounded-full text-xs backdrop-blur-sm ${
                             listing?.status === "Featured"
@@ -387,7 +372,6 @@ export default function RentalListingApp() {
                       </div>
                     )}
 
-                    {/* Verified Badge */}
                     {listing?.isVerified && (
                       <div className="absolute top-4 right-4 w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
                         <div className="w-6 h-6 bg-white/80 rounded">
@@ -402,164 +386,121 @@ export default function RentalListingApp() {
                     )}
 
                     <div className="absolute bottom-4 left-4">
-                      <div className="bg-black/70 backdrop-blur-sm text-white px-4 py-2 rounded-xl font-bold text-base shadow-lg">
+                      <div className="bg-black/70 backdrop-blur-sm text-white px-4 py-2 rounded-xl font-bold text-base shadow-lg flex items-center gap-1">
+                        <IndianRupee size={18} className="inline-block" />
                         {listing?.actualPrice}
-                        <span className="text-sm font-normal opacity-80"></span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="p-6 space-y-4">
-                    {/* {renderStars(listing.rating, listing.reviews)} */}
-
-                    <div>
-                      <h3 className="font-bold text-base text-gray-800 mb-2 group-hover:text-blue-600 transition-colors">
+                  <div className="p-6 space-y-4 flex flex-col flex-1">
+                    {/* Header */}
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="font-bold text-base text-gray-800 group-hover:text-blue-600 transition-colors">
                         {listing?.name}
                       </h3>
-
-                      <div className="flex items-start text-gray-600 text-sm">
-                        <MapPin className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0 text-gray-400" />
-                        <span>{listing?.address}</span>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      {/* Facilities + Services */}
-                      <div className="flex flex-wrap items-center bg-gray-50 rounded-xl p-4 gap-x-4 gap-y-1">
-                        {(() => {
-                          const facilities = listing.facilities || [];
-                          const services = listing.services || [];
-                          const firstFacility = facilities[0];
-                          const firstService = services[0];
-                          const iconMap = {
-                            // Facilities
-                            Parking: Car,
-                            Lift: Building2,
-                            "Power Backup": Zap,
-
-                            // Services
-                            "Water Supply": Droplet,
-                            Maintenance: Wrench,
-                          };
-                          return (
-                            <>
-                              {/* ---- Facility ---- */}
-                              {firstFacility && (
-                                <div className="flex items-center gap-2 text-sm text-gray-600">
-                                  {(iconMap[firstFacility] || Star) &&
-                                    React.createElement(
-                                      iconMap[firstFacility] || Star,
-                                      {
-                                        className: "w-4 h-4 text-blue-500",
-                                      }
-                                    )}
-                                  <span className="font-medium">
-                                    {firstFacility}
-                                  </span>
-                                  {facilities.length > 1 && (
-                                    <span className="text-gray-600 font-medium">
-                                      ...
-                                    </span>
-                                  )}
-                                </div>
-                              )}
-
-                              {/* ---- Service ---- */}
-                              {firstService && (
-                                <div className="flex items-center gap-2 text-sm text-gray-600">
-                                  {(iconMap[firstService] || Star) &&
-                                    React.createElement(
-                                      iconMap[firstService] || Star,
-                                      {
-                                        className: "w-4 h-4 text-blue-500",
-                                      }
-                                    )}
-                                  <span className="font-medium">
-                                    {firstService}
-                                  </span>
-                                  {services.length > 1 && (
-                                    <span className="text-gray-600 font-medium">
-                                      ...
-                                    </span>
-                                  )}
-                                </div>
-                              )}
-                            </>
-                          );
-                        })()}
-                      </div>
-
-                      {/* Nearby */}
-                      <div className="flex flex-wrap items-center bg-gray-50 rounded-xl p-4 gap-x-4 gap-y-1">
-                        {(() => {
-                          const nearbyPlaces = listing.nearby || [];
-                          const firstTwo = nearbyPlaces.slice(0, 1);
-
-                          return (
-                            <>
-                              {firstTwo.map((place, index) => (
-                                <div
-                                  key={index}
-                                  className="flex items-center gap-2 text-sm text-gray-600"
-                                >
-                                  <MapPin className="w-4 h-4 text-red-500" />
-                                  <span className="font-medium capitalize">
-                                    {place.name}
-                                  </span>
-                                  - <span>{place.distance}Km</span>
-                                </div>
-                              ))}
-
-                              {nearbyPlaces.length > 1 && (
-                                <span className="text-sm text-gray-600 font-medium">
-                                  ...
-                                </span>
-                              )}
-                            </>
-                          );
-                        })()}
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                      <span className="text-xs text-gray-500">
-                        Listed: {listing.listedDate}
-                      </span>
                       <span className="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-medium">
                         {listing?.propertyType}
                       </span>
                     </div>
+
+                    {/* Address */}
+                    <div className="flex items-start text-gray-600 text-sm">
+                      <MapPin className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0 text-gray-400" />
+                      <span>{listing?.address}</span>
+                    </div>
+
+                    {/* Facilities & Services */}
+                    <div className="space-y-1">
+                      <div className="flex flex-wrap items-center bg-gray-50 rounded-xl p-4 gap-x-4 gap-y-1">
+                        {(() => {
+                          const facilities = listing?.facilities || [];
+                          const services = listing?.services || [];
+                          const firstFacility = facilities[0];
+                          const firstService = services[0];
+
+                          return (
+                            <>
+                              {firstFacility && (
+                                <div className="flex items-center gap-2 text-sm text-gray-600">
+                                  <Building2 className="w-4 h-4 text-blue-500" />
+                                  <span className="font-medium">
+                                    Facility: {firstFacility}
+                                  </span>
+                                  {facilities.length > 1 && (
+                                    <span className="text-gray-600 font-medium">
+                                      …
+                                    </span>
+                                  )}
+                                </div>
+                              )}
+
+                              {firstService && (
+                                <div className="flex items-center gap-2 text-sm text-gray-600">
+                                  <DropletIcon className="w-4 h-4 text-blue-500" />
+                                  <span className="font-medium">
+                                    Service: {firstService}
+                                  </span>
+                                  {services.length > 1 && (
+                                    <span className="text-gray-600 font-medium">
+                                      …
+                                    </span>
+                                  )}
+                                </div>
+                              )}
+                            </>
+                          );
+                        })()}
+                      </div>
+
+                      {/* Nearby Places */}
+                      <div className="flex flex-wrap items-center bg-gray-50 rounded-xl p-4 gap-x-4 gap-y-1">
+                        {(listing?.nearby || [])
+                          .slice(0, 1)
+                          .map((place, index) => (
+                            <div
+                              key={index}
+                              className="flex items-center gap-1 text-sm text-gray-600"
+                            >
+                              <MapPin className="w-4 h-4 text-red-500" />
+                              <span className="font-medium capitalize">
+                                {place.name} - {place.distance} Km
+                              </span>
+                            </div>
+                          ))}
+
+                        {listing?.nearby?.length > 1 && (
+                          <span className="text-sm text-gray-600 font-medium">
+                            …
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Action Button (stick to bottom) */}
+                    <button
+                      onClick={() => handleClick(listing?._id)}
+                      className="w-full bg-teal-500 text-white py-2 sm:py-3 rounded-lg sm:rounded-xl
+                       text-sm sm:text-base font-semibold transition-all duration-300
+                       hover:bg-gradient-to-r hover:from-blue-700 hover:to-purple-700
+                       hover:shadow-lg transform hover:-translate-y-1"
+                    >
+                      View Details
+                    </button>
                   </div>
                 </div>
               ))}
             </div>
 
-            {/* Enhanced View All Button */}
-            {!showAll && listings.length > 4 && (
-              <div className="text-center mt-8 md:mt-12">
-                <button
-                  onClick={() => setShowAll(true)}
-                  className="bg-teal-500 text-white px-4 py-2 md:px-10 md:py-4 rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                >
-                  View All
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Pagination */}
-          {showAll && listings.length > limit && (
-            <div className="flex justify-center mt-8">
+            <div className="flex justify-end mt-6 px-4">
               <Pagination
                 current={page}
                 pageSize={limit}
-                total={listings.length}
+                total={total}
                 onChange={(newPage) => setPage(newPage)}
-                showSizeChanger={false}
-                showQuickJumper
               />
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>

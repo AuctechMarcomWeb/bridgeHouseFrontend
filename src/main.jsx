@@ -4,7 +4,8 @@ import "./index.css";
 import App from "./App.jsx";
 import { Toaster } from "react-hot-toast";
 import { ProfileProvider } from "./context/ProfileContext.jsx";
-import { PropertyProvider } from "./context/propertyContext.jsx";
+import { PropertyProvider } from "./context/PropertyContext.jsx";
+
 
 createRoot(document.getElementById("root")).render(
  

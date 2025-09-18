@@ -81,10 +81,11 @@ const PropertySlider = () => {
             {/* Show banners when loaded */}
             {!loading && banners.length > 0
               ? banners.map((banner, index) => {
-                  const property = banner?.propertyId; // may be null
+                  const property = banner?.propertyId;
                   return (
                     <div
                       key={banner?._id}
+                      onClick={() => property && handleClick(property._id)}
                       className={`absolute inset-0 flex transition-all duration-700 ease-in-out ${
                         index === currentSlide
                           ? "opacity-100 translate-x-0 z-10"

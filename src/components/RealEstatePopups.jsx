@@ -21,11 +21,8 @@ const RealEstatePopups = () => {
       .then((res) => {
         const data = res?.data?.data?.banners || [];
         const formatted = data.map((banner, index) => ({
-          // यहाँ `_id` को id के रूप में स्टोर किया
-          id: banner._id,
           ...banner,
           timestamp: Date.now() + index,
-          show: true,
         }));
         setPopups(formatted);
       })
@@ -33,7 +30,7 @@ const RealEstatePopups = () => {
   }, [bannerType]);
 
   const closePopup = (id) => {
-    setPopups((prev) => prev.filter((popup) => popup.id !== id));
+    setPopups((prev) => prev.filter((p) => p._id !== id));
   };
 
   return (
@@ -45,22 +42,26 @@ const RealEstatePopups = () => {
 
           return (
             <div
-              key={`${popup.id}-${popup.timestamp}`}
-              className={`transition-all duration-500 ease-out ${
-                popup.show
-                  ? "translate-x-0 opacity-100"
-                  : "translate-x-full opacity-0"
-              }`}
+              key={`${popup.id}`}
+              onClick={() => navigate(`/property-detail/${property?._id}`)}
+              className="transition-all duration-300 ease-out translate-x-0 opacity-100"
+              // className={`transition-all duration-500 ease-out ${
+              //   popup.show
+              //     ? "translate-x-0 opacity-100"
+              //     : "translate-x-full opacity-0"
+              // }`}
               style={{
-                animationDelay: `${index * 200}ms`,
                 marginTop: `${index * 10}px`,
               }}
             >
               <div className="relative w-60 bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100">
                 {/* Close Button */}
                 <button
-                  onClick={() => closePopup(popup.id)}
-                  className="absolute top-3 right-3 z-10 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:bg-white transition-all duration-200 hover:scale-110"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    closePopup(popup._id);
+                  }}
+                  className="absolute top-2 right-2 z-20 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:bg-white transition-all duration-200 hover:scale-110 pointer-events-auto"
                 >
                   <X size={16} className="text-gray-600" />
                 </button>
@@ -121,9 +122,9 @@ const RealEstatePopups = () => {
                     >
                       View Details
                     </button>
-                    <button className="w-10 h-8 border border-gray-300 rounded-lg flex items-center justify-center hover:bg-gray-50 transition-colors">
+                    {/* <button className="w-10 h-8 border border-gray-300 rounded-lg flex items-center justify-center hover:bg-gray-50 transition-colors">
                       <Phone size={14} className="text-gray-600" />
-                    </button>
+                    </button> */}
                   </div>
                 </div>
 

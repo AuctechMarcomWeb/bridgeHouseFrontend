@@ -1,14 +1,14 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { X, MapPin, Star, Phone, IndianRupee } from "lucide-react";
+import { X, MapPin, Star, IndianRupee } from "lucide-react";
 import { getRequest } from "../Helpers";
 
 const RealEstateLeftPopups = () => {
   const [popups, setPopups] = useState([]);
+  const [bannerType, setBannerType] = useState("leftside");
   const navigate = useNavigate();
 
-  // Gradient colors cycle
   const COLORS = [
     "from-orange-500 to-red-400",
     "from-blue-600 to-cyan-400",
@@ -17,28 +17,20 @@ const RealEstateLeftPopups = () => {
   ];
 
   useEffect(() => {
-    getRequest(`banner?bannerType=leftside`)
+    getRequest(`banner?bannerType=${bannerType}`)
       .then((res) => {
         const data = res?.data?.data?.banners || [];
         const formatted = data.map((banner, index) => ({
           ...banner,
           timestamp: Date.now() + index,
-          show: true,
         }));
         setPopups(formatted);
       })
       .catch((err) => console.error("Error fetching leftside banners:", err));
-  }, []);
+  }, [bannerType]);
 
-  const closePopup = (timestamp) => {
-    // 1. Mark the popup as hidden
-    setPopups((prev) =>
-      prev.map((p) => (p.timestamp === timestamp ? { ...p, show: false } : p))
-    );
-
-    setTimeout(() => {
-      setPopups((prev) => prev.filter((p) => p.timestamp !== timestamp));
-    }, 100);
+  const closePopup = (id) => {
+    setPopups((prev) => prev.filter((p) => p._id !== id));
   };
 
   return (
@@ -46,26 +38,25 @@ const RealEstateLeftPopups = () => {
       <div className="absolute left-4 top-4 space-y-4 pointer-events-auto cursor-pointer">
         {popups.map((popup, index) => {
           const property = popup?.propertyId;
-          const gradient = COLORS[index % COLORS.length]; // pick color by index
+          const gradient = COLORS[index % COLORS.length];
 
           return (
             <div
-              key={`${popup._id}-${popup.timestamp}`}
-              className={`transition-all duration-500 ease-out ${
-                popup.show
-                  ? "translate-x-0 opacity-100"
-                  : "-translate-x-full opacity-0"
-              }`}
+              key={`${popup._id}`}
+              onClick={() => navigate(`/property-detail/${property?._id}`)}
+              className="transition-all duration-300 ease-out translate-x-0 opacity-100"
               style={{
-                animationDelay: `${index * 200}ms`,
                 marginTop: `${index * 10}px`,
               }}
             >
               <div className="relative w-60 bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100">
                 {/* Close Button */}
                 <button
-                  onClick={() => closePopup(popup.timestamp)}
-                  className="absolute top-3 right-3 z-10 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:bg-white transition-all duration-200 hover:scale-110"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    closePopup(popup._id);
+                  }}
+                  className="absolute top-2 right-2 z-20 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:bg-white transition-all duration-200 hover:scale-110 pointer-events-auto"
                 >
                   <X size={16} className="text-gray-600" />
                 </button>
@@ -75,13 +66,9 @@ const RealEstateLeftPopups = () => {
                   className={`bg-gradient-to-r ${gradient} p-4 text-white relative overflow-hidden`}
                 >
                   <div className="absolute inset-0 bg-black/10"></div>
-                  <div className="relative z-10">
-                    <div className="flex items-center gap-2">
-                      <Star className="w-4 h-4 fill-yellow-300 text-yellow-300" />
-                      <span className="text-sm font-medium">
-                        Premium Listing
-                      </span>
-                    </div>
+                  <div className="relative z-10 flex items-center gap-2">
+                    <Star className="w-4 h-4 fill-yellow-300 text-yellow-300" />
+                    <span className="text-sm font-medium">Premium Listing</span>
                   </div>
                 </div>
 
@@ -121,23 +108,16 @@ const RealEstateLeftPopups = () => {
                     </div>
                   </div>
 
-                  {/* Action Buttons */}
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() =>
-                        navigate(`/property-detail/${property?._id}`)
-                      }
-                      className={`flex-1 bg-gradient-to-r ${gradient} text-white py-2 px-3 rounded-lg text-xs font-semibold hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5`}
-                    >
-                      View Details
-                    </button>
-                    <button className="w-10 h-8 border border-gray-300 rounded-lg flex items-center justify-center hover:bg-gray-50 transition-colors">
-                      <Phone size={14} className="text-gray-600" />
-                    </button>
-                  </div>
+                  <button
+                    onClick={() =>
+                      navigate(`/property-detail/${property?._id}`)
+                    }
+                    className={`w-full bg-gradient-to-r ${gradient} text-white py-2 px-3 rounded-lg text-xs font-semibold hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5`}
+                  >
+                    View Details
+                  </button>
                 </div>
 
-                {/* Bottom accent */}
                 <div className={`h-1 bg-gradient-to-r ${gradient}`}></div>
               </div>
             </div>

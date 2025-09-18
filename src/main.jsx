@@ -7,7 +7,7 @@ import { ProfileProvider } from "./context/ProfileContext.jsx";
 import { PropertyProvider } from "./context/propertyContext.jsx";
 
 createRoot(document.getElementById("root")).render(
-  // <StrictMode>
+ 
   <>
     <ProfileProvider>
       <PropertyProvider>
@@ -15,5 +15,5 @@ createRoot(document.getElementById("root")).render(
       </PropertyProvider>
     </ProfileProvider>
   </>
-  // {/* </StrictMode> */}
+
 );

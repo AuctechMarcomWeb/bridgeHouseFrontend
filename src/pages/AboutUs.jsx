@@ -48,10 +48,12 @@ const AboutUs = () => {
             <p className="md:text-xl text-base text-blue-100 mb-8 max-w-3xl mx-auto leading-relaxed">
               Connecting Dreams to Reality Through Premier Real Estate Excellence
             </p>
-            <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-gray-700 to-blue-800 bg-opacity-20 backdrop-blur-sm rounded-full px-6 py-3 text-white">
+            
+            {/* <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-gray-700 to-blue-800 bg-opacity-20 backdrop-blur-sm rounded-full px-6 py-3 text-white">
               <span className="text-base font-medium">Building Futures Since 2008</span>
               <ArrowRight className="w-5 h-5" />
-            </div>
+            </div> */}
+
           </div>
         </div>
         

@@ -56,7 +56,6 @@ export default function RentalListingApp() {
     maxPrice: "",
   });
 
-  const displayListings = listings.slice((page - 1) * limit, page * limit);
 
   useEffect(() => {
     fetchProperties();
@@ -81,7 +80,7 @@ export default function RentalListingApp() {
     getRequest(`properties?${query}`)
       .then((res) => {
         setListing(res?.data?.data?.properties || []);
-        setTotal(res?.totalPages || 0);
+setTotal(res?.data?.data?.totalProperties || 0);
         console.log("Filtered Property List", res?.data?.data || []);
       })
       .catch((err) => console.log("Api Error", err))
@@ -319,7 +318,7 @@ export default function RentalListingApp() {
           <div className="flex-1 min-w-0">
             {/* Enhanced Listing Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 px-4">
-              {displayListings.map((listing) => (
+              {listings.map((listing) => (
                 <div
                   key={listing?._id}
                   onClick={() => handleClick(listing?._id)}
@@ -492,14 +491,7 @@ export default function RentalListingApp() {
               ))}
             </div>
 
-            <div className="flex justify-end mt-6 px-4">
-              <Pagination
-                current={page}
-                pageSize={limit}
-                total={total}
-                onChange={(newPage) => setPage(newPage)}
-              />
-            </div>
+           <div className="flex justify-end mt-6 px-4"> <Pagination current={page} pageSize={limit} total={total} onChange={(newPage) => setPage(newPage)} /> </div>
           </div>
         </div>
       </div>

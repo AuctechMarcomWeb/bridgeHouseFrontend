@@ -7,6 +7,7 @@ import { ProfileProvider } from "./context/ProfileContext.jsx";
 import { PropertyProvider } from "./context/propertyContext.jsx";
 
 createRoot(document.getElementById("root")).render(
+ 
   <>
     <ProfileProvider>
       <PropertyProvider>

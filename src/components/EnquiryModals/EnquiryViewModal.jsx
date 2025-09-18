@@ -1,18 +1,31 @@
-/* EnquiryForm.jsx */
-import React, { useState } from "react";
-import { Phone } from "lucide-react";
-import { postRequest } from "../Helpers";
-import toast from "react-hot-toast";
+import { Modal } from 'antd';
+import React, { useState, useEffect } from 'react';
+const EnquiryViewModal = ({openModal,modalData,setModal}) => {
+    const handleCancel = ()=>{
+        setModal(false)
+    }
 
-const EnquiryForm = ({ propertyId }) => {
+   
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
     message: "",
-    property: propertyId,
+    property: "",
   });
-  console.log("formData", formData);
+
+  // 🔹 Auto set data when modalData comes
+  useEffect(() => {
+    if (modalData) {
+      setFormData({
+        name: modalData?.name || "",
+        email: modalData?.email || "",
+        phone: modalData?.phone || "",
+        message: modalData?.message || "",
+        property: modalData?.propertyId || "",
+      });
+    }
+  }, [modalData]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -29,7 +42,7 @@ const EnquiryForm = ({ propertyId }) => {
           email: "",
           phone: "",
           message: "",
-          property: propertyId,
+          property: "",
         });
       })
       .catch((err) => {
@@ -37,22 +50,17 @@ const EnquiryForm = ({ propertyId }) => {
         toast.error(err?.response?.data?.message);
       });
   };
+    
 
   return (
     <>
-    <div></div>
-    <div className="bg- rounded-2xl shadow-lg p-6 top-4">
-      <h3 className="text-xl font-bold text-gray-800 mb-6">Enquiry</h3>
-
-      <div className="flex gap-2 mb-6">
-        <button
-          type="button"
-          className="flex-1 bg-gradient-to-r from-teal-500 to-cyan-600 text-white py-3 px-4 rounded-xl font-medium hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2"
-        >
-          <Phone className="w-4 h-4" />
-          Get In Touch With Us
-        </button>
-      </div>
+       <Modal
+        title="ViewDetail Modal"
+        closable={{ 'aria-label': 'Custom Close Button' }}
+        open={openModal}
+        onCancel={handleCancel}
+         footer={null}
+      >
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
@@ -90,18 +98,11 @@ const EnquiryForm = ({ propertyId }) => {
           className="w-full text-sm p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
           required
         />
-        <button
-          type="submit"
-          className="w-full bg-gradient-to-r from-gray-800 to-black text-white py-4 rounded-xl font-bold hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5"
-        >
-          Send Message
-        </button>
       </form>
-    </div>
-</>
-
-
+        
+      </Modal>
+    </>
   );
 };
 
-export default EnquiryForm;
+export default EnquiryViewModal;

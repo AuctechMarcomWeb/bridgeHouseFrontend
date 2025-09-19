@@ -41,6 +41,7 @@ import { useNavigate } from "react-router-dom";
 import { formatDate } from "../Utils";
 import { FaUser, FaBirthdayCake, FaIdBadge } from "react-icons/fa";
 import CreatePasswordModal from "../components/CreatePasswordModal";
+import PropertyDetailsModal from "../components/PropertyDetailsModal";
 
 export default function RealEstateProfile() {
   const { user, isLoggedIn } = useContext(ProfileContext);
@@ -85,8 +86,12 @@ export default function RealEstateProfile() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [updateStatus, setUpdateStatus] = useState(false);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
-
+  const openDetails = (property) => {
+    setSelectedProperty(property);
+    setIsDetailsOpen(true);
+  };
   const iconMap = {
     // Facilities
     Parking: Car,
@@ -155,7 +160,6 @@ export default function RealEstateProfile() {
     }
   };
 
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       <div className="max-w-7xl mx-auto p-6">
@@ -220,51 +224,49 @@ export default function RealEstateProfile() {
                   </div>
                 </div>
 
-                {user?.accountType !== "Buyer" && user?.consumeListing >= user?.PropertyListing && (
-                  <div className="w-full">
+                {user?.accountType !== "Buyer" &&
+                  user?.consumeListing >= user?.PropertyListing && (
+                    <div className="w-full">
+                      {/* Left side message */}
+                      <div className="text-center sm:text-left text-white">
+                        <h4 className=" mt-8 text-lg font-bold flex items-center gap-2">
+                          Limit Reached
+                        </h4>
+                        <p className="text-sm text-white/80 text-left">
+                          You’ve used your property listings. Upgrade now to
+                          unlock more properties!
+                        </p>
 
-                    {/* Left side message */}
-                    <div className="text-center sm:text-left text-white">
-                      <h4 className=" mt-8 text-lg font-bold flex items-center gap-2">
-                        Limit Reached
-                      </h4>
-                      <p className="text-sm text-white/80 text-left">
-                        You’ve used your property listings. Upgrade now to unlock more properties!
-                      </p>
+                        {/* Numbers Section */}
+                        <div className="flex items-center gap-4 mt-4">
+                          {/* Used */}
+                          <div className="px-4 py-2 rounded-xl bg-white/20 backdrop-blur-sm">
+                            <p className="text-xs text-white/80">Used</p>
+                            <p className="text-xl font-bold text-white">
+                              {user?.PropertyListing}
+                            </p>
+                          </div>
 
+                          {/* Total */}
+                          <div className="px-4 py-2 rounded-xl bg-white/20 backdrop-blur-sm">
+                            <p className="text-xs text-white/80">Total</p>
+                            <p className="text-xl font-bold text-white">
+                              {user?.consumeListing}
+                            </p>
+                          </div>
 
-                      {/* Numbers Section */}
-                      <div className="flex items-center gap-4 mt-4">
-                        {/* Used */}
-                        <div className="px-4 py-2 rounded-xl bg-white/20 backdrop-blur-sm">
-                          <p className="text-xs text-white/80">Used</p>
-                          <p className="text-xl font-bold text-white">
-                            {user?.PropertyListing}
-                          </p>
-                        </div>
-
-                        {/* Total */}
-                        <div className="px-4 py-2 rounded-xl bg-white/20 backdrop-blur-sm">
-                          <p className="text-xs text-white/80">Total</p>
-                          <p className="text-xl font-bold text-white">
-                            {user?.consumeListing}
-                          </p>
-                        </div>
-
-                        {/* Remaining */}
-                        <div className="px-4 py-2 rounded-xl bg-white/20 backdrop-blur-sm">
-                          <p className="text-xs text-white/80">Remaining</p>
-                          <p className="text-xl font-bold text-white">
-                            {user?.consumeListing - user?.PropertyListing}
-                          </p>
+                          {/* Remaining */}
+                          <div className="px-4 py-2 rounded-xl bg-white/20 backdrop-blur-sm">
+                            <p className="text-xs text-white/80">Remaining</p>
+                            <p className="text-xl font-bold text-white">
+                              {user?.consumeListing - user?.PropertyListing}
+                            </p>
+                          </div>
                         </div>
                       </div>
+                      {/* Right side button */}
                     </div>
-                    {/* Right side button */}
-                  </div>
-                )}
-
-
+                  )}
               </div>
 
               <div className="flex flex-col gap-4">
@@ -285,16 +287,16 @@ export default function RealEstateProfile() {
                 </button>
 
                 {/* ✅ Upgrade button yaha hoga */}
-                {user?.accountType !== "Buyer" && user?.consumeListing >= user?.PropertyListing && (
-                  <button
-                    onClick={() => setUpgradeModal(true)}
-                    className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:scale-105 transition-all duration-300"
-                  >
-                    Upgrade Plan
-                  </button>
-                )}
+                {user?.accountType !== "Buyer" &&
+                  user?.consumeListing >= user?.PropertyListing && (
+                    <button
+                      onClick={() => setUpgradeModal(true)}
+                      className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:scale-105 transition-all duration-300"
+                    >
+                      Upgrade Plan
+                    </button>
+                  )}
               </div>
-
             </div>
           </div>
         </div>
@@ -319,7 +321,6 @@ export default function RealEstateProfile() {
                 <Plus size={20} />
                 Add Property
               </button>
-
             </div>
 
             {properties.length === 0 ? (
@@ -346,12 +347,16 @@ export default function RealEstateProfile() {
                 {properties.map((property) => (
                   <div
                     key={property?.id}
+                    onClick={() => {
+                      setSelectedProperty(property);
+                      setIsDetailsOpen(true);
+                    }}
                     className="group bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-2xl hover:border-blue-200 transition-all duration-300 transform hover:-translate-y-1"
                   >
                     <div className="relative overflow-hidden">
                       <div className="relative h-56 bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center overflow-hidden group rounded-xl">
                         {Array.isArray(property?.gallery) &&
-                          property?.gallery?.length > 0 ? (
+                        property?.gallery?.length > 0 ? (
                           <>
                             <img
                               src={property?.gallery[0]}
@@ -384,14 +389,15 @@ export default function RealEstateProfile() {
 
                       {property?.approvalStatus && (
                         <div
-                          className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs backdrop-blur-sm shadow-lg text-white ${property.approvalStatus === "Published"
-                            ? "bg-green-500/90"
-                            : property.approvalStatus === "Pending"
+                          className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs backdrop-blur-sm shadow-lg text-white ${
+                            property.approvalStatus === "Published"
+                              ? "bg-green-500/90"
+                              : property.approvalStatus === "Pending"
                               ? "bg-amber-500/90"
                               : property.approvalStatus === "Rejected"
-                                ? "bg-red-500/90"
-                                : "bg-blue-500/90" //
-                            }`}
+                              ? "bg-red-500/90"
+                              : "bg-blue-500/90" //
+                          }`}
                         >
                           {property.approvalStatus}
                         </div>
@@ -404,10 +410,11 @@ export default function RealEstateProfile() {
                           {property?.name}
                         </h3>
                         <span
-                          className={`text-xs font-semibold px-3 py-1 rounded-full ${property?.status === "For Sale"
-                            ? "bg-green-100 text-green-800"
-                            : "bg-blue-100 text-blue-800"
-                            }`}
+                          className={`text-xs font-semibold px-3 py-1 rounded-full ${
+                            property?.status === "For Sale"
+                              ? "bg-green-100 text-green-800"
+                              : "bg-blue-100 text-blue-800"
+                          }`}
                         >
                           {property?.status}
                         </span>
@@ -455,7 +462,8 @@ export default function RealEstateProfile() {
                           <div className="flex items-center gap-2 text-sm text-gray-600">
                             <Calendar className="w-4 h-4 text-blue-500" />
                             <span className="font-medium">
-                              Built {property?.propertyDetails?.builtYear ?? "—"}
+                              Built{" "}
+                              {property?.propertyDetails?.builtYear ?? "—"}
                             </span>
                           </div>
                         </div>
@@ -490,7 +498,7 @@ export default function RealEstateProfile() {
                               <span className="font-medium capitalize">
                                 {place.name}
                               </span>{" "}
-                              - <span>{place.distance}</span>
+                              - <span>{place.distance}Km</span>
                             </div>
                           ))}
                         </div>
@@ -510,7 +518,9 @@ export default function RealEstateProfile() {
 
                       <div className="flex gap-3">
                         <button
-                          onClick={() => {
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            console.log("Edit clicked", property);
                             setSelectedProperty(property); // Edit mode
                             setIsModalOpen(true);
                           }}
@@ -520,14 +530,29 @@ export default function RealEstateProfile() {
                         </button>
 
                         <button
-                          onClick={() => handleDelete(property._id)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(property._id);
+                          }}
                           className="flex-1 py-2.5 text-sm font-medium bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-all duration-200"
                         >
                           Delete
-  
-  
                         </button>
-{/* 
+
+                        {user?.accountType !== "Buyer" &&
+                          isModalOpen &&
+                          user?.consumeListing >= user?.PropertyListing && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setUpgradeModal(true);
+                              }}
+                              className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:scale-105 transition-all duration-300"
+                            >
+                              Upgrade Plan
+                            </button>
+                          )}
+                        {/* 
                         {user?.accountType !== "Buyer" && user?.consumeListing >= user?.PropertyListing && (
                           <button
                             onClick={() => setUpgradeModal(true)}
@@ -536,9 +561,6 @@ export default function RealEstateProfile() {
                             Upgrade Plan
                           </button>
                         )} */}
-
-
-                        
                       </div>
                     </div>
                   </div>
@@ -548,23 +570,23 @@ export default function RealEstateProfile() {
           </div>
         )}
 
-
-        {/* ✅ Add Property Modal (only open if limit not exceeded) */}
-        {user?.accountType !== "Buyer" &&
-          user?.consumeListing < user?.PropertyListing && (
-            <AddPropertyModal
-              isModalOpen={isModalOpen}
-              setIsModalOpen={setIsModalOpen}
-              modalData={selectedProperty}
-              setModalData={setSelectedProperty}
-              setPropertyStatus={setUpdateStatus}
-            />
-          )}
+        {/* ✅ Add Property Modal*/}
+        {user?.accountType !== "Buyer" && isModalOpen && (
+          <AddPropertyModal
+            isModalOpen={isModalOpen}
+            setIsModalOpen={setIsModalOpen}
+            modalData={selectedProperty}
+            setModalData={setSelectedProperty}
+            setPropertyStatus={setUpdateStatus}
+          />
+        )}
 
         {/* ✅ Upgrade Popup */}
 
-        <UpgradeModal open={upgradeModal} onClose={() => setUpgradeModal(false)} />
-
+        <UpgradeModal
+          open={upgradeModal}
+          onClose={() => setUpgradeModal(false)}
+        />
 
         {showEdit && (
           <EditProfileModal
@@ -583,11 +605,12 @@ export default function RealEstateProfile() {
             setUpdate={setUpdate}
           />
         )}
-
-
+        <PropertyDetailsModal
+          open={isDetailsOpen}
+          onClose={() => setIsDetailsOpen(false)}
+          property={selectedProperty}
+        />
       </div>
-
     </div>
-
   );
 }

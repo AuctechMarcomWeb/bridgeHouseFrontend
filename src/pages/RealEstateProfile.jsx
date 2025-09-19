@@ -524,8 +524,10 @@ export default function RealEstateProfile() {
                           className="flex-1 py-2.5 text-sm font-medium bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-all duration-200"
                         >
                           Delete
+  
+  
                         </button>
-
+{/* 
                         {user?.accountType !== "Buyer" && user?.consumeListing >= user?.PropertyListing && (
                           <button
                             onClick={() => setUpgradeModal(true)}
@@ -533,7 +535,10 @@ export default function RealEstateProfile() {
                           >
                             Upgrade Plan
                           </button>
-                        )}
+                        )} */}
+
+
+                        
                       </div>
                     </div>
                   </div>

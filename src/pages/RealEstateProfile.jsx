@@ -552,6 +552,15 @@ export default function RealEstateProfile() {
                               Upgrade Plan
                             </button>
                           )}
+                        {/* 
+                        {user?.accountType !== "Buyer" && user?.consumeListing >= user?.PropertyListing && (
+                          <button
+                            onClick={() => setUpgradeModal(true)}
+                            className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:scale-105 transition-all duration-300"
+                          >
+                            Upgrade Plan
+                          </button>
+                        )} */}
                       </div>
                     </div>
                   </div>

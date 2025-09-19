@@ -15,6 +15,7 @@ import {
   Wrench,
   Star,
   IndianRupee,
+  DropletIcon,
 } from "lucide-react";
 import { getRequest } from "../Helpers";
 import { Navigate, useNavigate } from "react-router-dom";
@@ -298,29 +299,62 @@ const PropertySliderTwo = () => {
           </span>
         </div>
 
-        <div className="flex items-center text-gray-600 mb-3 sm:mb-4">
-          <MapPin size={14} className="mr-1 sm:mr-2 text-red-500" />
-          <span className="text-xs sm:text-sm">{property?.address}</span>
+        <div className="flex items-start text-gray-600 text-sm mb-1">
+          <MapPin className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0 text-gray-400" />
+          <span className="truncate block w-full" title={property?.address}>
+            {property?.address}
+          </span>
         </div>
 
-        <div className="flex justify-between items-center text-gray-700 mb-3 sm:mb-4 text-xs sm:text-sm">
-          <div className="flex flex-wrap items-center bg-gray-50 rounded-xl p-4 gap-x-6 gap-y-2">
-            {[...(property.facilities || []), ...(property.services || [])].map(
-              (item, index) => {
-                const Icon = iconMap[item] || Star;
-                return (
-                  <div
-                    key={index}
-                    className="flex items-center gap-2 text-sm text-gray-600"
-                  >
-                    <Icon className="w-4 h-4 text-blue-500" />
-                    <span className="font-medium">{item}</span>
+        {/* Facilities & Services */}
+        <div className="flex flex-wrap items-center bg-gray-50 rounded-xl p-1 gap-2 mb-1 text-sm text-gray-600">
+          {(() => {
+            const facilities = property?.facilities || [];
+            const services = property?.services || [];
+            const firstFacility = facilities[0];
+            const firstService = services[0];
+
+            return (
+              <>
+                {firstFacility && (
+                  <div className="flex items-center gap-1">
+                    <Building2 className="w-4 h-4 text-blue-500" />
+                    <span className="font-medium">
+                      Facility: {firstFacility}
+                    </span>
+                    {facilities.length > 1 && (
+                      <span className="font-medium">…</span>
+                    )}
                   </div>
-                );
-              }
+                )}
+                {firstService && (
+                  <div className="flex items-center gap-1">
+                    <DropletIcon className="w-4 h-4 text-blue-500" />
+                    <span className="font-medium">Service: {firstService}</span>
+                    {services.length > 1 && (
+                      <span className="font-medium">…</span>
+                    )}
+                  </div>
+                )}
+              </>
+            );
+          })()}
+        </div>
+
+        {/* Nearby Places */}
+        {property?.nearby?.length > 0 && (
+          <div className="flex items-center bg-gray-50 rounded-xl p-1 gap-2 text-sm text-gray-600 mb-1">
+            <MapPin className="w-4 h-4 text-red-500" />
+            <span className="font-medium">Near By:</span>
+            <span className="font-medium capitalize">
+              {property.nearby[0].name} - {property.nearby[0].distance} Km
+            </span>
+            {property.nearby.length > 1 && (
+              <span className="font-medium">…</span>
             )}
           </div>
-        </div>
+        )}
+
         <button
           onClick={() => handleClick(property?._id)}
           className="w-full bg-teal-500 text-white py-2 sm:py-3 rounded-lg sm:rounded-xl text-sm sm:text-base font-semibold transition-all duration-300 hover:bg-gradient-to-r hover:from-blue-700 hover:to-purple-700 hover:shadow-lg transform hover:-translate-y-1"

@@ -1,10 +1,13 @@
-import React, { useState } from "react";
-import { Search, Home, Building } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { Home, Building, Search, Warehouse, Building2 } from "lucide-react";
 import bannerBg from "../assets/bridge-bg.png";
 import SearchBar from "../components/SearchBar";
+import { getRequest } from "../Helpers";
 
 const RealEstateBanner = () => {
-  const [activeTab, setActiveTab] = useState("buy");
+  const [activeTab, setActiveTab] = useState("");
+  const [propertyTypes, setPropertyTypes] = useState([]);
+
   const [formData, setFormData] = useState({
     city: "",
     propertyType: "",
@@ -12,6 +15,12 @@ const RealEstateBanner = () => {
     minPrice: "",
     maxPrice: "",
   });
+  const iconsMap = {
+    residential: Home,
+    plot: Home,
+    commercial: Building2,
+    villa: Building2,
+  };
 
   const handleTabSwitch = (tab) => {
     setActiveTab(tab);
@@ -23,6 +32,18 @@ const RealEstateBanner = () => {
       [field]: value,
     }));
   };
+
+  useEffect(() => {
+    getRequest("category?type=all") // or your API endpoint
+      .then((res) => {
+        let data = res?.data?.data?.categories || [];
+        data = data.slice(0, 4); // limit to 4 items
+        setPropertyTypes(data);
+
+        if (data.length > 0) setActiveTab(data[0].name); // first tab active by default
+      })
+      .catch((err) => console.log("Error fetching categories:", err));
+  }, []);
 
   const formatPrice = (value) => {
     const numericValue = value.replace(/\D/g, "");
@@ -109,52 +130,32 @@ const RealEstateBanner = () => {
 
         {/* Tab Buttons */}
         <div className=" ">
-          <div className=" flex flex-wrap  gap-2 pb-2">
-            <button
-              onClick={() => handleTabSwitch("buy")}
-              className={`flex items-center gap-2 px-4 py-3 font-medium text-sm rounded-lg transition-all duration-300 ${
-                activeTab === "buy"
-                  ? "bg-teal-500 text-white shadow-lg"
-                  : "bg-slate-200 text-slate-700 hover:bg-slate-300"
-              }`}
-            >
-              <Home size={18} />
-              Buy Property
-            </button>
-            <button
-              onClick={() => handleTabSwitch("rent")}
-              className={`flex items-center gap-2 px-4 py-3 font-medium text-sm rounded-lg transition-all duration-300 ${
-                activeTab === "rent"
-                  ? "bg-teal-500 text-white shadow-lg"
-                  : "bg-slate-200 text-slate-700 hover:bg-slate-300"
-              }`}
-            >
-              <Building size={18} />
-              Rent Property
-            </button>
-            <button
-              onClick={() => handleTabSwitch("plot")}
-              className={`flex items-center gap-2 px-4 py-3 font-medium text-sm rounded-lg transition-all duration-300 ${
-                activeTab === "plot"
-                  ? "bg-teal-500 text-white shadow-lg"
-                  : "bg-slate-200 text-slate-700 hover:bg-slate-300"
-              }`}
-            >
-              <Building size={18} />
-              Plot
-            </button>
-            <button
-              onClick={() => handleTabSwitch("commercial")}
-              className={`flex items-center gap-2 px-4 py-3 font-medium text-sm rounded-lg transition-all duration-300 ${
-                activeTab === "commercial"
-                  ? "bg-teal-500 text-white shadow-lg"
-                  : "bg-slate-200 text-slate-700 hover:bg-slate-300"
-              }`}
-            >
-              <Building size={18} />
-              Commercial
-            </button>
+          <div className="flex flex-wrap gap-2 pb-2">
+            {propertyTypes.length > 0 ? (
+              propertyTypes.map((type) => {
+                const iconKey = type.name?.toLowerCase().trim();
+                const Icon = iconsMap[iconKey] || Home;
+
+                return (
+                  <button
+                    key={type._id}
+                    onClick={() => handleTabSwitch(type.name)}
+                    className={`flex items-center gap-2 px-4 py-3 font-medium text-sm rounded-lg transition-all duration-300 ${
+                      activeTab === type.name
+                        ? "bg-teal-500 text-white shadow-lg"
+                        : "bg-slate-200 text-slate-700 hover:bg-slate-300"
+                    }`}
+                  >
+                    <Icon size={18} />
+                    {type.name}
+                  </button>
+                );
+              })
+            ) : (
+              <p className="text-gray-500">No property types found</p>
+            )}
           </div>
+
           <SearchBar />
         </div>
 

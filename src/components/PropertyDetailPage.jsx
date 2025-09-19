@@ -219,15 +219,26 @@ export default function PropertyDetailPage() {
 
       <div className="max-w-7xl mx-auto py-12 p-4">
         <div className="flex items-center gap-3 mb-2">
-          {/* <span className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-3 py-1 rounded-full text-sm  flex items-center gap-1">
-            <TrendingUp className="w-4 h-4" />
-            Trending
-          </span> */}
-          <span className="bg-gradient-to-r from-amber-400 to-orange-400 text-white px-3 py-1 rounded-full text-sm  flex items-center gap-1">
+          {/* Verified Badge */}
+          {properties?.isVerified && (
+            <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+              <div className="w-6 h-6 bg-white/80 rounded flex items-center justify-center">
+                <img
+                  width="24"
+                  height="24"
+                  src="https://img.icons8.com/color/48/verified-account--v1.png"
+                  alt="verified-account"
+                />
+              </div>
+            </div>
+          )}
+          {/* Status Badge */}
+          <span className="bg-gradient-to-r from-amber-400 to-orange-400 text-white px-3 py-1 rounded-full text-sm flex items-center gap-1">
             <Sparkles className="w-4 h-4" />
             {properties?.status}
           </span>
         </div>
+
         <div className="flex flex-col xl:flex-row gap-8">
           {/* Left Column */}
           <div className="flex-1">
@@ -443,7 +454,7 @@ export default function PropertyDetailPage() {
                       <div className="flex items-center gap-3">
                         <div className="w-6 h-6 bg-gradient-to-br from-red-800 to-pink-400 rounded-lg flex items-center justify-center text-white shadow-lg">
                           {/* {const Icon = serviceIcons[service] || Star;} */}
-                          {serviceIcons[service] || "❓"}
+                          <span className="text-xs ">✓</span>
                         </div>
                         <div className="text-sm  text-gray-600">{service}</div>
                       </div>

@@ -88,36 +88,26 @@ const PropertyCard = ({ property, onClick }) => {
         </div>
 
         {/* Badges */}
-        <div className="absolute top-3 left-3 flex gap-2">
-          {property.isNew && (
-            <span className="bg-red-500 text-white px-2 py-1 rounded text-xs font-medium">
-              New
-            </span>
-          )}
-          {property.isFeatured && (
-            <span className="bg-orange-400 text-white px-2 py-1 rounded text-xs font-medium">
-              Featured
-            </span>
-          )}
-        </div>
-
-        {/* Heart icon */}
-        {/* <button className="absolute top-3 right-3 p-2 bg-white rounded-full shadow-md hover:bg-gray-50">
-          <Heart className="w-4 h-4 text-gray-400" />
-        </button> */}
-        {property?.status && (
-          <div className="absolute top-3 right-3 p-2 ">
-            <div
-              className={`px-3 py-1 rounded-full text-xs backdrop-blur-sm ${
-                property?.status === "Featured"
-                  ? "bg-amber-500/90 text-white shadow-lg"
-                  : "bg-blue-500/90 text-white shadow-lg"
-              }`}
-            >
-              {property?.status}
+        <div className="absolute top-3 left-3 right-3 flex justify-between items-center">
+          {/* Verified Badge - Left */}
+          {property?.isVerified && (
+            <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+              <div className="w-6 h-6 bg-white/80 rounded flex items-center justify-center">
+                <img
+                  width="24"
+                  height="24"
+                  src="https://img.icons8.com/color/48/verified-account--v1.png"
+                  alt="verified-account"
+                />
+              </div>
             </div>
-          </div>
-        )}
+          )}
+
+          {/* Status Badge - Right */}
+          <span className="bg-green-400 text-white px-3 py-1 rounded-full text-sm flex items-center gap-1">
+            {property?.status}
+          </span>
+        </div>
 
         {/* Host avatar */}
         <div className="absolute bottom-3 left-3 w-8 h-8 bg-white rounded-full p-0.5">

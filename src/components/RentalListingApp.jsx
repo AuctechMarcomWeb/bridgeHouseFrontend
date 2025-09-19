@@ -1,9 +1,9 @@
 /* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { MdVerifiedUser } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-import { Slider, Switch } from "antd";
+import { Slider, Spin, Switch } from "antd";
 import {
   ChevronDown,
   Search,
@@ -30,10 +30,11 @@ import {
 } from "lucide-react";
 import { getRequest } from "../Helpers";
 import { Pagination } from "antd";
+import PropertyFilters from "./PropertyFilters";
+import { PropertyContext } from "../context/PropertyContext";
 
 export default function RentalListingApp() {
   const navigate = useNavigate();
-
   const [openDropdowns, setOpenDropdowns] = useState({});
   const [favorites, setFavorites] = useState(new Set());
   const [loading, setLoading] = useState(false);
@@ -43,11 +44,10 @@ export default function RentalListingApp() {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [limit] = useState(5);
-  const [searchTerm, setSearchTerm] = useState("");
   const [approvalStatus, setApprovalStatus] = useState("");
-
+  const { search, setSearch } = useContext(PropertyContext);
   const [filters, setFilters] = useState({
-    search: "",
+    search: search,
     minSqft: "",
     maxSqft: "",
     propertyType: "",
@@ -55,32 +55,31 @@ export default function RentalListingApp() {
     minPrice: "",
     maxPrice: "",
   });
-
+  const [appliedFilters, setAppliedFilters] = useState(filters);
 
   useEffect(() => {
     fetchProperties();
-  }, [page, filters, approvalStatus]);
-  console.log("Pagination State:", { page, total });
+  }, [page, approvalStatus, appliedFilters]);
 
   const fetchProperties = () => {
     setLoading(true);
     const query = new URLSearchParams({
-      search: filters.search,
+      search: appliedFilters.search,
       page,
       limit,
       approvalStatus,
-      minSqft: filters.minSqft,
-      maxSqft: filters.maxSqft,
-      propertyType: filters.propertyType,
-      bhk: filters.bhk,
-      minPrice: filters.minPrice,
-      maxPrice: filters.maxPrice,
+      minSqft: appliedFilters.minSqft,
+      maxSqft: appliedFilters.maxSqft,
+      propertyType: appliedFilters.propertyType,
+      bhk: appliedFilters.bhk,
+      minPrice: appliedFilters.minPrice,
+      maxPrice: appliedFilters.maxPrice,
     }).toString();
 
     getRequest(`properties?${query}`)
       .then((res) => {
         setListing(res?.data?.data?.properties || []);
-setTotal(res?.data?.data?.totalProperties || 0);
+        setTotal(res?.data?.data?.totalProperties || 0);
         console.log("Filtered Property List", res?.data?.data || []);
       })
       .catch((err) => console.log("Api Error", err))
@@ -88,8 +87,6 @@ setTotal(res?.data?.data?.totalProperties || 0);
   };
 
   const handleClick = (id) => {
-    console.log("id=====", id);
-
     navigate(`/property-detail/${id}`);
   };
 
@@ -101,13 +98,15 @@ setTotal(res?.data?.data?.totalProperties || 0);
   };
 
   const handleApplyFilters = () => {
-    console.log("Selected Filters:", filters);
-    setPage(1); // reset pagination to page 1 when applying filters
-    fetchProperties();
+    console.log("selected filters", filters);
+    setSearch(filters.search); // ✅ update global search
+    setAppliedFilters(filters);
+    setPage(1);
+    setLoading(true);
   };
 
   const handleResetFilters = () => {
-    setFilters({
+    const empty = {
       search: "",
       minSqft: "",
       maxSqft: "",
@@ -115,13 +114,16 @@ setTotal(res?.data?.data?.totalProperties || 0);
       bhk: "",
       minPrice: "",
       maxPrice: "",
-    });
+    };
+    setFilters(empty);
+    setAppliedFilters(empty); // ✅ reset applied too
     setPage(1);
-    fetchProperties(); // ✅ refetch after reset
+    setSearch("");
   };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      <div className="w-full lg:w-[80%] xl:w-[75%] 2xl:w-[70%] mx-auto px-4 md:px-0 py-4 md:py-8">
+      <div className="w-full   2xl:w-[70%] mx-auto px-4 2xl:px-0 py-4 md:py-8">
         {/* Header */}
         <div className="text-center mb-6 md:mb-12">
           <div className="inline-flex items-center justify-center mb-4">
@@ -139,359 +141,212 @@ setTotal(res?.data?.data?.totalProperties || 0);
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Enhanced Sidebar Filter */}
           <div className=" lg:w-80 flex-shrink-0">
-            <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden sticky top-8">
-              <div className="bg- px-6 py-4">
-                <div className="flex items-center gap-3 text-grey-800">
-                  <SlidersHorizontal className="w-5 h-5" />
-                  <h2 className="text-lg font-semibold"> Filters</h2>
-                </div>
-              </div>
-
-              <div className="p-6 space-y-6 max-h-[calc(100vh-200px)] overflow-y-auto">
-                <button
-                  onClick={handleResetFilters}
-                  className="text-red-500 text-sm font-medium hover:text-red-600 transition-colors"
-                >
-                  Reset All Filters
-                </button>
-                {/* Enhanced Search */}
-                <div className="relative">
-                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <input
-                    type="text"
-                    placeholder="Search properties..."
-                    value={filters.search}
-                    onChange={(e) =>
-                      setFilters({ ...filters, search: e.target.value })
-                    }
-                    className="w-full pl-11 pr-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 hover:bg-white transition-all"
-                  />
-                </div>
-                {/* Sqft Range */}
-                {/* Sqft Range */}
-                <div className="space-y-3">
-                  <label className="block text-sm font-semibold text-gray-700">
-                    Square Feet Range
-                  </label>
-                  <Slider
-                    range
-                    min={100}
-                    max={5000}
-                    step={50}
-                    value={[filters.minSqft || 100, filters.maxSqft || 5000]}
-                    onChange={(value) =>
-                      setFilters({
-                        ...filters,
-                        minSqft: value[0],
-                        maxSqft: value[1],
-                      })
-                    }
-                  />
-                  <div className="flex justify-between text-xs text-gray-500">
-                    <span>{filters.minSqft || 100} sqft</span>
-                    <span>{filters.maxSqft || 5000} sqft</span>
-                  </div>
-                </div>
-
-                {/* Property Types */}
-                <div className="space-y-3">
-                  <button
-                    className="flex items-center justify-between w-full text-left group"
-                    onClick={() => toggleDropdown("propertyType")}
-                  >
-                    <span className="text-sm font-semibold text-gray-700 group-hover:text-blue-600 transition-colors">
-                      Property Types
-                    </span>
-                    <ChevronDown
-                      className={`w-4 h-4 text-gray-400 transition-transform ${
-                        openDropdowns.propertyType ? "rotate-180" : ""
-                      }`}
-                    />
-                  </button>
-                  {openDropdowns.propertyType && (
-                    <div className="space-y-3 pl-4 border-l-2 border-blue-100">
-                      {["Apartment", "Villa", "Residential", "Plot"].map(
-                        (type) => (
-                          <label
-                            key={type}
-                            className="flex items-center gap-2 cursor-pointer"
-                          >
-                            <input
-                              type="radio"
-                              name="propertyType" // single selection group
-                              value={type}
-                              checked={filters.propertyType === type}
-                              onChange={(e) =>
-                                setFilters({
-                                  ...filters,
-                                  propertyType: e.target.value,
-                                })
-                              }
-                              className="w-4 h-4 text-blue-600"
-                            />
-                            <span className="text-sm">{type}</span>
-                          </label>
-                        )
-                      )}
-                    </div>
-                  )}
-                </div>
-                {/* BHK Types */}
-                <div className="space-y-3">
-                  <button
-                    className="flex items-center justify-between w-full text-left group"
-                    onClick={() => toggleDropdown("bhk")}
-                  >
-                    <span className="text-sm font-semibold text-gray-700 group-hover:text-blue-600 transition-colors">
-                      BHK Types
-                    </span>
-                    <ChevronDown
-                      className={`w-4 h-4 text-gray-400 transition-transform ${
-                        openDropdowns.bhk ? "rotate-180" : ""
-                      }`}
-                    />
-                  </button>
-                  {openDropdowns.bhk && (
-                    <div className="space-y-3 pl-4 border-l-2 border-blue-100">
-                      {["1 BHK", "2 BHK", "3 BHK", "4 BHK"].map((bhkOption) => (
-                        <label
-                          key={bhkOption}
-                          className="flex items-center gap-2 cursor-pointer"
-                        >
-                          <input
-                            type="radio"
-                            name="bhk" // all radios share the same name
-                            value={bhkOption}
-                            checked={filters.bhk === bhkOption}
-                            onChange={(e) =>
-                              setFilters({ ...filters, bhk: e.target.value })
-                            }
-                            className="w-4 h-4 text-blue-600"
-                          />
-                          <span className="text-sm">{bhkOption}</span>
-                        </label>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* Price Range */}
-                <div className="space-y-3">
-                  <label className="block text-sm font-semibold text-gray-700">
-                    Price Range (₹)
-                  </label>
-                  <Slider
-                    range
-                    min={30000}
-                    max={50000000000}
-                    step={5000}
-                    value={[
-                      filters.minPrice || 30000,
-                      filters.maxPrice || 50000000000,
-                    ]}
-                    onChange={(value) =>
-                      setFilters({
-                        ...filters,
-                        minPrice: value[0],
-                        maxPrice: value[1],
-                      })
-                    }
-                  />
-                  <div className="flex justify-between text-xs text-gray-500">
-                    <span>₹{filters.minPrice || 30000}</span>
-                    <span>₹{filters.maxPrice || 50000000000}</span>
-                  </div>
-                </div>
-
-                {/* Apply Filter Button */}
-                <button
-                  onClick={handleApplyFilters}
-                  className="w-full bg-teal-500 text-white py-4 rounded-xl font-semibold hover:bg-teal-600 transition-all"
-                >
-                  Apply Filters
-                </button>
-              </div>
-            </div>
+            <PropertyFilters
+              filters={filters}
+              setFilters={setFilters}
+              openDropdowns={openDropdowns}
+              toggleDropdown={toggleDropdown}
+              handleApplyFilters={handleApplyFilters}
+              handleResetFilters={handleResetFilters}
+            />
           </div>
 
           {/* Enhanced Main Content */}
           <div className="flex-1 min-w-0">
             {/* Enhanced Listing Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 px-4">
-              {listings.map((listing) => (
-                <div
-                  key={listing?._id}
-                  onClick={() => handleClick(listing?._id)}
-                  className="group bg-white rounded-2xl shadow-lg overflow-hidden
-                 hover:shadow-2xl transition-all duration-300
-                 transform hover:-translate-y-1 border border-gray-100
-                 cursor-pointer h-full flex flex-col"
-                >
-                  <div className="relative aspect-[4/3] overflow-hidden">
-                    {Array.isArray(listing?.gallery) &&
-                    listing.gallery.length > 0 ? (
-                      <>
-                        <img
-                          src={listing?.gallery[0]}
-                          alt={`${listing?.title || "Listing"} image`}
-                          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                          onError={(e) => {
-                            e.target.style.display = "none";
-                            e.target.nextElementSibling.style.display = "flex";
-                          }}
-                        />
-                        {/* Hidden fallback when image fails */}
-                        <div className="hidden absolute inset-0 items-center justify-center">
-                          <Home size={50} className="text-blue-400" />
-                        </div>
-                        <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
-                      </>
-                    ) : (
-                      <>
-                        {/* Default fallback when no gallery */}
-                        <Home
-                          size={50}
-                          className="text-blue-400 transition-transform duration-300 group-hover:scale-110"
-                        />
-                        <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
-                      </>
-                    )}
-
-                    {listing?.status && (
-                      <div className="absolute top-4 left-4 space-y-2">
-                        <div
-                          className={`px-3 py-1 rounded-full text-xs backdrop-blur-sm ${
-                            listing?.status === "Featured"
-                              ? "bg-amber-500/90 text-white shadow-lg"
-                              : "bg-blue-500/90 text-white shadow-lg"
-                          }`}
-                        >
-                          {listing?.status}
-                        </div>
-                      </div>
-                    )}
-
-                    {listing?.isVerified && (
-                      <div className="absolute top-4 right-4 w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
-                        <div className="w-6 h-6 bg-white/80 rounded">
+            {loading ? (
+              <div className="flex justify-center items-center min-h-[300px]">
+                <Spin size="large" tip="Loading properties..." fullscreen />
+              </div>
+            ) : listings.length === 0 ? (
+              <div className="flex justify-center items-center min-h-[300px] text-gray-600 text-lg">
+                No properties found for the selected filters.
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
+                {listings.map((listing) => (
+                  <div
+                    key={listing?._id}
+                    onClick={() => handleClick(listing?._id)}
+                    className="group bg-white rounded-xl shadow-md overflow-hidden
+             hover:shadow-xl transition-all duration-300
+             transform hover:-translate-y-1 border border-gray-100
+             cursor-pointer h-full flex flex-col max-w-sm"
+                  >
+                    <div className="relative aspect-[4/3] overflow-hidden group">
+                      {Array.isArray(listing?.gallery) &&
+                      listing.gallery.length > 0 ? (
+                        <>
                           <img
-                            width="48"
-                            height="48"
-                            src="https://img.icons8.com/color/48/verified-account--v1.png"
-                            alt="verified-account"
+                            src={listing?.gallery[0]}
+                            alt={`${listing?.title || "Listing"} image`}
+                            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            onError={(e) => {
+                              // hide the broken image
+                              e.target.style.display = "none";
+                              // show fallback
+                              e.target.parentElement.querySelector(
+                                ".fallback"
+                              ).style.display = "flex";
+                            }}
                           />
+                          {/* Hidden fallback when image fails */}
+                          <div className="fallback hidden absolute inset-0 items-center justify-center bg-gray-100">
+                            <Home size={50} className="text-blue-400" />
+                          </div>
+
+                          {/* overlay */}
+                          <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+                        </>
+                      ) : (
+                        <>
+                          {/* Default fallback when no gallery */}
+                          <div className="flex absolute inset-0 items-center justify-center bg-gray-100">
+                            <Home
+                              size={50}
+                              className="text-blue-400 transition-transform duration-300 group-hover:scale-110"
+                            />
+                          </div>
+
+                          <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+                        </>
+                      )}
+
+                      {listing?.status && (
+                        <div className="absolute top-4 left-4 space-y-2">
+                          <div
+                            className={`px-3 py-1 rounded-full text-xs backdrop-blur-sm ${
+                              listing?.status === "Featured"
+                                ? "bg-amber-500/90 text-white shadow-lg"
+                                : "bg-blue-500/90 text-white shadow-lg"
+                            }`}
+                          >
+                            {listing?.status}
+                          </div>
+                        </div>
+                      )}
+
+                      {listing?.isVerified && (
+                        <div className="absolute top-4 right-4 w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
+                          <div className="w-6 h-6 bg-white/80 rounded">
+                            <img
+                              width="48"
+                              height="48"
+                              src="https://img.icons8.com/color/48/verified-account--v1.png"
+                              alt="verified-account"
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="absolute bottom-4 left-4">
+                        <div className="bg-black/70 backdrop-blur-sm text-white px-4 py-2 rounded-xl font-bold text-base shadow-lg flex items-center gap-1">
+                          <IndianRupee size={18} className="inline-block" />
+                          {listing?.actualPrice}
                         </div>
                       </div>
-                    )}
-
-                    <div className="absolute bottom-4 left-4">
-                      <div className="bg-black/70 backdrop-blur-sm text-white px-4 py-2 rounded-xl font-bold text-base shadow-lg flex items-center gap-1">
-                        <IndianRupee size={18} className="inline-block" />
-                        {listing?.actualPrice}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="p-6 space-y-4 flex flex-col flex-1">
-                    {/* Header */}
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="font-bold text-base text-gray-800 group-hover:text-blue-600 transition-colors">
-                        {listing?.name}
-                      </h3>
-                      <span className="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-medium">
-                        {listing?.propertyType}
-                      </span>
                     </div>
 
-                    {/* Address */}
-                    <div className="flex items-start text-gray-600 text-sm">
-                      <MapPin className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0 text-gray-400" />
-                      <span>{listing?.address}</span>
-                    </div>
-
-                    {/* Facilities & Services */}
-                    <div className="space-y-1">
-                      <div className="flex flex-wrap items-center bg-gray-50 rounded-xl p-4 gap-x-4 gap-y-1">
-                        {(() => {
-                          const facilities = listing?.facilities || [];
-                          const services = listing?.services || [];
-                          const firstFacility = facilities[0];
-                          const firstService = services[0];
-
-                          return (
-                            <>
-                              {firstFacility && (
-                                <div className="flex items-center gap-2 text-sm text-gray-600">
-                                  <Building2 className="w-4 h-4 text-blue-500" />
-                                  <span className="font-medium">
-                                    Facility: {firstFacility}
-                                  </span>
-                                  {facilities.length > 1 && (
-                                    <span className="text-gray-600 font-medium">
-                                      …
-                                    </span>
-                                  )}
-                                </div>
-                              )}
-
-                              {firstService && (
-                                <div className="flex items-center gap-2 text-sm text-gray-600">
-                                  <DropletIcon className="w-4 h-4 text-blue-500" />
-                                  <span className="font-medium">
-                                    Service: {firstService}
-                                  </span>
-                                  {services.length > 1 && (
-                                    <span className="text-gray-600 font-medium">
-                                      …
-                                    </span>
-                                  )}
-                                </div>
-                              )}
-                            </>
-                          );
-                        })()}
+                    <div className="p-6 space-y-4 flex flex-col flex-1">
+                      {/* Header */}
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="font-bold text-base text-gray-800 group-hover:text-blue-600 transition-colors">
+                          {listing?.name}
+                        </h3>
+                        <span className="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-medium">
+                          {listing?.propertyType}
+                        </span>
                       </div>
 
-                      {/* Nearby Places */}
-                      <div className="flex flex-wrap items-center bg-gray-50 rounded-xl p-4 gap-x-4 gap-y-1">
-                        {(listing?.nearby || [])
-                          .slice(0, 1)
-                          .map((place, index) => (
-                            <div
-                              key={index}
-                              className="flex items-center gap-1 text-sm text-gray-600"
-                            >
-                              <MapPin className="w-4 h-4 text-red-500" />
-                              <span className="font-medium capitalize">
-                                {place.name} - {place.distance} Km
-                              </span>
-                            </div>
-                          ))}
-
-                        {listing?.nearby?.length > 1 && (
-                          <span className="text-sm text-gray-600 font-medium">
-                            …
+                      <div className="2xl:min-h-[136px] xl:min-h-[150px] lg:min-h-[150px] sm:min-h-150px]">
+                        {/* Address */}
+                        <div className="flex items-start text-gray-600 text-sm mb-1">
+                          <MapPin className="w-4 h-4 mr-2 mt-0.5 flex-shrink-0 text-gray-400" />
+                          <span
+                            className="truncate block w-full"
+                            title={listing?.address}
+                          >
+                            {listing?.address}
                           </span>
+                        </div>
+
+                        {/* Facilities & Services */}
+                        <div className="flex flex-wrap items-center bg-gray-50 rounded-xl p-1 gap-2 mb-1 text-sm text-gray-600">
+                          {(() => {
+                            const facilities = listing?.facilities || [];
+                            const services = listing?.services || [];
+                            const firstFacility = facilities[0];
+                            const firstService = services[0];
+
+                            return (
+                              <>
+                                {firstFacility && (
+                                  <div className="flex items-center gap-1">
+                                    <Building2 className="w-4 h-4 text-blue-500" />
+                                    <span className="font-medium">
+                                      Facility: {firstFacility}
+                                    </span>
+                                    {facilities.length > 1 && (
+                                      <span className="font-medium">…</span>
+                                    )}
+                                  </div>
+                                )}
+                                {firstService && (
+                                  <div className="flex items-center gap-1">
+                                    <DropletIcon className="w-4 h-4 text-blue-500" />
+                                    <span className="font-medium">
+                                      Service: {firstService}
+                                    </span>
+                                    {services.length > 1 && (
+                                      <span className="font-medium">…</span>
+                                    )}
+                                  </div>
+                                )}
+                              </>
+                            );
+                          })()}
+                        </div>
+
+                        {/* Nearby Places */}
+                        {listing?.nearby?.length > 0 && (
+                          <div className="flex items-center bg-gray-50 rounded-xl p-1 gap-2 text-sm text-gray-600 mb-1">
+                            <MapPin className="w-4 h-4 text-red-500" />
+                            <span className="font-medium">Near By:</span>
+                            <span className="font-medium capitalize">
+                              {listing.nearby[0].name} -{" "}
+                              {listing.nearby[0].distance} Km
+                            </span>
+                            {listing.nearby.length > 1 && (
+                              <span className="font-medium">…</span>
+                            )}
+                          </div>
                         )}
                       </div>
+
+                      {/* Action Button */}
+                      <button
+                        onClick={() => handleClick(listing?._id)}
+                        className="w-full max-w-[250px] bg-teal-500 text-white py-2 rounded-lg text-sm font-semibold
+               transition-all duration-300 hover:bg-gradient-to-r hover:from-blue-700 hover:to-purple-700
+               hover:shadow-lg transform hover:-translate-y-1"
+                      >
+                        View Details
+                      </button>
                     </div>
-
-                    {/* Action Button (stick to bottom) */}
-                    <button
-                      onClick={() => handleClick(listing?._id)}
-                      className="w-full bg-teal-500 text-white py-2 sm:py-3 rounded-lg sm:rounded-xl
-                       text-sm sm:text-base font-semibold transition-all duration-300
-                       hover:bg-gradient-to-r hover:from-blue-700 hover:to-purple-700
-                       hover:shadow-lg transform hover:-translate-y-1"
-                    >
-                      View Details
-                    </button>
                   </div>
-                </div>
-              ))}
-            </div>
-
-           <div className="flex justify-end mt-6 px-4"> <Pagination current={page} pageSize={limit} total={total} onChange={(newPage) => setPage(newPage)} /> </div>
+                ))}
+              </div>
+            )}
+            {!loading && listings.length > 0 && (
+              <div className="flex justify-end mt-6 px-4">
+                <Pagination
+                  current={page}
+                  pageSize={limit}
+                  total={total}
+                  onChange={(newPage) => setPage(newPage)}
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>

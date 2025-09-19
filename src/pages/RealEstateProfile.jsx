@@ -50,7 +50,7 @@ export default function RealEstateProfile() {
   const [showEdit, setShowEdit] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [update, setUpdate] = useState(false);
-   const [upgradeModal, setUpgradeModal] = useState(false); 
+  const [upgradeModal, setUpgradeModal] = useState(false);
 
   // Redirect if not logged in
   useEffect(() => {
@@ -79,7 +79,7 @@ export default function RealEstateProfile() {
     setShowEdit(false);
   };
 
-        console.log("Account Type ===>", user?.accountType);
+  console.log("Account Type ===>", user?.accountType);
 
   const [properties, setProperties] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -219,6 +219,52 @@ export default function RealEstateProfile() {
                     </span>
                   </div>
                 </div>
+
+                {user?.accountType !== "Buyer" && user?.consumeListing >= user?.PropertyListing && (
+                  <div className="w-full">
+
+                    {/* Left side message */}
+                    <div className="text-center sm:text-left text-white">
+                      <h4 className=" mt-8 text-lg font-bold flex items-center gap-2">
+                        Limit Reached
+                      </h4>
+                      <p className="text-sm text-white/80 text-left">
+                        You’ve used your property listings. Upgrade now to unlock more properties!
+                      </p>
+
+
+                      {/* Numbers Section */}
+                      <div className="flex items-center gap-4 mt-4">
+                        {/* Used */}
+                        <div className="px-4 py-2 rounded-xl bg-white/20 backdrop-blur-sm">
+                          <p className="text-xs text-white/80">Used</p>
+                          <p className="text-xl font-bold text-white">
+                            {user?.PropertyListing}
+                          </p>
+                        </div>
+
+                        {/* Total */}
+                        <div className="px-4 py-2 rounded-xl bg-white/20 backdrop-blur-sm">
+                          <p className="text-xs text-white/80">Total</p>
+                          <p className="text-xl font-bold text-white">
+                            {user?.consumeListing}
+                          </p>
+                        </div>
+
+                        {/* Remaining */}
+                        <div className="px-4 py-2 rounded-xl bg-white/20 backdrop-blur-sm">
+                          <p className="text-xs text-white/80">Remaining</p>
+                          <p className="text-xl font-bold text-white">
+                            {user?.consumeListing - user?.PropertyListing}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    {/* Right side button */}
+                  </div>
+                )}
+
+
               </div>
 
               <div className="flex flex-col gap-4">
@@ -237,248 +283,266 @@ export default function RealEstateProfile() {
                 >
                   Edit Profile
                 </button>
+
+                {/* ✅ Upgrade button yaha hoga */}
+                {user?.accountType !== "Buyer" && user?.consumeListing >= user?.PropertyListing && (
+                  <button
+                    onClick={() => setUpgradeModal(true)}
+                    className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:scale-105 transition-all duration-300"
+                  >
+                    Upgrade Plan
+                  </button>
+                )}
               </div>
+
             </div>
           </div>
         </div>
 
         {/* Enhanced Properties Section */}
 
-           {user?.accountType !== "Buyer" && (
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-            <div>
-              <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">
-                Property Portfolio
-              </h2>
-              <p className="text-gray-600 text-sm">
-                Manage your real estate listings
-              </p>
-            </div>
-       <button
-  onClick={handleAddProperty}   
-  className="flex items-center gap-2 px-6 py-3 bg-[#059669] text-white font-semibold rounded-xl hover:from-green-700 hover:to-green-600 transition-all duration-300 shadow-lg transform hover:scale-105"
->
-  <Plus size={20} />
-  Add Property
-</button>
-
-          </div>
-
-          {properties.length === 0 ? (
-            <div className="text-center py-16 bg-gray-50 rounded-xl">
-              <Home size={64} className="text-gray-400 mx-auto mb-6" />
-              <p className="text-gray-600 text-xl font-medium mb-2">
-                No Properties Listed
-              </p>
-              <p className="text-gray-500 mb-6">
-                Start building your portfolio by adding your first property
-              </p>
+        {user?.accountType !== "Buyer" && (
+          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+              <div>
+                <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">
+                  Property Portfolio
+                </h2>
+                <p className="text-gray-600 text-sm">
+                  Manage your real estate listings
+                </p>
+              </div>
               <button
-                onClick={() => {
-                  setSelectedProperty(null); // Add mode
-                  setIsModalOpen(true);
-                }}
-                className="px-6 py-3 bg-[#059669] text-white font-semibold rounded-xl hover:from-green-700 hover:to-green-600 transition-all duration-300 shadow-lg transform hover:scale-105"
+                onClick={handleAddProperty}
+                className="flex items-center gap-2 px-6 py-3 bg-[#059669] text-white font-semibold rounded-xl hover:from-green-700 hover:to-green-600 transition-all duration-300 shadow-lg transform hover:scale-105"
               >
+                <Plus size={20} />
                 Add Property
               </button>
+
             </div>
-          ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
-              {properties.map((property) => (
-                <div
-                  key={property?.id}
-                  className="group bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-2xl hover:border-blue-200 transition-all duration-300 transform hover:-translate-y-1"
+
+            {properties.length === 0 ? (
+              <div className="text-center py-16 bg-gray-50 rounded-xl">
+                <Home size={64} className="text-gray-400 mx-auto mb-6" />
+                <p className="text-gray-600 text-xl font-medium mb-2">
+                  No Properties Listed
+                </p>
+                <p className="text-gray-500 mb-6">
+                  Start building your portfolio by adding your first property
+                </p>
+                <button
+                  onClick={() => {
+                    setSelectedProperty(null); // Add mode
+                    setIsModalOpen(true);
+                  }}
+                  className="px-6 py-3 bg-[#059669] text-white font-semibold rounded-xl hover:from-green-700 hover:to-green-600 transition-all duration-300 shadow-lg transform hover:scale-105"
                 >
-                  <div className="relative overflow-hidden">
-                    <div className="relative h-56 bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center overflow-hidden group rounded-xl">
-                      {Array.isArray(property?.gallery) &&
-                      property?.gallery?.length > 0 ? (
-                        <>
-                          <img
-                            src={property?.gallery[0]}
-                            alt={`${property?.title || "Listing"} image`}
-                            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                            onError={(e) => {
-                              // Fallback if image fails to load
-                              e.target.style.display = "none";
-                              e.target.nextElementSibling.style.display =
-                                "flex";
-                            }}
-                          />
-                          {/* Hidden fallback that shows if image fails to load */}
-                          <div className="hidden absolute inset-0 items-center justify-center">
-                            <Home size={50} className="text-blue-400" />
-                          </div>
-                          <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
-                        </>
-                      ) : (
-                        <>
-                          {/* Default fallback when no gallery images */}
-                          <Home
-                            size={50}
-                            className="text-blue-400 transition-transform duration-300 group-hover:scale-110"
-                          />
-                          <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
-                        </>
+                  Add Property
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+                {properties.map((property) => (
+                  <div
+                    key={property?.id}
+                    className="group bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-2xl hover:border-blue-200 transition-all duration-300 transform hover:-translate-y-1"
+                  >
+                    <div className="relative overflow-hidden">
+                      <div className="relative h-56 bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center overflow-hidden group rounded-xl">
+                        {Array.isArray(property?.gallery) &&
+                          property?.gallery?.length > 0 ? (
+                          <>
+                            <img
+                              src={property?.gallery[0]}
+                              alt={`${property?.title || "Listing"} image`}
+                              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                              onError={(e) => {
+                                // Fallback if image fails to load
+                                e.target.style.display = "none";
+                                e.target.nextElementSibling.style.display =
+                                  "flex";
+                              }}
+                            />
+                            {/* Hidden fallback that shows if image fails to load */}
+                            <div className="hidden absolute inset-0 items-center justify-center">
+                              <Home size={50} className="text-blue-400" />
+                            </div>
+                            <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+                          </>
+                        ) : (
+                          <>
+                            {/* Default fallback when no gallery images */}
+                            <Home
+                              size={50}
+                              className="text-blue-400 transition-transform duration-300 group-hover:scale-110"
+                            />
+                            <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+                          </>
+                        )}
+                      </div>
+
+                      {property?.approvalStatus && (
+                        <div
+                          className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs backdrop-blur-sm shadow-lg text-white ${property.approvalStatus === "Published"
+                            ? "bg-green-500/90"
+                            : property.approvalStatus === "Pending"
+                              ? "bg-amber-500/90"
+                              : property.approvalStatus === "Rejected"
+                                ? "bg-red-500/90"
+                                : "bg-blue-500/90" //
+                            }`}
+                        >
+                          {property.approvalStatus}
+                        </div>
                       )}
                     </div>
 
-                    {property?.approvalStatus && (
-                      <div
-                        className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs backdrop-blur-sm shadow-lg text-white ${
-                          property.approvalStatus === "Published"
-                            ? "bg-green-500/90"
-                            : property.approvalStatus === "Pending"
-                            ? "bg-amber-500/90"
-                            : property.approvalStatus === "Rejected"
-                            ? "bg-red-500/90"
-                            : "bg-blue-500/90" //
-                        }`}
-                      >
-                        {property.approvalStatus}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="p-6">
-                    <div className="flex justify-between items-start mb-3">
-                      <h3 className="font-bold text-gray-900 text-lg group-hover:text-blue-600 transition-colors line-clamp-2">
-                        {property?.name}
-                      </h3>
-                      <span
-                        className={`text-xs font-semibold px-3 py-1 rounded-full ${
-                          property?.status === "For Sale"
+                    <div className="p-6">
+                      <div className="flex justify-between items-start mb-3">
+                        <h3 className="font-bold text-gray-900 text-lg group-hover:text-blue-600 transition-colors line-clamp-2">
+                          {property?.name}
+                        </h3>
+                        <span
+                          className={`text-xs font-semibold px-3 py-1 rounded-full ${property?.status === "For Sale"
                             ? "bg-green-100 text-green-800"
                             : "bg-blue-100 text-blue-800"
-                        }`}
-                      >
-                        {property?.status}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center gap-2 text-gray-600 mb-4">
-                      <MapPin size={16} className="text-gray-400" />
-                      <span className="text-sm">{property?.address}</span>
-                    </div>
-
-                    <div className="space-y-2">
-                      <div className="flex flex-wrap items-center bg-gray-50 rounded-xl p-4 gap-x-6 gap-y-2">
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <LucideRuler className="w-4 h-4 text-blue-500" />
-                          <span className="font-medium">
-                            {property?.propertyDetails?.area ?? "—"} sq ft
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <Bed className="w-4 h-4 text-blue-500" />
-                          <span className="font-medium">
-                            {property?.propertyDetails?.bedrooms ?? "—"}{" "}
-                            Bedrooms
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <Bath className="w-4 h-4 text-blue-500" />
-                          <span className="font-medium">
-                            {property?.propertyDetails?.bathrooms ?? "—"}{" "}
-                            Bathrooms
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <Layers className="w-4 h-4 text-blue-500" />
-                          <span className="font-medium">
-                            {property?.propertyDetails?.floors ?? "—"} Floors
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600 capitalize">
-                          <Compass className="w-4 h-4 text-blue-500" />
-                          <span className="font-medium">
-                            Facing {property?.propertyDetails?.facing ?? "—"}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <Calendar className="w-4 h-4 text-blue-500" />
-                          <span className="font-medium">
-                            Built {property?.propertyDetails?.builtYear ?? "—"}
-                          </span>
-                        </div>
+                            }`}
+                        >
+                          {property?.status}
+                        </span>
                       </div>
 
-                      {/* Facilities + Services */}
-                      <div className="flex flex-wrap items-center bg-gray-50 rounded-xl p-4 gap-x-6 gap-y-2">
-                        {[
-                          ...(property?.facilities || []),
-                          ...(property?.services || []),
-                        ].map((item, index) => {
-                          const Icon = iconMap[item] || Star;
-                          return (
+                      <div className="flex items-center gap-2 text-gray-600 mb-4">
+                        <MapPin size={16} className="text-gray-400" />
+                        <span className="text-sm">{property?.address}</span>
+                      </div>
+
+                      <div className="space-y-2">
+                        <div className="flex flex-wrap items-center bg-gray-50 rounded-xl p-4 gap-x-6 gap-y-2">
+                          <div className="flex items-center gap-2 text-sm text-gray-600">
+                            <LucideRuler className="w-4 h-4 text-blue-500" />
+                            <span className="font-medium">
+                              {property?.propertyDetails?.area ?? "—"} sq ft
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm text-gray-600">
+                            <Bed className="w-4 h-4 text-blue-500" />
+                            <span className="font-medium">
+                              {property?.propertyDetails?.bedrooms ?? "—"}{" "}
+                              Bedrooms
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm text-gray-600">
+                            <Bath className="w-4 h-4 text-blue-500" />
+                            <span className="font-medium">
+                              {property?.propertyDetails?.bathrooms ?? "—"}{" "}
+                              Bathrooms
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm text-gray-600">
+                            <Layers className="w-4 h-4 text-blue-500" />
+                            <span className="font-medium">
+                              {property?.propertyDetails?.floors ?? "—"} Floors
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm text-gray-600 capitalize">
+                            <Compass className="w-4 h-4 text-blue-500" />
+                            <span className="font-medium">
+                              Facing {property?.propertyDetails?.facing ?? "—"}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm text-gray-600">
+                            <Calendar className="w-4 h-4 text-blue-500" />
+                            <span className="font-medium">
+                              Built {property?.propertyDetails?.builtYear ?? "—"}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Facilities + Services */}
+                        <div className="flex flex-wrap items-center bg-gray-50 rounded-xl p-4 gap-x-6 gap-y-2">
+                          {[
+                            ...(property?.facilities || []),
+                            ...(property?.services || []),
+                          ].map((item, index) => {
+                            const Icon = iconMap[item] || Star;
+                            return (
+                              <div
+                                key={index}
+                                className="flex items-center gap-2 text-sm text-gray-600"
+                              >
+                                <Icon className="w-4 h-4 text-blue-500" />
+                                <span className="font-medium">{item}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        {/* Nearby */}
+                        <div className="flex flex-wrap items-center bg-gray-50 rounded-xl p-4 gap-x-6 gap-y-2">
+                          {property.nearby?.map((place, index) => (
                             <div
                               key={index}
                               className="flex items-center gap-2 text-sm text-gray-600"
                             >
-                              <Icon className="w-4 h-4 text-blue-500" />
-                              <span className="font-medium">{item}</span>
+                              <MapPin className="w-4 h-4 text-red-500" />
+                              <span className="font-medium capitalize">
+                                {place.name}
+                              </span>{" "}
+                              - <span>{place.distance}</span>
                             </div>
-                          );
-                        })}
+                          ))}
+                        </div>
                       </div>
 
-                      {/* Nearby */}
-                      <div className="flex flex-wrap items-center bg-gray-50 rounded-xl p-4 gap-x-6 gap-y-2">
-                        {property.nearby?.map((place, index) => (
-                          <div
-                            key={index}
-                            className="flex items-center gap-2 text-sm text-gray-600"
+                      <div className="flex items-center justify-between mb-4">
+                        {/* Price - Left */}
+                        <h3 className="text-lg font-bold bg-[#059669] bg-clip-text text-transparent">
+                          {property?.actualPrice}
+                        </h3>
+
+                        {/* Property Type - Right */}
+                        <span className="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-medium">
+                          {property?.propertyType}
+                        </span>
+                      </div>
+
+                      <div className="flex gap-3">
+                        <button
+                          onClick={() => {
+                            setSelectedProperty(property); // Edit mode
+                            setIsModalOpen(true);
+                          }}
+                          className="flex-1 py-2.5 text-sm font-medium bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all duration-200"
+                        >
+                          Edit
+                        </button>
+
+                        <button
+                          onClick={() => handleDelete(property._id)}
+                          className="flex-1 py-2.5 text-sm font-medium bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-all duration-200"
+                        >
+                          Delete
+                        </button>
+
+                        {user?.accountType !== "Buyer" && user?.consumeListing >= user?.PropertyListing && (
+                          <button
+                            onClick={() => setUpgradeModal(true)}
+                            className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:scale-105 transition-all duration-300"
                           >
-                            <MapPin className="w-4 h-4 text-red-500" />
-                            <span className="font-medium capitalize">
-                              {place.name}
-                            </span>{" "}
-                            - <span>{place.distance}</span>
-                          </div>
-                        ))}
+                            Upgrade Plan
+                          </button>
+                        )}
                       </div>
-                    </div>
-
-                    <div className="flex items-center justify-between mb-4">
-                      {/* Price - Left */}
-                      <h3 className="text-lg font-bold bg-[#059669] bg-clip-text text-transparent">
-                        {property?.actualPrice}
-                      </h3>
-
-                      {/* Property Type - Right */}
-                      <span className="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-medium">
-                        {property?.propertyType}
-                      </span>
-                    </div>
-
-                    <div className="flex gap-3">
-                      <button
-                        onClick={() => {
-                          setSelectedProperty(property); // Edit mode
-                          setIsModalOpen(true);
-                        }}
-                        className="flex-1 py-2.5 text-sm font-medium bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all duration-200"
-                      >
-                        Edit
-                      </button>
-
-                      <button
-                        onClick={() => handleDelete(property._id)}
-                        className="flex-1 py-2.5 text-sm font-medium bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-all duration-200"
-                      >
-                        Delete
-                      </button>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-           )}
-  
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
 
         {/* ✅ Add Property Modal (only open if limit not exceeded) */}
         {user?.accountType !== "Buyer" &&
@@ -494,7 +558,7 @@ export default function RealEstateProfile() {
 
         {/* ✅ Upgrade Popup */}
 
-   <UpgradeModal open={upgradeModal} onClose={() => setUpgradeModal(false)} />
+        <UpgradeModal open={upgradeModal} onClose={() => setUpgradeModal(false)} />
 
 
         {showEdit && (
@@ -515,10 +579,10 @@ export default function RealEstateProfile() {
           />
         )}
 
-        
+
       </div>
-      
+
     </div>
-      
+
   );
 }

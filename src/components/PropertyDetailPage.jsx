@@ -219,19 +219,6 @@ export default function PropertyDetailPage() {
 
       <div className="max-w-7xl mx-auto py-12 p-4">
         <div className="flex items-center gap-3 mb-2">
-          {/* Verified Badge */}
-          {properties?.isVerified && (
-            <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-              <div className="w-6 h-6 bg-white/80 rounded flex items-center justify-center">
-                <img
-                  width="24"
-                  height="24"
-                  src="https://img.icons8.com/color/48/verified-account--v1.png"
-                  alt="verified-account"
-                />
-              </div>
-            </div>
-          )}
           {/* Status Badge */}
           <span className="bg-gradient-to-r from-amber-400 to-orange-400 text-white px-3 py-1 rounded-full text-sm flex items-center gap-1">
             <Sparkles className="w-4 h-4" />
@@ -250,9 +237,23 @@ export default function PropertyDetailPage() {
                   alt="Property main view"
                   className="w-full h-140 object-cover"
                 />
-                <div className="absolute top-4 right-4 bg-black/50 text-white px-3 py-1 rounded-full text-sm flex items-center gap-1">
-                  <Camera className="w-4 h-4" />
-                  {selectedImage + 1} / {images.length}
+                {/* Top-right overlay: Camera + Verified */}
+                <div className="absolute top-4 right-4 flex items-center gap-2 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
+                  {/* Verified Icon */}
+                  {properties?.isVerified && (
+                    <img
+                      width="20"
+                      height="20"
+                      src="https://img.icons8.com/color/48/verified-account--v1.png"
+                      alt="verified-account"
+                    />
+                  )}
+
+                  {/* Camera + counter */}
+                  <div className="flex items-center gap-1">
+                    <Camera className="w-4 h-4" />
+                    {selectedImage + 1} / {images.length}
+                  </div>
                 </div>
               </div>
               <div className="p-6">
@@ -505,8 +506,74 @@ export default function PropertyDetailPage() {
               <h3 className="text-xl font-bold text-gray-800 mb-6">
                 Property Owner
               </h3>
-
               <div className="flex items-center gap-4 mb-6">
+                {(() => {
+                  const user = properties.isAdopted
+                    ? {
+                        name: "Bridge House User",
+                        profilepic: "",
+                        phone: "1234567890",
+                        email: "dummy@example.com",
+                      }
+                    : properties.addedBy;
+
+                  return (
+                    <>
+                      {/* Avatar */}
+                      <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg overflow-hidden">
+                        {user?.profilepic ? (
+                          <img
+                            src={user.profilepic}
+                            alt="Profile"
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          user?.name?.[0]?.toUpperCase() || "U"
+                        )}
+                      </div>
+
+                      {/* Name + Verified */}
+                      <div className="flex-1">
+                        <div className="font-bold text-gray-900 flex items-center gap-2">
+                          {user?.name}
+                          <Verified className="w-5 h-5 text-blue-500" />
+                        </div>
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
+
+              {/* Contact Info */}
+              <div className="space-y-3 mb-6">
+                {(() => {
+                  const contactInfo = properties.isAdopted
+                    ? [
+                        { label: "Phone", value: "1234567890" },
+                        { label: "Email", value: "dummy@example.com" },
+                      ]
+                    : [
+                        { label: "Phone", value: properties?.addedBy?.phone },
+                        { label: "Email", value: properties?.addedBy?.email },
+                      ];
+
+                  return contactInfo.map((item, index) => (
+                    <div
+                      key={index}
+                      className="flex justify-between items-center py-2"
+                    >
+                      <span className="text-gray-600 text-sm">
+                        {item.label}
+                      </span>
+                      <span className="font-medium text-sm text-gray-600">
+                        {item.value}
+                      </span>
+                    </div>
+                  ));
+                })()}
+              </div>
+
+              {/* <div className="flex items-center gap-4 mb-6">
                 <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg overflow-hidden">
                   {properties?.addedBy?.profilepic ? (
                     <img
@@ -525,17 +592,6 @@ export default function PropertyDetailPage() {
                     {properties?.addedBy?.name}
                     <Verified className="w-5 h-5 text-blue-500" />
                   </div>
-                  {/* <div className="flex items-center gap-1">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className="w-4 h-4 fill-yellow-400 text-yellow-400"
-                      />
-                    ))}
-                    <span className="text-gray-500 ml-2 text-sm">
-                      (32 Reviews)
-                    </span>
-                  </div> */}
                 </div>
               </div>
 
@@ -554,7 +610,7 @@ export default function PropertyDetailPage() {
                     </span>
                   </div>
                 ))}
-              </div>
+              </div> */}
 
               {/* <div className="flex gap-2">
                 <button className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 rounded-xl font-medium hover:shadow-lg transition-all duration-300">

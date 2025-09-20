@@ -35,8 +35,11 @@ export default function EditProfileModal({
   );
 
   console.log("formdata", formData);
+  console.log("occupation", formData?.occupation);
+
   const [loading, setLoading] = useState(false);
   const [imageUploading, setImageUploading] = useState(false);
+  const [profileImageError, setProfileImageError] = useState("");
 
   const { setCookie } = useCookie();
 
@@ -56,6 +59,13 @@ export default function EditProfileModal({
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!formData.profilepic) {
+      setProfileImageError("Profile image is required"); // show message inline
+      return;
+    }
+
+    setProfileImageError(""); // clear error if image exists
+
     setLoading(true);
     patchRequest({
       url: `auth/update/${user?._id}`,
@@ -143,6 +153,7 @@ export default function EditProfileModal({
                 onChange={handleChange}
                 placeholder="Enter your full name"
                 className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none h-12"
+                required
               />
             </div>
 
@@ -161,6 +172,7 @@ export default function EditProfileModal({
                 onChange={handleChange}
                 placeholder="Enter phone number"
                 className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none h-12"
+                required
               />
             </div>
           </div>
@@ -181,6 +193,7 @@ export default function EditProfileModal({
                 value={formData?.dob}
                 onChange={handleChange}
                 className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none h-12"
+                required
               />
             </div>
 
@@ -199,6 +212,7 @@ export default function EditProfileModal({
                 onChange={handleChange}
                 placeholder="Enter your occupation"
                 className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none h-12"
+                required
               />
             </div>
           </div>
@@ -220,6 +234,7 @@ export default function EditProfileModal({
                 onChange={handleChange}
                 placeholder="Enter your email"
                 className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none h-12"
+                required
               />
             </div>
             <div className="flex flex-col">
@@ -230,6 +245,7 @@ export default function EditProfileModal({
                 <AddressForm
                   value={user?.address}
                   onSelect={handleLocationSelect}
+                  required
                 />
               </div>
             </div>
@@ -249,6 +265,7 @@ export default function EditProfileModal({
                 value={formData?.gender}
                 onChange={handleChange}
                 className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 h-12"
+                required
               >
                 <option value="">Select Gender</option>
                 <option value="Male">Male</option>
@@ -271,6 +288,7 @@ export default function EditProfileModal({
                       checked={formData?.accountType === type}
                       onChange={handleChange}
                       className="hidden"
+                      required
                     />
                     <div className="w-5 h-5 border border-gray-300 rounded-full flex items-center justify-center">
                       {formData?.accountType === type && (
@@ -297,7 +315,10 @@ export default function EditProfileModal({
               type="file"
               name="profilepic"
               accept="image/*"
-              onChange={handleFileChange}
+              onChange={(e) => {
+                handleFileChange(e);
+                setProfileImageError(""); // clear error when user selects image
+              }}
               className="w-full"
             />
 
@@ -344,6 +365,10 @@ export default function EditProfileModal({
                   </button>
                 </div>
               )
+            )}
+            {/* Inline error message */}
+            {profileImageError && (
+              <p className="text-red-500 text-sm mt-1">{profileImageError}</p>
             )}
           </div>
 

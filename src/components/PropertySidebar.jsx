@@ -154,18 +154,23 @@ const PropertySidebar = () => {
         </div>
 
         <div className="space-y-2 mb-4">
-          <div className="flex items-center space-x-2">
-            <Home className="w-4 h-4 text-gray-500" />
-            <span className="text-sm font-semibold text-gray-700">
-              {property?.propertyId?.propertyType}
-            </span>
+          <div className="flex items-center justify-between">
+            {/* Left Side */}
+            <div className="flex items-center space-x-2">
+              <Home className="w-4 h-4 text-gray-500" />
+              <span className="text-sm font-semibold text-gray-700">
+                {property?.propertyId?.propertyType}
+              </span>
+            </div>
+
+            {/* Right Side */}
+            <div className="text-lg font-bold text-green-600 flex items-center">
+              <IndianRupee size={18} className="inline-block mr-1" />
+              {property?.propertyId?.sellingPrice}
+            </div>
           </div>
-          <div className="text-lg font-bold text-green-600">
-            <IndianRupee size={18} className="inline-block" />
-            {property?.propertyId?.sellingPrice}
-          </div>
+
           <div className="text-xs text-gray-500">
-            {/* Marketed by{" "} */}
             <span className="font-semibold">
               {property?.propertyId?.accountType}
             </span>
@@ -199,14 +204,14 @@ const PropertySidebar = () => {
           <PropertyCard key={property.id} property={property} />
         ))}
       </div>
-
+      {/* 
       <div className="mt-6 p-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg text-white text-center">
         <h3 className="font-bold mb-2">Looking to sell?</h3>
         <p className="text-sm mb-3">Get the best price for your property</p>
         <button className="bg-white text-blue-600 px-4 py-2 rounded-md font-semibold text-sm hover:bg-gray-100 transition-colors">
           Get Free Valuation
         </button>
-      </div>
+      </div> */}
     </div>
   );
 };

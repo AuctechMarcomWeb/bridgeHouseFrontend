@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 import React, { useContext, useEffect, useState } from "react";
@@ -43,7 +44,7 @@ export default function RentalListingApp() {
   const [imageError, setImageError] = useState(false);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
-  const [limit] = useState(5);
+  const [limit] = useState(6);
   const [approvalStatus, setApprovalStatus] = useState("");
   const { search, setSearch } = useContext(PropertyContext);
   const [filters, setFilters] = useState({

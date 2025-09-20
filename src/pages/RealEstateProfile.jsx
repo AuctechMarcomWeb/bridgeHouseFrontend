@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/rules-of-hooks */
 import { useContext, useEffect, useState } from "react";
 import { Modal, Button } from "antd";
@@ -28,6 +29,11 @@ import {
   LucideRuler,
   Layers,
   Compass,
+  CheckCircle,
+  IndianRupee,
+  Search,
+  Filter,
+  FilterIcon,
 } from "lucide-react";
 
 import Swal from "sweetalert2";
@@ -53,7 +59,7 @@ export default function RealEstateProfile() {
   const [update, setUpdate] = useState(false);
   const [upgradeModal, setUpgradeModal] = useState(false);
 
-  // Redirect if not logged in
+  //Redirect if not logged in
   useEffect(() => {
     if (isLoggedIn === false) {
       navigate("/"); // redirect to home
@@ -81,7 +87,6 @@ export default function RealEstateProfile() {
   };
 
   console.log("Account Type ===>", user?.accountType);
-
   const [properties, setProperties] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState(null);
@@ -92,16 +97,7 @@ export default function RealEstateProfile() {
     setSelectedProperty(property);
     setIsDetailsOpen(true);
   };
-  const iconMap = {
-    // Facilities
-    Parking: Car,
-    Lift: Building2,
-    "Power Backup": Zap,
 
-    // Services
-    "Water Supply": Droplet,
-    Maintenance: Wrench,
-  };
   console.log("user", userProfile?._id);
 
   useEffect(() => {
@@ -153,10 +149,10 @@ export default function RealEstateProfile() {
       user?.accountType !== "Buyer" &&
       user?.consumeListing >= user?.PropertyListing
     ) {
-      setUpgradeModal(true); // Show upgrade popup
+      setUpgradeModal(true);
     } else {
       setSelectedProperty(null);
-      setIsModalOpen(true); // Show AddProperty modal
+      setIsModalOpen(true);
     }
   };
 
@@ -198,7 +194,7 @@ export default function RealEstateProfile() {
                     <User className="w-4 h-4" />
                     <span>{userProfile?.gender || "-"}</span>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
                     <Calendar className="w-4 h-4" />
                     <span>{formatDate(userProfile?.dob) || "-"}</span>
                   </div>
@@ -212,12 +208,12 @@ export default function RealEstateProfile() {
                     <Mail size={16} className="text-blue-200" />
                     <span className="text-blue-100">{userProfile?.email}</span>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
                     <Phone size={16} className="text-blue-200" />
                     <span className="text-blue-100">{userProfile?.phone}</span>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <MapPin size={20} className="text-blue-200" />
+                  <div className="flex items-center gap-2">
+                    <MapPin size={25} className="text-blue-200" />
                     <span className="text-blue-100">
                       {userProfile?.address}
                     </span>
@@ -303,6 +299,7 @@ export default function RealEstateProfile() {
 
         {/* Enhanced Properties Section */}
 
+        {/* Seller Section - Add Properties */}
         {user?.accountType !== "Buyer" && (
           <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
@@ -316,7 +313,7 @@ export default function RealEstateProfile() {
               </div>
               <button
                 onClick={handleAddProperty}
-                className="flex items-center gap-2 px-6 py-3 bg-[#059669] text-white font-semibold rounded-xl hover:from-green-700 hover:to-green-600 transition-all duration-300 shadow-lg transform hover:scale-105"
+                className="flex items-center gap-2 px-6 py-3 bg-[#004d88] text-white font-semibold rounded-xl hover:from-green-700 hover:to-green-600 transition-all duration-300 shadow-lg transform hover:scale-105"
               >
                 <Plus size={20} />
                 Add Property
@@ -337,7 +334,7 @@ export default function RealEstateProfile() {
                     setSelectedProperty(null); // Add mode
                     setIsModalOpen(true);
                   }}
-                  className="px-6 py-3 bg-[#059669] text-white font-semibold rounded-xl hover:from-green-700 hover:to-green-600 transition-all duration-300 shadow-lg transform hover:scale-105"
+                  className="px-6 py-3 bg-[#004d88] text-white font-semibold rounded-xl hover:from-green-700 hover:to-green-600 transition-all duration-300 shadow-lg transform hover:scale-105"
                 >
                   Add Property
                 </button>
@@ -363,13 +360,12 @@ export default function RealEstateProfile() {
                               alt={`${property?.title || "Listing"} image`}
                               className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                               onError={(e) => {
-                                // Fallback if image fails to load
                                 e.target.style.display = "none";
                                 e.target.nextElementSibling.style.display =
                                   "flex";
                               }}
                             />
-                            {/* Hidden fallback that shows if image fails to load */}
+                            {/* Hidden fallback */}
                             <div className="hidden absolute inset-0 items-center justify-center">
                               <Home size={50} className="text-blue-400" />
                             </div>
@@ -387,16 +383,24 @@ export default function RealEstateProfile() {
                         )}
                       </div>
 
+                      {/* Verified Badge – LEFT TOP */}
+                      {property.isVerified && (
+                        <span className="absolute top-4 left-4 flex items-center gap-1 bg-green-600 text-white text-xs font-semibold px-3 py-1 rounded-full shadow">
+                          <CheckCircle className="w-4 h-4" />
+                        </span>
+                      )}
+
+                      {/* Approval Status Badge – RIGHT TOP */}
                       {property?.approvalStatus && (
                         <div
-                          className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs backdrop-blur-sm shadow-lg text-white ${
+                          className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs backdrop-blur-sm shadow-lg text-white ${
                             property.approvalStatus === "Published"
                               ? "bg-green-500/90"
                               : property.approvalStatus === "Pending"
                               ? "bg-amber-500/90"
                               : property.approvalStatus === "Rejected"
                               ? "bg-red-500/90"
-                              : "bg-blue-500/90" //
+                              : "bg-blue-500/90"
                           }`}
                         >
                           {property.approvalStatus}
@@ -404,8 +408,8 @@ export default function RealEstateProfile() {
                       )}
                     </div>
 
-                    <div className="p-6">
-                      <div className="flex justify-between items-start mb-3">
+                    <div className="p-4">
+                      <div className="flex justify-between items-start mb-2">
                         <h3 className="font-bold text-gray-900 text-lg group-hover:text-blue-600 transition-colors line-clamp-2">
                           {property?.name}
                         </h3>
@@ -419,14 +423,12 @@ export default function RealEstateProfile() {
                           {property?.status}
                         </span>
                       </div>
-
-                      <div className="flex items-center gap-2 text-gray-600 mb-4">
-                        <MapPin size={16} className="text-gray-400" />
+                      <div className="flex items-center gap-2 text-gray-600 mb-2">
+                        <MapPin size={20} className="text-gray-400" />
                         <span className="text-sm">{property?.address}</span>
                       </div>
-
                       <div className="space-y-2">
-                        <div className="flex flex-wrap items-center bg-gray-50 rounded-xl p-4 gap-x-6 gap-y-2">
+                        <div className="flex flex-wrap items-center bg-gray-50 rounded-xl p-2 gap-2">
                           <div className="flex items-center gap-2 text-sm text-gray-600">
                             <LucideRuler className="w-4 h-4 text-blue-500" />
                             <span className="font-medium">
@@ -466,47 +468,54 @@ export default function RealEstateProfile() {
                               {property?.propertyDetails?.builtYear ?? "—"}
                             </span>
                           </div>
-                        </div>
-
-                        {/* Facilities + Services */}
-                        <div className="flex flex-wrap items-center bg-gray-50 rounded-xl p-4 gap-x-6 gap-y-2">
-                          {[
-                            ...(property?.facilities || []),
-                            ...(property?.services || []),
-                          ].map((item, index) => {
-                            const Icon = iconMap[item] || Star;
-                            return (
-                              <div
-                                key={index}
-                                className="flex items-center gap-2 text-sm text-gray-600"
-                              >
-                                <Icon className="w-4 h-4 text-blue-500" />
-                                <span className="font-medium">{item}</span>
-                              </div>
-                            );
-                          })}
-                        </div>
-
-                        {/* Nearby */}
-                        <div className="flex flex-wrap items-center bg-gray-50 rounded-xl p-4 gap-x-6 gap-y-2">
-                          {property.nearby?.map((place, index) => (
-                            <div
-                              key={index}
-                              className="flex items-center gap-2 text-sm text-gray-600"
-                            >
-                              <MapPin className="w-4 h-4 text-red-500" />
-                              <span className="font-medium capitalize">
-                                {place.name}
-                              </span>{" "}
-                              - <span>{place.distance}Km</span>
+                          {/* Facilities */}
+                          {(property.facilities || []).length > 0 && (
+                            <div className="flex items-center gap-1 text-gray-700 mt-1 text-sm">
+                              <span className="text-blue-500">
+                                <Home className="w-4 h-4" />
+                              </span>
+                              <strong>Facilities:</strong>
+                              <span>{property.facilities.join(", ")}</span>
                             </div>
-                          ))}
+                          )}
+
+                          {/* Services */}
+                          {(property.services || []).length > 0 && (
+                            <div className="flex items-center gap-1 text-gray-700 mt-1 text-sm">
+                              <span className="text-blue-500">
+                                <Layers className="w-4 h-4" />
+                              </span>
+                              <strong>Services:</strong>
+                              <span>{property.services.join(", ")}</span>
+                            </div>
+                          )}
+
+                          {/* Nearby */}
+                          {property.nearby?.length > 0 && (
+                            <div className="flex items-center gap-1 text-gray-700 mt-1 text-sm">
+                              <span className="text-red-500">
+                                <MapPin className="w-4 h-4" />
+                              </span>
+                              <strong>Nearby:</strong>
+                              <span>
+                                {property.nearby
+                                  .map(
+                                    (n) => `${n.name} — ${n.distance ?? "—"} Km`
+                                  )
+                                  .join(", ")}
+                              </span>
+                            </div>
+                          )}
                         </div>
                       </div>
 
                       <div className="flex items-center justify-between mb-4">
                         {/* Price - Left */}
-                        <h3 className="text-lg font-bold bg-[#059669] bg-clip-text text-transparent">
+                        <h3 className="text-lg font-bold text-green-600">
+                          <IndianRupee
+                            size={18}
+                            className="inline-block mr-1"
+                          />
                           {property?.actualPrice}
                         </h3>
 
@@ -552,15 +561,6 @@ export default function RealEstateProfile() {
                               Upgrade Plan
                             </button>
                           )}
-                        {/* 
-                        {user?.accountType !== "Buyer" && user?.consumeListing >= user?.PropertyListing && (
-                          <button
-                            onClick={() => setUpgradeModal(true)}
-                            className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:scale-105 transition-all duration-300"
-                          >
-                            Upgrade Plan
-                          </button>
-                        )} */}
                       </div>
                     </div>
                   </div>
@@ -570,7 +570,174 @@ export default function RealEstateProfile() {
           </div>
         )}
 
-        {/* ✅ Add Property Modal*/}
+        {/* Buyer Section - Show Available Properties */}
+        {user?.accountType === "Buyer" && (
+          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
+            {/* Search and Filter Header */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+              <div>
+                <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">
+                  Available Properties
+                </h2>
+                <p className="text-gray-600 text-sm">
+                  Discover your dream home
+                </p>
+              </div>
+
+              {/* Search Bar */}
+              <div className="flex gap-4 w-full sm:w-auto">
+                {/* <div className="relative flex-1 sm:w-80">
+                  <input
+                    type="text"
+                    placeholder="Search properties by location, type..."
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    // Add your search logic here
+                  />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                </div> */}
+              </div>
+            </div>
+
+            {/* Available Properties Grid */}
+            {properties.length === 0 ? (
+              <div className="text-center py-16 bg-gray-50 rounded-xl">
+                <Home size={64} className="text-gray-400 mx-auto mb-6" />
+                <p className="text-gray-600 text-xl font-medium mb-2">
+                  No Properties Available
+                </p>
+                <p className="text-gray-500 mb-6">
+                  Check back later for new property listings
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+                {properties.map((property) => (
+                  <div
+                    key={property?.id}
+                    className="group bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-2xl hover:border-green-200 transition-all duration-300 transform hover:-translate-y-1"
+                  >
+                    <div className="relative overflow-hidden">
+                      <div className="relative h-56 bg-gradient-to-br from-green-100 to-blue-100 flex items-center justify-center overflow-hidden group rounded-xl">
+                        {Array.isArray(property?.gallery) &&
+                        property?.gallery?.length > 0 ? (
+                          <>
+                            <img
+                              src={property?.gallery[0]}
+                              alt={`${property?.title || "Property"} image`}
+                              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            />
+                            <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+                          </>
+                        ) : (
+                          <>
+                            <Home
+                              size={50}
+                              className="text-green-400 transition-transform duration-300 group-hover:scale-110"
+                            />
+                            <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+                          </>
+                        )}
+                      </div>
+
+                      {/* Wishlist Heart - TOP RIGHT */}
+                      <button className="absolute top-4 right-4 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-white transition-all">
+                        <Heart className="w-5 h-5 text-gray-600 hover:text-red-500" />
+                      </button>
+                    </div>
+
+                    <div className="p-4">
+                      <div className="flex justify-between items-start mb-2">
+                        <h3 className="font-bold text-gray-900 text-lg group-hover:text-green-600 transition-colors line-clamp-2">
+                          {property?.name}
+                        </h3>
+                        <span
+                          className={`text-xs font-semibold px-3 py-1 rounded-full ${
+                            property?.status === "For Sale"
+                              ? "bg-green-100 text-green-800"
+                              : "bg-blue-100 text-blue-800"
+                          }`}
+                        >
+                          {property?.status}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-2 text-gray-600 mb-3">
+                        <MapPin size={16} className="text-gray-400" />
+                        <span className="text-sm">{property?.address}</span>
+                      </div>
+
+                      {/* Property Details */}
+                      <div className="space-y-2 mb-4">
+                        <div className="flex flex-wrap items-center bg-gray-50 rounded-xl p-3 gap-3">
+                          <div className="flex items-center gap-1 text-sm text-gray-600">
+                            <LucideRuler className="w-4 h-4 text-green-500" />
+                            <span className="font-medium">
+                              {property?.propertyDetails?.area ?? "—"} sq ft
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-1 text-sm text-gray-600">
+                            <Bed className="w-4 h-4 text-green-500" />
+                            <span className="font-medium">
+                              {property?.propertyDetails?.bedrooms ?? "—"} Beds
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-1 text-sm text-gray-600">
+                            <Bath className="w-4 h-4 text-green-500" />
+                            <span className="font-medium">
+                              {property?.propertyDetails?.bathrooms ?? "—"}{" "}
+                              Baths
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between mb-4">
+                        {/* Price */}
+                        <h3 className="text-xl font-bold text-green-600">
+                          <IndianRupee
+                            size={20}
+                            className="inline-block mr-1"
+                          />
+                          {property?.actualPrice}
+                        </h3>
+                        {/* Property Type */}
+                        <span className="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full font-medium">
+                          {property?.propertyType}
+                        </span>
+                      </div>
+
+                      {/* Buyer Action Buttons */}
+                      <div className="flex gap-3">
+                        <button
+                          onClick={() => {
+                            setSelectedProperty(property);
+                            setIsDetailsOpen(true);
+                          }}
+                          className="flex-1 py-2.5 text-sm font-medium bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-200"
+                        >
+                          View Details
+                        </button>
+                        <button
+                          onClick={() => {
+                            // Add contact seller logic here
+                            console.log(
+                              "Contact seller for property:",
+                              property._id
+                            );
+                          }}
+                          className="flex-1 py-2.5 text-sm font-medium bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all duration-200"
+                        >
+                          Contact Seller
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+        {/* Add Property Modal*/}
         {user?.accountType !== "Buyer" && isModalOpen && (
           <AddPropertyModal
             isModalOpen={isModalOpen}
@@ -580,14 +747,12 @@ export default function RealEstateProfile() {
             setPropertyStatus={setUpdateStatus}
           />
         )}
-
-        {/* ✅ Upgrade Popup */}
-
+        {/*Upgrade Popup */}
         <UpgradeModal
           open={upgradeModal}
           onClose={() => setUpgradeModal(false)}
         />
-
+        {/*EDIT pROFILE*/}
         {showEdit && (
           <EditProfileModal
             show={showEdit}
@@ -597,7 +762,6 @@ export default function RealEstateProfile() {
             setUpdate={setUpdate}
           />
         )}
-
         {showPassword && (
           <CreatePasswordModal
             show={showPassword}

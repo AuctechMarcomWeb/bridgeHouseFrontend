@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { getRequest } from "../Helpers";
 import RealEstateLeftPopups from "./RealEstateLeftPopups";
-//import RealEstatePopup from "./RealEstatePopup";
+import FloatingPopup from "./FloatingPopup.jsx";
 
 // const propertyTypes = [
 //   {
@@ -98,10 +98,13 @@ export default function FeaturedPropertyType() {
     console.log("categoryname", name);
 
     navigate(`/property-list?propertyType=${name}`);
-    // window.location.href = "/";
   }
+
   return (
-    <div className="w-full py-8 md:py-12 px-6 bg-white">
+    <div
+      id="featured-section"
+      className=" relative w-full py-8 md:py-12 px-6 bg-white"
+    >
       {/* Section Heading */}
       <div className="flex justify-center mb-3">
         <span className="h-1 w-12 bg-gradient-to-r from-purple-500 to-green-400 rounded-full"></span>
@@ -155,8 +158,6 @@ export default function FeaturedPropertyType() {
           );
         })}
       </div>
-      <RealEstatePopups />
-      <RealEstateLeftPopups />
     </div>
   );
 }

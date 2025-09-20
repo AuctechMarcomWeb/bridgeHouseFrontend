@@ -3,7 +3,7 @@ import { Modal } from "antd";
 import React, { useContext, useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { ProfileContext } from "../context/ProfileContext";
-import { fileUpload, postRequest, putRequest } from "../Helpers";
+import { fileUpload, getRequest, postRequest, putRequest } from "../Helpers";
 import Addressform from "./Addressform";
 import { X } from "lucide-react";
 import { Select } from "antd";
@@ -17,10 +17,13 @@ const AddPropertyModal = ({
   show,
   onClose,
 }) => {
-  const { user, setUser,setUpdateStatus } = useContext(ProfileContext);
+  const { user, setUser, setUpdateStatus } = useContext(ProfileContext);
 
   console.log("modalData===", modalData);
-
+  const [type, setType] = useState([]);
+  const [bhk, setBhk] = useState([]);
+  const [services, setServices] = useState([]);
+  const [facilites, setFacilites] = useState([]);
   const [formData, setFormData] = useState(
     modalData
       ? { ...modalData }
@@ -49,16 +52,70 @@ const AddPropertyModal = ({
           nearby: [],
           gallery: [],
           propertyCode: "",
+          bhk: "",
         }
   );
 
   console.log("formData===>", formData);
 
+  useEffect(() => {
+    getRequest(`category?isPagination=false`)
+      .then((res) => {
+        const responseData = res?.data?.data;
+        console.log("Category", responseData);
+        setType(responseData?.categories);
+      })
+      .catch((error) => {
+        console.log("error", error);
+      });
+    getRequest(`bhk?isPagination=false`)
+      .then((res) => {
+        const responseData = res?.data?.data;
+        console.log("bhk", responseData);
+        setBhk(responseData?.bhks);
+      })
+      .catch((error) => {
+        console.log("error", error);
+      });
+    getRequest(`facilites?isPagination=false`)
+      .then((res) => {
+        const responseData = res?.data?.data;
+        console.log("facilites", responseData);
+        setFacilites(responseData?.facilities);
+      })
+      .catch((error) => {
+        console.log("error", error);
+      });
+    getRequest(`service?isPagination=false`)
+      .then((res) => {
+        const responseData = res?.data?.data;
+        console.log("service", responseData);
+        setServices(responseData?.services);
+      })
+      .catch((error) => {
+        console.log("error", error);
+      });
+  }, []);
+
+  const typeOption = type?.map((item, index) => {
+    return (
+      <>
+        <option value={item?.name}>{item?.name}</option>
+      </>
+    );
+  });
+  const bhkOption = bhk?.map((item, index) => {
+    return (
+      <>
+        <option value={item?.name}>{item?.name}</option>
+      </>
+    );
+  });
+
   const [loading, setLoading] = useState(false);
   const [galleryLoading, setGalleryLoading] = useState(false);
   const [documentLoading, setDocumentLoading] = useState(false);
   const [errors, setErrors] = useState({});
-
   const [facilityInput, setFacilityInput] = useState("");
   const [serviceInput, setServiceInput] = useState("");
   const [nearbyName, setNearbyName] = useState("");
@@ -113,6 +170,7 @@ const AddPropertyModal = ({
       nearby: [],
       gallery: [],
       propertyCode: "",
+      bhk: "",
     });
 
     setModalData(null);
@@ -381,11 +439,7 @@ const AddPropertyModal = ({
                     onChange={handleChange}
                   >
                     <option value="">Select Property Type</option>
-                    <option value="Villa">Villa</option>
-                    <option value="Residential">Residential</option>
-                    <option value="Farmhouse">Farmhouse</option>
-                    <option value="Plot">Plot</option>
-                    <option value="Commercial">Commercial</option>
+                    {typeOption}
                   </select>
                 </div>
 
@@ -540,7 +594,7 @@ const AddPropertyModal = ({
                 <Addressform
                   value={formData?.address || modalData?.address}
                   onSelect={handleLocationSelect}
-                  className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                  className="w-full p-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                 />
               </div>
 
@@ -568,14 +622,21 @@ const AddPropertyModal = ({
               <div>
                 <label className="form-label fw-bold">Facilities *</label>
                 <Select
-                  value={formData?.facilities || []}
+                  value={formData?.facilities}
                   mode="tags"
                   size="large"
-                  className="w-full"
+                  style={{ width: "100%" }}
                   placeholder="Enter/Select Your Facilities"
-                  onChange={(value) =>
-                    setFormData({ ...formData, facilities: value })
-                  }
+                  onChange={(value) => {
+                    setFormData({
+                      ...formData,
+                      facilities: value,
+                    });
+                  }}
+                  options={facilites?.map((service) => ({
+                    label: service?.name,
+                    value: service?.name,
+                  }))}
                 />
               </div>
 
@@ -583,19 +644,40 @@ const AddPropertyModal = ({
               <div>
                 <label className="form-label fw-bold">Services *</label>
                 <Select
-                  value={formData?.services || []}
+                  value={formData?.services}
                   mode="tags"
                   size="large"
-                  className="w-full"
+                  style={{ width: "100%" }}
                   placeholder="Enter/Select Your Services"
-                  onChange={(value) =>
-                    setFormData({ ...formData, services: value })
-                  }
+                  onChange={(value) => {
+                    setFormData({
+                      ...formData,
+                      services: value,
+                    });
+                  }}
+                  options={services?.map((service) => ({
+                    label: service?.name,
+                    value: service?.name,
+                  }))}
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
+              {/*BHK*/}
+              <div>
+                <label className="form-label fw-bold">Property Type *</label>
+                <select
+                  className="w-full p-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                  name="bhk"
+                  value={formData?.bhk || ""}
+                  required
+                  onChange={handleChange}
+                >
+                  <option value="">Select BHK</option>
+                  {bhkOption}
+                </select>
+              </div>
               {/* Property Images Upload */}
               <div>
                 <label className="form-label fw-bold">Property Images *</label>
@@ -898,13 +980,7 @@ const AddPropertyModal = ({
         </form>
       </div>
     </Modal>
-
   );
 };
-
-
-
-
-
 
 export default AddPropertyModal;

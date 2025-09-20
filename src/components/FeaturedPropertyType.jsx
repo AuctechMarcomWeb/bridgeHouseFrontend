@@ -158,6 +158,8 @@ export default function FeaturedPropertyType() {
           );
         })}
       </div>
+      {/* <RealEstatePopups />
+      <RealEstateLeftPopups /> */}
     </div>
   );
 }

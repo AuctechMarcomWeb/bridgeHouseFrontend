@@ -17,7 +17,7 @@ const BridgeHousepayment = ({ open, onClose, total, selectedPlan }) => {
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [showRazorpay, setShowRazorpay] = useState(false);
 
-  // ✅ Step 1: Create Order
+  //  Step 1: Create Order
   const createOrder = async () => {
     setLoading(true);
     try {
@@ -29,13 +29,13 @@ const BridgeHousepayment = ({ open, onClose, total, selectedPlan }) => {
           quantity: 1,
           price: total,
           totalAmount: total,
-          name: user?.name,
-          email: user?.email,
-          phone: user?.phone,
-          address: user?.address,
-          city: user?.city,
-          state: user?.state,
-          pincode: user?.pincode,
+          name: "RAM",
+          email: "HARSH@gmail.com",
+          phone: 111111111,
+          address:"trtrtrtrt",
+          city: "fdggfdg",
+          state: "fdfdgdfgfd",
+          pincode: "dfdf",
           country: "India",
           paymentGateway: "razorpay",
           planId: selectedPlan?._id,

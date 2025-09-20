@@ -47,6 +47,7 @@ const UpgradeModal = ({ open, onClose }) => {
   
 
   const [orderDetails, setOrderDetails] = useState(null);
+  const [loading, setLoading] = useState(false); 
 
   const subtotal = selectedPlan ? selectedPlan.price * quantity : 0;
   const tax = subtotal * 0.18;
@@ -55,6 +56,7 @@ const UpgradeModal = ({ open, onClose }) => {
   const makePayment = (e) => {
     e.preventDefault();
     setShowPayment(false)
+    setLoading(true)
 
     postRequest({
       url: `payment/create`,
@@ -80,6 +82,9 @@ const UpgradeModal = ({ open, onClose }) => {
       console.log("error",error);
       
     })
+        .finally(() => {
+      setLoading(false);
+    });
 
     console.log("payment==========>", total);
   };
@@ -273,7 +278,7 @@ const UpgradeModal = ({ open, onClose }) => {
 
         {/* 🔹 Pay Now Button */}
         <Space style={{ width: "100%", justifyContent: "center" }}>
-          <Button
+          {/* <Button
             type="primary"
             size="large"
             onClick={makePayment} // Razorpay open karega
@@ -289,7 +294,29 @@ const UpgradeModal = ({ open, onClose }) => {
             icon={<CrownOutlined />}
           >
             Pay Now
-          </Button>
+            
+          </Button> */}
+
+          <Button
+  type="primary"
+  size="large"
+  onClick={makePayment}
+  loading={loading}   // <-- loader binding
+  disabled={loading}  // <-- multiple click avoid
+  style={{
+    minWidth: "160px",
+    height: "48px",
+    borderRadius: "8px",
+    fontWeight: "600",
+    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+    border: "none",
+    boxShadow: "0 4px 12px rgba(102, 126, 234, 0.4)",
+  }}
+  icon={<CrownOutlined />}
+>
+  {loading ? "Processing..." : "Pay Now"}
+</Button>
+
         </Space>
       </div>
 

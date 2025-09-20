@@ -34,7 +34,7 @@ const RealEstateLeftPopups = () => {
   };
 
   return (
-    <div className="hidden md:block absolute left-0 w-full h-full pointer-events-none z-50">
+    <div className="hidden md:block absolute left-0 w-full h-full pointer-events-none z-50 ">
       <div className="absolute left-4 top-4 space-y-4 pointer-events-auto cursor-pointer">
         {popups.map((popup, index) => {
           const property = popup?.propertyId;

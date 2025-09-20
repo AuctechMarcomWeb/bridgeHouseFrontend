@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   Modal,
   Button,
@@ -10,8 +10,10 @@ import {
   Col,
 } from "antd";
 import { CrownOutlined } from "@ant-design/icons";
-import { getRequest } from "../Helpers";
+import { getRequest, postRequest } from "../Helpers";
 import BridgeHousepayment from "./bridgeHousepayment";
+import RenderRazorpay from "./Payment/RenderRazorpay";
+import { ProfileContext } from "../context/ProfileContext";
 
 const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
@@ -21,6 +23,9 @@ const UpgradeModal = ({ open, onClose }) => {
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [showPayment, setShowPayment] = useState(false);
+  const { user } = useContext(ProfileContext);
+
+
 
   useEffect(() => {
     getRequest(`subscription-packages`)
@@ -32,9 +37,52 @@ const UpgradeModal = ({ open, onClose }) => {
       .catch((err) => console.log("Api Error", err));
   }, []);
 
+  // const orderDetails = {
+  //   amount: 400,
+  //   currency: "INR",
+  //   orderId: "order_RJqEKTkCAQiYlg",
+  // };
+
+  console.log("selectedPlan",selectedPlan);
+  
+
+  const [orderDetails, setOrderDetails] = useState(null);
+
   const subtotal = selectedPlan ? selectedPlan.price * quantity : 0;
   const tax = subtotal * 0.18;
   const total = subtotal + tax;
+
+  const makePayment = (e) => {
+    e.preventDefault();
+    setShowPayment(false)
+
+    postRequest({
+      url: `payment/create`,
+      cred: {
+        userId: user?._id,
+        planName: selectedPlan?.name,
+        quantity:quantity,
+        price: total,
+        name: "John Doe",
+        email: "john@example.com",
+        phone: "9876543210",
+        address: "123, MG Road",
+        city: "Mumbai",
+        state: "Maharashtra",
+        pincode: "400001",
+      },
+    }).then((res)=>{
+      console.log("res dat a ===>",res?.data?.data?.order);
+      setOrderDetails(res?.data?.data?.razorpayOrder)
+      setShowPayment(true)
+      
+    }).catch((error)=>{
+      console.log("error",error);
+      
+    })
+
+    console.log("payment==========>", total);
+  };
 
   return (
     <Modal
@@ -95,7 +143,7 @@ const UpgradeModal = ({ open, onClose }) => {
               >
                 {plans.map((plan) => (
                   <Option key={plan._id} value={plan._id}>
-                    {plan.name}
+                   Unit - {plan?.PropertyListingLimit} PropertyListing - ₹{plan?.price}
                   </Option>
                 ))}
               </Select>
@@ -139,7 +187,7 @@ const UpgradeModal = ({ open, onClose }) => {
               </Text>
             </Col>
           </Row>
-         </div>
+        </div>
 
         {/* Summary Section */}
         <div
@@ -152,25 +200,50 @@ const UpgradeModal = ({ open, onClose }) => {
           }}
         >
           {/* Subtotal */}
-          <p style={{ fontSize: "16px", margin: "6px 0", display: "flex", justifyContent: "space-between" }}>
+          <p
+            style={{
+              fontSize: "16px",
+              margin: "6px 0",
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
             <span>Subtotal</span>
             <strong>₹{subtotal.toFixed(2)}</strong>
           </p>
 
           {/* Tax */}
-          <p style={{ fontSize: "16px", margin: "6px 0", display: "flex", justifyContent: "space-between" }}>
+          <p
+            style={{
+              fontSize: "16px",
+              margin: "6px 0",
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
             <span>Tax (18%)</span>
             <strong>₹{tax.toFixed(2)}</strong>
           </p>
 
           {/* Payment Method */}
-          <p style={{ fontSize: "18px", margin: "6px 0", display: "flex", justifyContent: "space-between" }}>
+          <p
+            style={{
+              fontSize: "18px",
+              margin: "6px 0",
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
             <span>Payment Method</span>
-            <strong style={{
-              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-            }}>Online Payment</strong>
+            <strong
+              style={{
+                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
+              Online Payment
+            </strong>
           </p>
 
           <Divider style={{ margin: "15px 0" }} />
@@ -198,13 +271,12 @@ const UpgradeModal = ({ open, onClose }) => {
           </p>
         </div>
 
-
         {/* 🔹 Pay Now Button */}
         <Space style={{ width: "100%", justifyContent: "center" }}>
           <Button
             type="primary"
             size="large"
-            onClick={() => {console.log("===============") ,setShowPayment(true)} }// Razorpay open karega
+            onClick={makePayment} // Razorpay open karega
             style={{
               minWidth: "160px",
               height: "48px",
@@ -222,12 +294,13 @@ const UpgradeModal = ({ open, onClose }) => {
       </div>
 
       {/* Razorpay Payment Trigger */}
+
       {showPayment && (
-        <BridgeHousepayment
-        open={open}
-          total={total}
-          selectedPlan={selectedPlan}
-          onClose={() => setShowPayment(false)}
+        <RenderRazorpay
+          amount={orderDetails.amount}
+          currency={orderDetails.currency}
+          orderId={orderDetails.id}
+          
         />
       )}
     </Modal>
@@ -236,5 +309,4 @@ const UpgradeModal = ({ open, onClose }) => {
 
 export default UpgradeModal;
 
-
-UpgradeModal.js
+UpgradeModal.js;

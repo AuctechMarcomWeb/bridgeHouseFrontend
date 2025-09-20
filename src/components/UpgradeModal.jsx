@@ -1,8 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Button, Typography, Select, Space, Divider } from "antd";
+import {
+  Modal,
+  Button,
+  Typography,
+  Select,
+  Space,
+  Divider,
+  Row,
+  Col,
+} from "antd";
 import { CrownOutlined } from "@ant-design/icons";
 import { getRequest } from "../Helpers";
-import { handlePayment } from "./RazorPayCheckout";
+import BridgeHousepayment from "./bridgeHousepayment";
 
 const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
@@ -11,6 +20,7 @@ const UpgradeModal = ({ open, onClose }) => {
   const [plans, setPlans] = useState([]);
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [quantity, setQuantity] = useState(1);
+  const [showPayment, setShowPayment] = useState(false);
 
   useEffect(() => {
     getRequest(`subscription-packages`)
@@ -32,14 +42,15 @@ const UpgradeModal = ({ open, onClose }) => {
       open={open}
       onCancel={onClose}
       footer={null}
-      width={700}
+      width="90%"
+      style={{ maxWidth: 700 }}
       centered
     >
       {/* 🔹 Header */}
       <div
         style={{
           background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-          padding: "32px",
+          padding: "24px",
           textAlign: "center",
           color: "white",
         }}
@@ -55,82 +66,82 @@ const UpgradeModal = ({ open, onClose }) => {
       </div>
 
       {/* 🔹 Body */}
-      <div style={{ padding: "32px" }}>
+      <div style={{ padding: "24px" }}>
         <Title level={4}>Select Your Plan</Title>
 
-        {/* Plan + Quantity + Price Row */}
+        {/* Plan + Quantity + Price */}
         <div
           style={{
-            display: "flex",
-            alignItems: "flex-start",
-            gap: "16px",
-            marginBottom: "20px",
             padding: "16px",
             borderRadius: "12px",
             background: "#f9f9ff",
             boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+            marginBottom: "20px",
           }}
         >
-          {/* Plan Dropdown */}
-          <div style={{ flex: 1 }}>
-            <Text strong style={{ display: "block", marginBottom: "6px" }}>
-              Select Plan
-            </Text>
-            <Select
-              value={selectedPlan?._id}
-              onChange={(id) =>
-                setSelectedPlan(plans.find((plan) => plan._id === id))
-              }
-              style={{ width: "100%" }}
-              size="large"
-            >
-              {plans.map((plan) => (
-                <Option key={plan._id} value={plan._id}>
-                  {plan.name}
-                </Option>
-              ))}
-            </Select>
-          </div>
+          <Row gutter={[16, 16]}>
+            {/* Plan Dropdown */}
+            <Col xs={24} sm={12}>
+              <Text strong style={{ display: "block", marginBottom: "6px" }}>
+                Select Plan
+              </Text>
+              <Select
+                value={selectedPlan?._id}
+                onChange={(id) =>
+                  setSelectedPlan(plans.find((plan) => plan._id === id))
+                }
+                style={{ width: "100%" }}
+                size="large"
+              >
+                {plans.map((plan) => (
+                  <Option key={plan._id} value={plan._id}>
+                    {plan.name}
+                  </Option>
+                ))}
+              </Select>
+            </Col>
 
-          {/* Quantity Dropdown */}
-          <div>
-            <Text strong style={{ display: "block", marginBottom: "6px" }}>
-              Quantity
-            </Text>
-            <Select
-              value={quantity}
-              onChange={(val) => setQuantity(val)}
-              style={{ width: 100 }}
-              size="large"
-            >
-              {[...Array(10)].map((_, i) => (
-                <Option key={i + 1} value={i + 1}>
-                  {i + 1}
-                </Option>
-              ))}
-            </Select>
-          </div>
+            {/* Quantity Dropdown */}
+            <Col xs={12} sm={6}>
+              <Text strong style={{ display: "block", marginBottom: "6px" }}>
+                Quantity
+              </Text>
+              <Select
+                value={quantity}
+                onChange={(val) => setQuantity(val)}
+                style={{ width: "100%" }}
+                size="large"
+              >
+                {[...Array(10)].map((_, i) => (
+                  <Option key={i + 1} value={i + 1}>
+                    {i + 1}
+                  </Option>
+                ))}
+              </Select>
+            </Col>
 
-          {/* Price */}
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            <Text strong style={{ marginBottom: "6px" }}>
-              Price
-            </Text>
-            <Text
-              strong
-              style={{
-                fontSize: "18px",
-                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-            >
-              ₹{(selectedPlan ? selectedPlan.price * quantity : 0).toFixed(2)}
-            </Text>
-          </div>
-        </div>
+            {/* Price */}
+            <Col xs={12} sm={6}>
+              <Text strong style={{ display: "block", marginBottom: "6px" }}>
+                Price
+              </Text>
+              <Text
+                strong
+                style={{
+                  fontSize: "18px",
+                  background:
+                    "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              >
+                ₹{(selectedPlan ? selectedPlan.price * quantity : 0).toFixed(2)}
+              </Text>
+            </Col>
+          </Row>
+         </div>
 
-        {/* 🔹 Summary Section */}
+        {/* Summary Section */}
         <div
           style={{
             padding: "16px",
@@ -140,22 +151,41 @@ const UpgradeModal = ({ open, onClose }) => {
             marginBottom: "24px",
           }}
         >
-          <p style={{ fontSize: "16px", margin: "4px 0" }}>
-            Subtotal: <strong>₹{subtotal.toFixed(2)}</strong>
+          {/* Subtotal */}
+          <p style={{ fontSize: "16px", margin: "6px 0", display: "flex", justifyContent: "space-between" }}>
+            <span>Subtotal</span>
+            <strong>₹{subtotal.toFixed(2)}</strong>
           </p>
-          <p style={{ fontSize: "16px", margin: "4px 0" }}>
-            Tax (18%): <strong>₹{tax.toFixed(2)}</strong>
+
+          {/* Tax */}
+          <p style={{ fontSize: "16px", margin: "6px 0", display: "flex", justifyContent: "space-between" }}>
+            <span>Tax (18%)</span>
+            <strong>₹{tax.toFixed(2)}</strong>
           </p>
-          <Divider style={{ margin: "8px 0" }} />
+
+          {/* Payment Method */}
+          <p style={{ fontSize: "18px", margin: "6px 0", display: "flex", justifyContent: "space-between" }}>
+            <span>Payment Method</span>
+            <strong style={{
+              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}>Online Payment</strong>
+          </p>
+
+          <Divider style={{ margin: "15px 0" }} />
+
+          {/* Total Paid */}
           <p
             style={{
-              fontSize: "20px",
+              fontSize: "18px",
               fontWeight: "bold",
-              margin: "4px 0",
-              color: "#333",
+              margin: "6px 0",
+              display: "flex",
+              justifyContent: "space-between",
             }}
           >
-            Total:{" "}
+            <span>Total Paid</span>
             <span
               style={{
                 background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
@@ -168,12 +198,13 @@ const UpgradeModal = ({ open, onClose }) => {
           </p>
         </div>
 
-        {/* 🔹 Footer Buttons */}
+
+        {/* 🔹 Pay Now Button */}
         <Space style={{ width: "100%", justifyContent: "center" }}>
           <Button
             type="primary"
             size="large"
-            onClick={() => handlePayment({ total, selectedPlan })}
+            onClick={() => {console.log("===============") ,setShowPayment(true)} }// Razorpay open karega
             style={{
               minWidth: "160px",
               height: "48px",
@@ -189,8 +220,21 @@ const UpgradeModal = ({ open, onClose }) => {
           </Button>
         </Space>
       </div>
+
+      {/* Razorpay Payment Trigger */}
+      {showPayment && (
+        <BridgeHousepayment
+        open={open}
+          total={total}
+          selectedPlan={selectedPlan}
+          onClose={() => setShowPayment(false)}
+        />
+      )}
     </Modal>
   );
 };
 
 export default UpgradeModal;
+
+
+UpgradeModal.js

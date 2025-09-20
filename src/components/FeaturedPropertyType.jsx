@@ -115,7 +115,7 @@ export default function FeaturedPropertyType() {
           Luxury
         </p>
       </div>
-
+ 
       {/* Property Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 w-full lg:w-[80%] xl:w-[75%] 2xl:w-[70%] mx-auto">
         {categories.map((category) => {
@@ -155,7 +155,7 @@ export default function FeaturedPropertyType() {
           );
         })}
       </div>
-      <RealEstatePopups />
+     <RealEstatePopups />
       <RealEstateLeftPopups />
     </div>
   );

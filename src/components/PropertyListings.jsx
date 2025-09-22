@@ -211,6 +211,7 @@ const PropertyListings = () => {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
+
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [searchTerm, setSearchTerm] = useState("");
@@ -223,10 +224,12 @@ const PropertyListings = () => {
   const [loading, setLoading] = useState(true);
   const [properties, setProperties] = useState([]);
   const { search } = useContext(PropertyContext);
+  const [localSearch, setLocalSearch] = useState(""); // local input state
+
   useEffect(() => {
     setLoading(true);
     getRequest(
-      `properties?page=${page}&limit=${limit}&search=${search}&sortBy=${sortBy}&isPagination=${isPagination}&propertyType=${propertyType}`
+      `properties?page=${page}&limit=${limit}&search=${localSearch}&sortBy=${sortBy}&isPagination=${isPagination}&propertyType=${propertyType}`
     )
       .then((res) => {
         setProperties(res?.data?.data?.properties || []);
@@ -234,11 +237,10 @@ const PropertyListings = () => {
       })
       .catch((err) => console.log("Api Error", err))
       .finally(() => setLoading(false));
-  }, [page, limit, search, sortBy, isPagination, propertyType]);
+  }, [page, limit, localSearch, sortBy, isPagination, propertyType]);
 
   const navigate = useNavigate();
   const handleClick = (id) => {
-    console.log("id=====", id);
     navigate(`/property-detail/${id}`);
   };
 
@@ -353,8 +355,8 @@ const PropertyListings = () => {
           <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 gap-4">
             {/* Left side - Results Count */}
             <div className="text-gray-600 text-sm sm:text-base">
-              Showing result
-              {/* <span className="font-medium">05</span> of{" "}
+              {/* Showing result
+              <span className="font-medium">05</span> of{" "}
               <span className="font-medium">125</span> */}
             </div>
 
@@ -385,8 +387,8 @@ const PropertyListings = () => {
                   type="text"
                   placeholder="Search..."
                   className="w-full focus:outline-none text-sm text-gray-700"
-                  // value={searchQuery}
-                  // onChange={(e) => setSearchQuery(e.target.value)}
+                  value={localSearch} // bind to local state
+                  onChange={(e) => setLocalSearch(e.target.value)} // setSearch should come from PropertyContext
                 />
               </div>
               {/* <div className="flex items-center gap-2">

@@ -1,13 +1,19 @@
-import React, { useEffect, useState } from "react";
+/* eslint-disable no-unused-vars */
+import React, { useContext, useEffect, useState } from "react";
 import { Home, Building, Search, Warehouse, Building2 } from "lucide-react";
 import bannerBg from "../assets/bridge-bg.png";
 import SearchBar from "../components/SearchBar";
 import { getRequest } from "../Helpers";
+import { PropertyContext } from "../context/PropertyContext";
+import { useNavigate } from "react-router-dom";
 
 const RealEstateBanner = () => {
   const [activeTab, setActiveTab] = useState("");
-  const [propertyTypes, setPropertyTypes] = useState([]);
+  console.log("ActiveTab state:", activeTab); // 🔹 Check activeTab state
 
+  const [propertyTypes, setPropertyTypes] = useState([]);
+  const { setPropertyType, setUpdateStatus } = useContext(PropertyContext);
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     city: "",
     propertyType: "",
@@ -23,7 +29,11 @@ const RealEstateBanner = () => {
   };
 
   const handleTabSwitch = (tab) => {
+    console.log("===Tab clicked:", tab); // 🔹 Which tab was clicked
     setActiveTab(tab);
+    console.log("@@@@ActiveTab before setPropertyType:", activeTab); // 🔹 current state (still old value because setState is async)
+    setPropertyType(tab); // ✅ update context
+    console.log("P####ropertyType set in context:", tab); // 🔹 confirm what is sent to context
   };
 
   const handleInputChange = (field, value) => {
@@ -44,7 +54,9 @@ const RealEstateBanner = () => {
       })
       .catch((err) => console.log("Error fetching categories:", err));
   }, []);
-
+  useEffect(() => {
+    console.log("ActiveTab updated:", activeTab);
+  }, [activeTab]);
   const formatPrice = (value) => {
     const numericValue = value.replace(/\D/g, "");
     if (numericValue) {
@@ -58,42 +70,42 @@ const RealEstateBanner = () => {
     handleInputChange(field, formattedValue);
   };
 
-  const handleSearch = () => {
-    const searchParams = {
-      type: activeTab,
-      ...formData,
-    };
+  // const handleSearch = () => {
+  //   const searchParams = {
+  //     type: activeTab,
+  //     ...formData,
+  //   };
 
-    alert(
-      `Searching for ${searchParams.type} properties...\n\nCity: ${
-        searchParams.city || "Any"
-      }\nType: ${searchParams.propertyType || "Any"}\nLocation: ${
-        searchParams.address || "Any"
-      }\nPrice Range: ${searchParams.minPrice || "$0"} - ${
-        searchParams.maxPrice || "$∞"
-      }`
-    );
+  //   alert(
+  //     `Searching for ${searchParams.type} properties...\n\nCity: ${
+  //       searchParams.city || "Any"
+  //     }\nType: ${searchParams.propertyType || "Any"}\nLocation: ${
+  //       searchParams.address || "Any"
+  //     }\nPrice Range: ${searchParams.minPrice || "$0"} - ${
+  //       searchParams.maxPrice || "$∞"
+  //     }`
+  //   );
 
-    console.log("Search Parameters:", searchParams);
-  };
+  //   console.log("Search Parameters:", searchParams);
+  // };
 
-  const cityOptions = [
-    { value: "", label: "Select" },
-    { value: "lucnkow ", label: "Lucnkow" },
-    { value: "barabanki", label: "Barabanki  " },
-    { value: "sitapur", label: "Sitapur" },
-    { value: "hardoi", label: "Hardoi" },
-    { value: "kanpur", label: "Kanpur" },
-  ];
+  // const cityOptions = [
+  //   { value: "", label: "Select" },
+  //   { value: "lucnkow ", label: "Lucnkow" },
+  //   { value: "barabanki", label: "Barabanki  " },
+  //   { value: "sitapur", label: "Sitapur" },
+  //   { value: "hardoi", label: "Hardoi" },
+  //   { value: "kanpur", label: "Kanpur" },
+  // ];
 
-  const propertyTypeOptions = [
-    { value: "", label: "Select" },
-    { value: "1-bhk", label: "1 BHK" },
-    { value: "2-bhk", label: "2 BHK" },
-    { value: "3-bhk", label: "3 BHK" },
-    { value: "villa", label: "Villa" },
-    { value: "townhouse", label: "Townhouse" },
-  ];
+  // const propertyTypeOptions = [
+  //   { value: "", label: "Select" },
+  //   { value: "1-bhk", label: "1 BHK" },
+  //   { value: "2-bhk", label: "2 BHK" },
+  //   { value: "3-bhk", label: "3 BHK" },
+  //   { value: "villa", label: "Villa" },
+  //   { value: "townhouse", label: "Townhouse" },
+  // ];
 
   return (
     <div
@@ -157,7 +169,8 @@ const RealEstateBanner = () => {
             )}
           </div>
 
-          <SearchBar />
+          {/* Pass activeTab to SearchBar */}
+          <SearchBar activeTab={activeTab} />
         </div>
 
         {/* Search Form */}

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { State } from "country-state-city";
 import React, { useState, useRef, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
@@ -17,7 +18,8 @@ const SearchBar = () => {
 
   //const [selectedState, setSelectedState] = useState();
   const navigate = useNavigate();
-  const { search, setSearch, setUpdateStatus } = useContext(PropertyContext);
+  const { search, setSearch, setUpdateStatus, propertyType } =
+    useContext(PropertyContext);
 
   // ✅ Load states
   useEffect(() => {
@@ -45,28 +47,28 @@ const SearchBar = () => {
 
   // ✅ Just redirect
   const handleSearch = () => {
+    console.log("Current propertyType:", propertyType); // 🔍 Debug
+
     if (
       (!selectedLocation || selectedLocation === "Select State") &&
       (!searchQuery || searchQuery.trim() === "")
     ) {
-      alert("Please select at least a state or an address!");
+      alert("Please enter a state, an address");
       return;
     }
-    const queryParams = new URLSearchParams();
 
-    if (selectedLocation && selectedLocation !== "Select State") {
-      queryParams.append("state", selectedLocation);
+    let searchValue = "";
+
+    if (searchQuery && searchQuery.trim() !== "") {
+      searchValue = searchQuery.trim();
+    } else if (selectedLocation && selectedLocation !== "Select State") {
+      searchValue = selectedLocation;
     }
 
-    if (searchQuery && searchQuery.trim() === "") {
-      queryParams.append("address", searchQuery);
-    }
-    // Update context
-    //setSearch(searchQuery);
-    setUpdateStatus((prev) => !prev);
+    setSearch(searchValue); // Update context
+    setUpdateStatus((prev) => !prev); // Trigger update
 
-    // navigate with filters
-    navigate(`/property-list`);
+    navigate("/property-list", { replace: false });
   };
 
   return (

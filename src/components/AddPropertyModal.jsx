@@ -24,6 +24,8 @@ const AddPropertyModal = ({
   const [bhk, setBhk] = useState([]);
   const [services, setServices] = useState([]);
   const [facilites, setFacilites] = useState([]);
+  const [documents, setDocuments] = useState([]);
+
   const [formData, setFormData] = useState(
     modalData
       ? { ...modalData }
@@ -95,6 +97,15 @@ const AddPropertyModal = ({
       .catch((error) => {
         console.log("error", error);
       });
+    getRequest(`documents?isPagination=false`)
+      .then((res) => {
+        const responseData = res?.data?.data;
+        console.log("documents", responseData);
+        setDocuments(responseData?.documents);
+      })
+      .catch((error) => {
+        console.log("error", error);
+      });
   }, []);
 
   const typeOption = type?.map((item, index) => {
@@ -105,6 +116,13 @@ const AddPropertyModal = ({
     );
   });
   const bhkOption = bhk?.map((item, index) => {
+    return (
+      <>
+        <option value={item?.name}>{item?.name}</option>
+      </>
+    );
+  });
+  const documentsOption = documents?.map((item, index) => {
     return (
       <>
         <option value={item?.name}>{item?.name}</option>
@@ -330,7 +348,7 @@ const AddPropertyModal = ({
   const addDocument = () => {
     setFormData((prev) => ({
       ...prev,
-      documents: [...prev.nearby, { name: "", number: "", image: "" }],
+      documents: [...prev.documents, { name: "", number: "", image: "" }],
     }));
   };
 
@@ -502,13 +520,14 @@ const AddPropertyModal = ({
                 <div>
                   <label className="form-label fw-bold">Area</label>
                   <input
-                    type="text"
+                    type="number"
                     className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                     name="area"
                     data-nested="propertyDetails"
                     value={formData?.propertyDetails?.area || ""}
                     onChange={handleChange}
                     placeholder="Enter area (e.g., 1200 sqft)"
+                    required
                   />
                 </div>
 
@@ -516,13 +535,14 @@ const AddPropertyModal = ({
                 <div>
                   <label className="form-label fw-bold">Bedrooms</label>
                   <input
-                    type="text"
+                    type="number"
                     className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                     name="bedrooms"
                     data-nested="propertyDetails"
                     value={formData?.propertyDetails?.bedrooms || ""}
                     onChange={handleChange}
                     placeholder="Enter number of bedrooms"
+                    required
                   />
                 </div>
 
@@ -530,13 +550,14 @@ const AddPropertyModal = ({
                 <div>
                   <label className="form-label fw-bold">Bathrooms</label>
                   <input
-                    type="text"
+                    type="number"
                     className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                     name="bathrooms"
                     data-nested="propertyDetails"
                     value={formData?.propertyDetails?.bathrooms || ""}
                     onChange={handleChange}
                     placeholder="Enter number of bathrooms"
+                    required
                   />
                 </div>
 
@@ -544,13 +565,14 @@ const AddPropertyModal = ({
                 <div>
                   <label className="form-label fw-bold">Floors</label>
                   <input
-                    type="text"
+                    type="number"
                     className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                     name="floors"
                     data-nested="propertyDetails"
                     value={formData?.propertyDetails?.floors || ""}
                     onChange={handleChange}
                     placeholder="Enter number of floors"
+                    required
                   />
                 </div>
 
@@ -565,6 +587,7 @@ const AddPropertyModal = ({
                     value={formData?.propertyDetails?.facing || ""}
                     onChange={handleChange}
                     placeholder="Enter facing direction"
+                    required
                   />
                 </div>
 
@@ -572,13 +595,14 @@ const AddPropertyModal = ({
                 <div>
                   <label className="form-label fw-bold">Built Year</label>
                   <input
-                    type="text"
+                    type="number"
                     className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                     name="builtYear"
                     data-nested="propertyDetails"
                     value={formData?.propertyDetails?.builtYear || ""}
                     onChange={handleChange}
                     placeholder="Enter year built"
+                    required
                   />
                 </div>
               </div>
@@ -595,6 +619,7 @@ const AddPropertyModal = ({
                   value={formData?.address || modalData?.address}
                   onSelect={handleLocationSelect}
                   className="w-full p-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                  required
                 />
               </div>
 
@@ -626,6 +651,7 @@ const AddPropertyModal = ({
                   mode="tags"
                   size="large"
                   style={{ width: "100%" }}
+                  required
                   placeholder="Enter/Select Your Facilities"
                   onChange={(value) => {
                     setFormData({
@@ -649,6 +675,7 @@ const AddPropertyModal = ({
                   size="large"
                   style={{ width: "100%" }}
                   placeholder="Enter/Select Your Services"
+                  required
                   onChange={(value) => {
                     setFormData({
                       ...formData,
@@ -748,19 +775,21 @@ const AddPropertyModal = ({
                       onChange={(e) => handleNearByChange(e, index)}
                       className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none transition-all"
                       placeholder="Enter nearby name"
+                      required
                     />
                   </div>
 
                   {/* Distance / Description */}
                   <div>
-                    <label className="form-label">Description</label>
+                    <label className="form-label">Distance</label>
                     <input
-                      type="text"
+                      type="number"
                       name={`facilityDistance_${index}`}
                       value={facility?.distance || ""}
                       onChange={(e) => handleNearByChange(e, index)}
                       className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                      placeholder="Enter distance / description"
+                      placeholder="Enter distance"
+                      required
                     />
                   </div>
 
@@ -804,14 +833,15 @@ const AddPropertyModal = ({
                   {/* Document Name */}
                   <div>
                     <label className="form-label">Document Name</label>
-                    <input
-                      type="text"
+                    <select
                       name={`documentName_${index}`}
-                      value={doc?.name || ""}
+                      value={doc?.name}
                       onChange={(e) => handleDocumentChange(e, index)}
-                      className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                      placeholder="Enter document name"
-                    />
+                      className="w-full p-2 border border-gray-300 rounded-l focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                    >
+                      <option value="">Select Document</option>
+                      {documentsOption}
+                    </select>
                   </div>
 
                   {/* Document Number */}
@@ -824,6 +854,7 @@ const AddPropertyModal = ({
                       onChange={(e) => handleDocumentChange(e, index)}
                       className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none transition-all"
                       placeholder="Enter document number"
+                      required
                     />
                   </div>
 
@@ -882,69 +913,6 @@ const AddPropertyModal = ({
                 >
                   Add More
                 </button>
-              </div>
-            </div>
-
-            <hr className="m-0 p-0 my-3" />
-
-            <div className="grid grid-cols-2 gap-4">
-              {/* Adopted Status */}
-              <div>
-                <label className="form-label fw-bold">Adopted Status *</label>
-                <select
-                  className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                  name="isAdopted"
-                  value={formData?.isAdopted || "false"}
-                  onChange={handleChange}
-                >
-                  <option value="true">Adopted</option>
-                  <option value="false">Not Adopted</option>
-                </select>
-              </div>
-
-              {/* Verified Status */}
-              <div>
-                <label className="form-label fw-bold">Verified Status *</label>
-                <select
-                  className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                  name="isVerified"
-                  value={formData?.isVerified || "false"}
-                  onChange={handleChange}
-                >
-                  <option value="true">Verified</option>
-                  <option value="false">Not Verified</option>
-                </select>
-              </div>
-
-              {/* Approval Status */}
-              <div>
-                <label className="form-label fw-bold">Approval Status *</label>
-                <select
-                  className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                  name="approvalStatus"
-                  value={formData?.approvalStatus || "Pending"}
-                  onChange={handleChange}
-                >
-                  <option value="Pending">Pending</option>
-                  <option value="Published">Published</option>
-                  <option value="Rejected">Rejected</option>
-                </select>
-              </div>
-
-              {/* Property Status */}
-              <div>
-                <label className="form-label fw-bold">Property Status *</label>
-                <select
-                  className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                  name="status"
-                  value={formData?.status || "Available"}
-                  onChange={handleChange}
-                >
-                  <option value="Available">Available</option>
-                  <option value="Sold">Sold</option>
-                  <option value="Registered">Registered</option>
-                  <option value="Booked">Booked</option>
-                </select>
               </div>
             </div>
           </div>

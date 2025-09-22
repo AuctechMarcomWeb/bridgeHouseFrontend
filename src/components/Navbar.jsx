@@ -1,6 +1,8 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect, useContext, useRef } from "react";
-import { Menu, X, Stethoscope, User, LogOut, HelpCircle } from "lucide-react";
+import {
+  Menu, X, Stethoscope, User, LogOut, HelpCircle, Wallet
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
@@ -18,7 +20,7 @@ const Navbar = () => {
   const { getCookie } = useCookie();
 
   //const userID = getCookie("userID", 30);
-  
+
   useEffect(() => {
     console.log("User data in Navbar:", user);
   }, [user]);
@@ -127,7 +129,7 @@ const Navbar = () => {
 
                 {/* Dropdown Menu */}
                 {dropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-full bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
+                  <div className="absolute right-0 mt-2 w-[200] bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
                     <Link
                       to="/profile"
                       className="block px-4 py-1.5 text-sm text-gray-700 hover:bg-gray-100 transition flex-start"
@@ -138,20 +140,36 @@ const Navbar = () => {
                         Profile
                       </button>
                     </Link>
-                  
-              {user?.accountType !== "Buyer" && (
-     <Link
-    to="/enquiry"
-    className="block px-4 py-1.5 text-sm text-gray-700 hover:bg-gray-100 transition flex-start"
-    onClick={() => setDropdownOpen(false)}
-  >
-    <button className="flex items-center gap-2 w-full py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer">
-      <HelpCircle className="w-4 h-4" />
-      Enquiry
-    </button>
-  </Link>
-              )}
 
+                    {/* conditional render of enquiry */}
+                    {user?.accountType !== "Buyer" && (
+                      <Link
+                        to="/enquiry"
+                        className="block px-4 py-1.5 text-sm text-gray-700 hover:bg-gray-100 transition flex-start"
+                        onClick={() => setDropdownOpen(false)}
+                      >
+                        <button className="flex items-center gap-2 w-full py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer">
+                          <HelpCircle className="w-4 h-4" />
+                          Enquiry
+                        </button>
+                      </Link>
+                    )}
+
+                    {/* conditional render of paymentHistory */}
+
+                    {user?.accountType !== "Buyer" && (
+                      <Link
+                        to="/paymentHistory"
+                        className="block px-4 py-1.5 text-sm text-gray-700 hover:bg-gray-100 transition"
+                        onClick={() => setDropdownOpen(false)}
+                      >
+                        <button className="flex items-center gap-2 w-full py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+
+                          <Wallet className="w-4 h-4" />
+                          SubInfo
+                        </button>
+                      </Link>
+                    )}
 
 
 
@@ -240,33 +258,59 @@ const Navbar = () => {
                   </div>
 
                   {/* Dropdown in Mobile */}
-                  {dropdownOpen && (
-                    <div className="mt-1 bg-white shadow-lg rounded-md border border-gray-200 overflow-hidden w-auto min-w-max">
-                      <Link
-                        to="/profile"
-                        className="block px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100 transition"
-                        onClick={() => {
-                          setDropdownOpen(false);
-                          setIsMenuOpen(false);
-                        }}
-                      >
-                        {" "}
-                        <User className="w-5 h-5 " />
-                        Profile
-                      </Link>
-                      <button
-                        className="w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100 transition"
-                        onClick={() => {
-                          logout();
-                          setDropdownOpen(false);
-                          setIsMenuOpen(false);
-                        }}
-                      >
-                        <LogOut className="w-5 h-5" />
-                        Logout
-                      </button>
-                    </div>
-                  )}
+{dropdownOpen && (
+  <div className="mt-1 bg-white shadow-lg rounded-md border border-gray-200 overflow-hidden 
+                  w-full sm:w-64 max-w-xs mx-auto">
+    <Link
+      to="/profile"
+      className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition"
+      onClick={() => {
+        setDropdownOpen(false);
+        setIsMenuOpen(false);
+      }}
+    >
+      <User className="w-5 h-5" />
+      Profile
+    </Link>
+
+    {user?.accountType !== "Buyer" && (
+      <Link
+        to="/enquiry"
+        className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition"
+        onClick={() => setDropdownOpen(false)}
+      >
+        <HelpCircle className="w-4 h-4" />
+        Enquiry
+      </Link>
+    )}
+
+    {user?.accountType !== "Buyer" && (
+      <Link
+        to="/paymentHistory"
+        className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition"
+        onClick={() => setDropdownOpen(false)}
+      >
+        <Wallet className="w-4 h-4" />
+        SubInfo
+      </Link>
+    )}
+
+    <button
+      className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition"
+      onClick={() => {
+        logout();
+        setDropdownOpen(false);
+        setIsMenuOpen(false);
+      }}
+    >
+      <LogOut className="w-5 h-5" />
+      Logout
+    </button>
+  </div>
+)}
+
+
+
                 </div>
               ) : (
                 <Link to="/login" className="block px-3 py-2 text-gray-700">

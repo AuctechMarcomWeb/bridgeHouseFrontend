@@ -185,7 +185,7 @@ const EnquiryPage = () => {
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white shadow-2xl rounded-2xl p-6 md:p-8 mb-6 border border-gray-100">
           {/* Heading */}
-          <h2 className="text-2xl font-bold text-purple-400 mb-4">Filter Enquiries</h2>
+          <h2 className="text-2xl font-bold text-[#004d88]  mb-4">Filter Enquiries</h2>
 
           {/* Form Controls */}
           <div className="flex flex-wrap items-center gap-4">
@@ -210,13 +210,15 @@ const EnquiryPage = () => {
             </select>
 
             {/* Export Button */}
-            <Button
-              type="primary"
-              className="bg-gradient-to-r from-cyan-400 to-teal-500 
-                   hover:scale-105 transition-transform duration-300"
-            >
-              Export
-            </Button>
+  <Button
+  type="primary"
+  className="!bg-[#004d88] text-white font-semibold 
+             transition-all duration-300 rounded-lg shadow-md"
+>
+  Export
+</Button>
+
+
           </div>
         </div>
       </div>
@@ -267,3 +269,6 @@ const EnquiryPage = () => {
 };
 
 export default EnquiryPage;
+
+
+// bg- 

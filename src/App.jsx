@@ -15,6 +15,7 @@ import RealEstateProfile from "./pages/RealEstateProfile";
 import { ProfileProvider } from "./context/ProfileContext";
 import EnquiryPage from "./pages/EnquiryPage";
 import { Toaster } from "react-hot-toast";
+import PaymentHistory from "./pages/paymentHistory";
 // import Signup from "./components/Signup";
 
 function App() {
@@ -41,6 +42,7 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/profile" element={<RealEstateProfile />} />
           <Route path="/enquiry" element={<EnquiryPage />} />
+            <Route path="/paymentHistory" element={<PaymentHistory />} />
           <Route
             path="/terms-and-conditions"
             element={<TermsAndConditions />}

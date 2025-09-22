@@ -34,6 +34,16 @@ export default function EditProfileModal({
         }
   );
 
+useEffect(() => {
+  if (user) {
+    setFormData({
+      ...user,
+      dob: formatDateCreatedAt(user?.dob),
+    });
+  }
+}, [user]);
+
+
   console.log("formdata", formData);
   console.log("occupation", formData?.occupation);
 

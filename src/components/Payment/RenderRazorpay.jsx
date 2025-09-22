@@ -1,6 +1,8 @@
-import { useEffect, useRef } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { postRequest } from "../../Helpers";
 import toast from "react-hot-toast";
+import { ProfileContext } from "../../context/ProfileContext";
+
 
 const loadScript = (src) =>
   new Promise((resolve) => {
@@ -61,6 +63,8 @@ const RenderRazorpay = ({ orderId, currency, amount }) => {
 
     rzp1.open();
   };
+  const { user, setUser, setUpdateStatus } = useContext(ProfileContext);
+  console.log("===========user details", user)
 
   const options = {
     key: "rzp_test_wHiuJBhFZCkHSf",
@@ -74,6 +78,7 @@ const RenderRazorpay = ({ orderId, currency, amount }) => {
 
       const { razorpay_payment_id, razorpay_order_id, razorpay_signature } = response;
 
+
       try {
         const res = await postRequest({
           url: "payment/verify",
@@ -83,18 +88,30 @@ const RenderRazorpay = ({ orderId, currency, amount }) => {
             razorpay_signature,
           },
         });
+         
+
 
         console.log("Verify API Success:", res?.data);
-
-        if (res?.data?.success) {
+        if (res?.data?.success && res?.data?.data?.user) {
           toast.success("Payment Verified Successfully!");
+          setUser(res.data.data.user);
+
+          setUpdateStatus((prev) => !prev);
+          console.log("Updated User =====", res.data.data.user);
+
+          console.log("sdfdfsdf=====", res.data)
+          console.log("fdgdfgdfg=======", res.data?.data)
         } else {
           toast.error("Payment Verification Failed!");
+        
         }
+
       } catch (error) {
         console.error("Verify API Error:", error);
         toast.error(" Error verifying payment. Please try again.");
+
       }
+
     },
 
     modal: {
@@ -111,6 +128,7 @@ const RenderRazorpay = ({ orderId, currency, amount }) => {
 
   useEffect(() => {
     displayRazorpay(options);
+    
   }, []);
 
   return null;

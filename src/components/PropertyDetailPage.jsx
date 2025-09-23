@@ -40,6 +40,8 @@ import { useParams } from "react-router-dom";
 import { getRequest } from "../Helpers";
 import EnquiryForm from "./EnquiryForm";
 
+import logo from "../assets/bridge-house.png";
+
 export default function PropertyDetailPage() {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -67,8 +69,9 @@ export default function PropertyDetailPage() {
     setLoading(true);
     getRequest(`properties/${id}`)
       .then((res) => {
-        console.log("Properties Details Pages ===", res?.data?.data);
+        console.log("Properties Details Pages ====", res?.data?.data);
         setProperties(res?.data?.data);
+        console.log("dssssssssssssssssssssssssssss",res.data.data)
       })
       .catch((error) => {
         console.log("error", error);
@@ -76,6 +79,7 @@ export default function PropertyDetailPage() {
       .finally(() => {
         setLoading(false);
       });
+    
   }, [id]);
 
   useEffect(() => {
@@ -263,11 +267,10 @@ export default function PropertyDetailPage() {
                       key={index}
                       src={img}
                       alt={`Property view ${index + 1}`}
-                      className={`w-24 h-20 object-cover rounded-lg cursor-pointer transition-all flex-shrink-0 ${
-                        selectedImage === index
-                          ? "ring-3 ring-blue-500 shadow-md"
-                          : "hover:shadow-md opacity-70 hover:opacity-100"
-                      }`}
+                      className={`w-24 h-20 object-cover rounded-lg cursor-pointer transition-all flex-shrink-0 ${selectedImage === index
+                        ? "ring-3 ring-blue-500 shadow-md"
+                        : "hover:shadow-md opacity-70 hover:opacity-100"
+                        }`}
                       onClick={() => setSelectedImage(index)}
                     />
                   ))}
@@ -501,79 +504,95 @@ export default function PropertyDetailPage() {
             {/* Enquiry Form */}
             <EnquiryForm propertyId={properties?._id} />
 
+
             {/* Listing Owner */}
-            <div className="bg-white rounded-2xl shadow-lg p-6">
-              <h3 className="text-xl font-bold text-gray-800 mb-6">
-                Property Owner
-              </h3>
-              <div className="flex items-center gap-4 mb-6">
-                {(() => {
-                  const user = properties.isAdopted
-                    ? {
-                        name: "Bridge House User",
-                        profilepic: "",
-                        phone: "1234567890",
-                        email: "dummy@example.com",
-                      }
-                    : properties.addedBy;
+<div className="bg-white rounded-2xl shadow-lg p-6">
+  <h3 className="text-xl font-bold text-gray-800 mb-6">Property Owner</h3>
 
-                  return (
-                    <>
-                      {/* Avatar */}
-                      <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg overflow-hidden">
-                        {user?.profilepic ? (
-                          <img
-                            src={user.profilepic}
-                            alt="Profile"
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          user?.name?.[0]?.toUpperCase() || "U"
-                        )}
-                      </div>
+  <div className="flex items-center gap-4 mb-6">
+    {properties?.isAdopted ? (
+      //  Seller Details (addedBy)
+      <>
+        <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg overflow-hidden">
+          {properties?.addedBy?.profilepic ? (
+            <img
+              src={properties.addedBy.profilepic}
+              alt="Profile"
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            properties?.addedBy?.name?.[0]?.toUpperCase() || "U"
+          )}
+        </div>
+        <div className="flex-1">
+          <div className="font-bold text-gray-900 flex items-center gap-2">
+            {properties?.addedBy?.name || "Seller"}
+            <Verified className="w-5 h-5 text-blue-500" />
+          </div>
+        </div>
+      </>
+    ) : (
+      //  BridgeHouse User (Dummy)
+      <>
+        <div className="w-16 h-16 rounded-full overflow-hidden shadow-lg">
+          <img
+            src={logo}   // 👈 Public folder se image
+            alt="Bridge House"
+              className="w-full h-full object-contain bg-white"
 
-                      {/* Name + Verified */}
-                      <div className="flex-1">
-                        <div className="font-bold text-gray-900 flex items-center gap-2">
-                          {user?.name}
-                          <Verified className="w-5 h-5 text-blue-500" />
-                        </div>
-                      </div>
-                    </>
-                  );
-                })()}
-              </div>
+          />
+        </div>
+        <div className="flex-1">
+          <div className="font-bold text-gray-900 flex items-center gap-2">
+            Bridge House User
+            <Verified className="w-5 h-5 text-blue-500" />
+          </div>
+        </div>
+      </>
+    )}
+  </div>
 
-              {/* Contact Info */}
-              <div className="space-y-3 mb-6">
-                {(() => {
-                  const contactInfo = properties.isAdopted
-                    ? [
-                        { label: "Phone", value: "1234567890" },
-                        { label: "Email", value: "dummy@example.com" },
-                      ]
-                    : [
-                        { label: "Phone", value: properties?.addedBy?.phone },
-                        { label: "Email", value: properties?.addedBy?.email },
-                      ];
+  {/* Contact Info */}
+  <div className="space-y-3 mb-6">
+    {properties?.isAdopted ? (
+      // Seller contact info
+      <>
+        <div className="flex justify-between items-center py-2">
+          <span className="text-gray-600 text-sm">Phone</span>
+          <span className="font-medium text-sm text-gray-600">
+            {properties?.addedBy?.phone || "N/A"}
+          </span>
+        </div>
 
-                  return contactInfo.map((item, index) => (
-                    <div
-                      key={index}
-                      className="flex justify-between items-center py-2"
-                    >
-                      <span className="text-gray-600 text-sm">
-                        {item.label}
-                      </span>
-                      <span className="font-medium text-sm text-gray-600">
-                        {item.value}
-                      </span>
-                    </div>
-                  ));
-                })()}
-              </div>
+        <div className="flex justify-between items-center py-2">
+          <span className="text-gray-600 text-sm">Email</span>
+          <span className="font-medium text-sm text-gray-600">
+            {properties?.addedBy?.email || "N/A"}
+          </span>
+        </div>
+      </>
+    ) : (
+      // Dummy BridgeHouse contact
+      <>
+        <div className="flex justify-between items-center py-2">
+          <span className="text-gray-600 text-sm">Phone</span>
+          <span className="font-medium text-sm text-gray-600">
+            1234567890
+          </span>
+        </div>
+        <div className="flex justify-between items-center py-2">
+          <span className="text-gray-600 text-sm">Email</span>
+          <span className="font-medium text-sm text-gray-600">
+            bridgehouse@example.com
+          </span>
+        </div>
+      </>
+    )}
+  </div>
+</div>
 
-              {/* <div className="flex items-center gap-4 mb-6">
+
+            {/* <div className="flex items-center gap-4 mb-6">
                 <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg overflow-hidden">
                   {properties?.addedBy?.profilepic ? (
                     <img
@@ -612,7 +631,7 @@ export default function PropertyDetailPage() {
                 ))}
               </div> */}
 
-              {/* <div className="flex gap-2">
+            {/* <div className="flex gap-2">
                 <button className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 rounded-xl font-medium hover:shadow-lg transition-all duration-300">
                   WhatsApp
                 </button>
@@ -620,7 +639,7 @@ export default function PropertyDetailPage() {
                   Chat Now
                 </button>
               </div> */}
-            </div>
+
 
             {/* Mortgage Calculator */}
             <div className="bg-white rounded-2xl shadow-lg p-6">

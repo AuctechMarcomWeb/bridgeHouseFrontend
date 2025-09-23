@@ -340,12 +340,16 @@ export default function RentalListingApp() {
             )}
             {!loading && listings.length > 0 && (
               <div className="flex justify-end mt-6 px-4">
-                <Pagination
+                {/* <Pagination
                   current={page}
                   pageSize={limit}
                   total={total}
                   onChange={(newPage) => setPage(newPage)}
-                />
+
+                /> */}
+              <Pagination simple defaultCurrent={page} total={total}
+              onChange={(newPage) => setPage(newPage)} />
+                
               </div>
             )}
           </div>

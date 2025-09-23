@@ -18,16 +18,15 @@ const SearchBar = () => {
 
   //const [selectedState, setSelectedState] = useState();
   const navigate = useNavigate();
-  const { search, setSearch, setUpdateStatus, propertyType } =
-    useContext(PropertyContext);
+  const { search, setSearch, setUpdateStatus, propertyType, setPropertyType } = useContext(PropertyContext);
 
-  // ✅ Load states
+  //  Load states
   useEffect(() => {
     const allStates = State.getStatesOfCountry("IN");
     setStates(allStates);
   }, []);
 
-  // ✅ Dropdown outside click
+  //  Dropdown outside click
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -38,16 +37,18 @@ const SearchBar = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // ✅ When new state is selected → reset search
+  //  When new state is selected → reset search
   const handleLocationSelect = (stateName) => {
     setSelectedLocation(stateName);
     setSearchQuery("");
     setIsDropdownOpen(false);
   };
 
-  // ✅ Just redirect
+  //  Just redirect
   const handleSearch = () => {
     console.log("Current propertyType:", propertyType); // 🔍 Debug
+
+
 
     if (
       (!selectedLocation || selectedLocation === "Select State") &&
@@ -64,8 +65,11 @@ const SearchBar = () => {
     } else if (selectedLocation && selectedLocation !== "Select State") {
       searchValue = selectedLocation;
     }
-
+   
     setSearch(searchValue); // Update context
+     setPropertyType(propertyType);
+     setSearch(searchValue )
+
     setUpdateStatus((prev) => !prev); // Trigger update
 
     navigate("/property-list", { replace: false });

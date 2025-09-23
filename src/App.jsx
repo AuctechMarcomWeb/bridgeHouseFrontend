@@ -16,6 +16,7 @@ import { ProfileProvider } from "./context/ProfileContext";
 import EnquiryPage from "./pages/EnquiryPage";
 import { Toaster } from "react-hot-toast";
 import PaymentHistory from "./pages/paymentHistory";
+import PageNotFound from "./pages/PageNotFound";
 // import Signup from "./components/Signup";
 
 function App() {
@@ -53,6 +54,9 @@ function App() {
           <Route path="/property-list" element={<PropertyListings />} />
           <Route path="/login" element={<Login />} />
           {/* <Route path="/signup" element ={<Signup/>} /> */}
+
+          {/* if url text unknown  */}
+          <Route path="*" element={<PageNotFound/>} />
         </Routes>
       </Router>
     </>

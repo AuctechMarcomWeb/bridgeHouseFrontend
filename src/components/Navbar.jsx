@@ -163,11 +163,11 @@ const Navbar = () => {
                         className="block px-4 py-1.5 text-sm text-gray-700 hover:bg-gray-100 transition"
                         onClick={() => setDropdownOpen(false)}
                       >
-                        <button className="flex items-center gap-2 w-full py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
-
+                        <button className="flex items-center gap-2 w-full py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors whitespace-nowrap truncate max-w-[160px]">
                           <Wallet className="w-4 h-4" />
-                          SubInfo
+                          Subscription History
                         </button>
+
                       </Link>
                     )}
 
@@ -258,56 +258,56 @@ const Navbar = () => {
                   </div>
 
                   {/* Dropdown in Mobile */}
-{dropdownOpen && (
-  <div className="mt-1 bg-white shadow-lg rounded-md border border-gray-200 overflow-hidden 
+                  {dropdownOpen && (
+                    <div className="mt-1 bg-white shadow-lg rounded-md border border-gray-200 overflow-hidden 
                   w-full sm:w-64 max-w-xs mx-auto">
-    <Link
-      to="/profile"
-      className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition"
-      onClick={() => {
-        setDropdownOpen(false);
-        setIsMenuOpen(false);
-      }}
-    >
-      <User className="w-5 h-5" />
-      Profile
-    </Link>
+                      <Link
+                        to="/profile"
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition"
+                        onClick={() => {
+                          setDropdownOpen(false);
+                          setIsMenuOpen(false);
+                        }}
+                      >
+                        <User className="w-5 h-5" />
+                        Profile
+                      </Link>
 
-    {user?.accountType !== "Buyer" && (
-      <Link
-        to="/enquiry"
-        className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition"
-        onClick={() => setDropdownOpen(false)}
-      >
-        <HelpCircle className="w-4 h-4" />
-        Enquiry
-      </Link>
-    )}
+                      {user?.accountType !== "Buyer" && (
+                        <Link
+                          to="/enquiry"
+                          className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition"
+                          onClick={() => setDropdownOpen(false)}
+                        >
+                          <HelpCircle className="w-4 h-4" />
+                          Enquiry
+                        </Link>
+                      )}
 
-    {user?.accountType !== "Buyer" && (
-      <Link
-        to="/paymentHistory"
-        className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition"
-        onClick={() => setDropdownOpen(false)}
-      >
-        <Wallet className="w-4 h-4" />
-        SubInfo
-      </Link>
-    )}
+                      {user?.accountType !== "Buyer" && (
+                        <Link
+                          to="/paymentHistory"
+                          className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition"
+                          onClick={() => setDropdownOpen(false)}
+                        >
+                          <Wallet className="w-4 h-4" />
+                          Subscription Histroy
+                        </Link>
+                      )}
 
-    <button
-      className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition"
-      onClick={() => {
-        logout();
-        setDropdownOpen(false);
-        setIsMenuOpen(false);
-      }}
-    >
-      <LogOut className="w-5 h-5" />
-      Logout
-    </button>
-  </div>
-)}
+                      <button
+                        className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition"
+                        onClick={() => {
+                          logout();
+                          setDropdownOpen(false);
+                          setIsMenuOpen(false);
+                        }}
+                      >
+                        <LogOut className="w-5 h-5" />
+                        Logout
+                      </button>
+                    </div>
+                  )}
 
 
 

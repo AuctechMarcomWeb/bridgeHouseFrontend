@@ -30,32 +30,32 @@ const AddPropertyModal = ({
     modalData
       ? { ...modalData }
       : {
-          address: "",
-          addedBy: user?._id,
-          name: "",
-          propertyType: "",
-          documents: [],
-          description: "",
-          propertyDetails: {
-            area: "",
-            bedrooms: "",
-            bathrooms: "",
-            floors: "",
-            facing: "",
-            builtYear: "",
-          },
-          status: "Available",
-          isVerified: false,
-          isAdopted: false,
-          actualPrice: "",
-          sellingPrice: "",
-          facilities: [],
-          services: [],
-          nearby: [],
-          gallery: [],
-          propertyCode: "",
-          bhk: "",
-        }
+        address: "",
+        addedBy: user?._id,
+        name: "",
+        propertyType: "",
+        documents: [],
+        description: "",
+        propertyDetails: {
+          area: "",
+          bedrooms: "",
+          bathrooms: "",
+          floors: "",
+          facing: "",
+          builtYear: "",
+        },
+        status: "Available",
+        isVerified: false,
+        isAdopted: false,
+        actualPrice: "",
+        sellingPrice: "",
+        facilities: [],
+        services: [],
+        nearby: [],
+        gallery: [],
+        propertyCode: "",
+        bhk: "",
+      }
   );
 
   console.log("formData===>", formData);
@@ -257,6 +257,7 @@ const AddPropertyModal = ({
     if (!formData.description.trim())
       newErrors.description = "Description is required";
 
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -432,9 +433,8 @@ const AddPropertyModal = ({
                   <label className="form-label fw-bold">Property Name *</label>
                   <input
                     type="text"
-                    className={`w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all ${
-                      errors?.name ? "is-invalid" : ""
-                    }`}
+                    className={`w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all ${errors?.name ? "is-invalid" : ""
+                      }`}
                     name="name"
                     required
                     value={formData?.name || ""}
@@ -540,9 +540,14 @@ const AddPropertyModal = ({
                     name="bedrooms"
                     data-nested="propertyDetails"
                     value={formData?.propertyDetails?.bedrooms || ""}
-                    onChange={handleChange}
+                    onChange={(e) => {
+                      if (e.target.value <= 100) {
+                        handleChange(e);
+                      }
+                    }}
                     placeholder="Enter number of bedrooms"
                     required
+              
                   />
                 </div>
 
@@ -555,9 +560,14 @@ const AddPropertyModal = ({
                     name="bathrooms"
                     data-nested="propertyDetails"
                     value={formData?.propertyDetails?.bathrooms || ""}
-                    onChange={handleChange}
+                    onChange={(e) => {
+                      if (e.target.value <= 100) {
+                        handleChange(e);
+                      }
+                    }}
                     placeholder="Enter number of bathrooms"
                     required
+                   
                   />
                 </div>
 
@@ -570,11 +580,17 @@ const AddPropertyModal = ({
                     name="floors"
                     data-nested="propertyDetails"
                     value={formData?.propertyDetails?.floors || ""}
-                    onChange={handleChange}
+                    onChange={(e) => {
+                      if (e.target.value <= 100) {
+                        handleChange(e);
+                      }
+                    }}
                     placeholder="Enter number of floors"
                     required
+                    
                   />
                 </div>
+
 
                 {/* Facing */}
                 <div>
@@ -628,9 +644,8 @@ const AddPropertyModal = ({
                 <label className="form-label fw-bold">Property Code *</label>
                 <input
                   type="text"
-                  className={`w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all ${
-                    errors?.propertyCode ? "is-invalid" : ""
-                  }`}
+                  className={`w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all ${errors?.propertyCode ? "is-invalid" : ""
+                    }`}
                   name="propertyCode"
                   value={formData?.propertyCode || ""}
                   required
@@ -932,17 +947,16 @@ const AddPropertyModal = ({
             <button
               type="submit"
               disabled={loading}
-              className={`px-4 py-2 rounded text-white transition-all ${
-                loading
-                  ? "bg-blue-300 cursor-not-allowed"
-                  : "bg-blue-600 hover:bg-blue-700"
-              }`}
+              className={`px-4 py-2 rounded text-white transition-all ${loading
+                ? "bg-blue-300 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700"
+                }`}
             >
               {loading
                 ? "Saving..."
                 : modalData
-                ? "Update Property"
-                : "Create Property"}
+                  ? "Update Property"
+                  : "Create Property"}
             </button>
           </div>
         </form>

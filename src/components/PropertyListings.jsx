@@ -41,9 +41,8 @@ const PropertyCard = ({ property, onClick }) => {
     return Array.from({ length: 5 }, (_, i) => (
       <span
         key={i}
-        className={`text-sm ${
-          i < Math.floor(rating) ? "text-yellow-400" : "text-gray-300"
-        }`}
+        className={`text-sm ${i < Math.floor(rating) ? "text-yellow-400" : "text-gray-300"
+          }`}
       >
         ★
       </span>
@@ -217,27 +216,35 @@ const PropertyListings = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("recent");
   const [isPagination, setIsPagination] = useState(true);
-  const [propertyType, setPropertyType] = useState(() => {
-    const queryParams = new URLSearchParams(location.search);
-    return queryParams.get("propertyType") || "";
-  });
+  // const [propertyType, setPropertyType] = useState(() => {
+  //   const queryParams = new URLSearchParams(location.search);
+  //   return queryParams.get("propertyType") || "";
+  // });
+
   const [loading, setLoading] = useState(true);
   const [properties, setProperties] = useState([]);
-  const { search } = useContext(PropertyContext);
+  const { search, propertyType } = useContext(PropertyContext);
   const [localSearch, setLocalSearch] = useState(""); // local input state
 
   useEffect(() => {
     setLoading(true);
+    // getRequest(
+    //   `properties?page=${page}&limit=${limit}&search=${localSearch}&sortBy=${sortBy}&isPagination=${isPagination}&propertyType=${propertyType}`
+    // )
     getRequest(
-      `properties?page=${page}&limit=${limit}&search=${localSearch}&sortBy=${sortBy}&isPagination=${isPagination}&propertyType=${propertyType}`
+      `properties?page=${page}&limit=${limit}&search=${search}&sortBy=${sortBy}&isPagination=${isPagination}&propertyType=${propertyType}&`
     )
+
       .then((res) => {
         setProperties(res?.data?.data?.properties || []);
         console.log("Property Lists Res", res?.data?.data || []);
       })
       .catch((err) => console.log("Api Error", err))
       .finally(() => setLoading(false));
-  }, [page, limit, localSearch, sortBy, isPagination, propertyType]);
+  }, [page, limit, search, localSearch, sortBy, isPagination, propertyType]);
+
+  console.log("ooooooooooooooooooooooo", search)
+  console.log("rrrrrrrrrrrrrrrrrrrrrrr", propertyType)
 
   const navigate = useNavigate();
   const handleClick = (id) => {

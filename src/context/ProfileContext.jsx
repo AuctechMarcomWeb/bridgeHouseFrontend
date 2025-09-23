@@ -28,18 +28,20 @@ export const ProfileProvider = ({ children }) => {
     }
   };
 
+
   //  Run on mount and whenever updateStatus changes
   useEffect(() => {
     fetchProfile();
   }, [updateStatus]);
 
+  
   //  Login function
   const login = async (token, userData) => {
     setCookie("token-bridge-house", token, 30);
     setIsLoggedIn(true);
     setUser(userData);
 
-    
+
     //  Turant backend se fresh profile la lo
 
     await fetchProfile();

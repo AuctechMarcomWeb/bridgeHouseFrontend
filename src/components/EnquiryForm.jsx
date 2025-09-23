@@ -80,6 +80,9 @@ const EnquiryForm = ({ propertyId }) => {
             placeholder="Your Phone Number"
             className="w-full text-sm p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             required
+            pattern="\d{10}"
+            minLength={10}
+            maxLength={10}
           />
           <textarea
             name="message"
@@ -89,6 +92,7 @@ const EnquiryForm = ({ propertyId }) => {
             placeholder="Your Message"
             className="w-full text-sm p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
             required
+
           />
           <button
             type="submit"

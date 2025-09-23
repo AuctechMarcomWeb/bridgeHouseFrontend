@@ -32,7 +32,7 @@ const RealEstateBanner = () => {
     console.log("===Tab clicked:", tab); // 🔹 Which tab was clicked
     setActiveTab(tab);
     console.log("@@@@ActiveTab before setPropertyType:", activeTab); // 🔹 current state (still old value because setState is async)
-    setPropertyType(tab); // ✅ update context
+    setPropertyType(tab); //  update context
     console.log("P####ropertyType set in context:", tab); // 🔹 confirm what is sent to context
   };
 

@@ -35,6 +35,7 @@ function App() {
         {/* <ProfileProvider> */}
         <Navbar />
         {/* </ProfileProvider> */}
+  
 
         <Routes>
           <Route path="/" element={<Home />} />
@@ -58,7 +59,8 @@ function App() {
           {/* if url text unknown  */}
           <Route path="*" element={<PageNotFound/>} />
         </Routes>
-      </Router>
+         </Router>
+   
     </>
   );
 }

@@ -302,8 +302,7 @@ export default function RealEstateProfile() {
                   Edit Profile
                 </button>
 
-                {user?.accountType !== "Buyer" &&
-                  user?.consumeListing >= user?.PropertyListing && (
+                {user?.accountType !== "Buyer" && (
                     <button
                       onClick={() => setUpgradeModal(true)}
                       className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:scale-105 transition-all duration-300"
@@ -755,6 +754,7 @@ export default function RealEstateProfile() {
             )}
           </div>
         )}
+        
         {/* Add Property Modal*/}
         {user?.accountType !== "Buyer" && isModalOpen && (
           <AddPropertyModal

@@ -59,6 +59,7 @@ function App() {
           {/* if url text unknown  */}
           <Route path="*" element={<PageNotFound/>} />
         </Routes>
+        <Footer/>
          </Router>
    
     </>

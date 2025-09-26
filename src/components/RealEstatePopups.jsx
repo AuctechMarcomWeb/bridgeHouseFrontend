@@ -54,7 +54,7 @@ const RealEstatePopups = () => {
                 marginTop: `${index * 10}px`,
               }}
             >
-              <div className="relative w-60 bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100">
+              <div className="relative w-50 bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100">
                 {/* Close Button */}
                 <button
                   onClick={(e) => {
@@ -79,7 +79,7 @@ const RealEstatePopups = () => {
 
 
                 {/* Property Image */}
-                <div className="relative h-40 overflow-hidden">
+                <div className="relative h-25 overflow-hidden">
                   <img
                     src={popup?.bannerImage}
                     alt={popup?.title}
@@ -94,7 +94,7 @@ const RealEstatePopups = () => {
 
 
                 {/* Content */}
-                <div className="p-4">
+                <div className="p-2">
                   <h3 className="font-bold text-gray-900 text-sm mb-2 line-clamp-2">
                     {popup?.title}
                   </h3>

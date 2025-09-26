@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import React, { useEffect, useState } from "react";
+import React, {useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import RealEstatePopups from "./RealEstatePopups";
 import {
@@ -13,9 +13,8 @@ import {
 import { getRequest } from "../Helpers";
 import RealEstateLeftPopups from "./RealEstateLeftPopups";
 import FloatingPopup from "./FloatingPopup.jsx";
+import { PropertyContext } from "../context/PropertyContext.jsx";
 
-// const propertyTypes = [
-//   {
 //     id: 1,
 //     icon: Building,
 //     name: "Buy",
@@ -55,6 +54,7 @@ import FloatingPopup from "./FloatingPopup.jsx";
 export default function FeaturedPropertyType() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
+  const { setPropertyType } = useContext(PropertyContext); // use context
   // 🔹 Filters ka state
   const [filters, setFilters] = useState({
     isPagination: true,
@@ -83,6 +83,7 @@ export default function FeaturedPropertyType() {
         setLoading(false);
       });
   }, [filters]);
+  console.log("categories-==============================", categories);
 
   // Icon map
   const iconMap = {
@@ -95,6 +96,7 @@ export default function FeaturedPropertyType() {
 
   const navigate = useNavigate();
   function handleClick(name) {
+    setPropertyType(name); 
     console.log("categoryname", name);
 
     navigate(`/property-list?propertyType=${name}`);

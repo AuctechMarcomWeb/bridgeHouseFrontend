@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import logo from "../assets/bridge-house.png";
 import { ProfileContext } from "../context/ProfileContext";
 import useCookie from "../Hooks/cookie";
+import { SiMercadopago } from 'react-icons/si';
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -27,7 +28,7 @@ const Navbar = () => {
 
   return (
     <nav className="w-full z-50 bg-white/90 shadow-lg">
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="w-full  max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center">
@@ -39,6 +40,7 @@ const Navbar = () => {
             </div>
           </div>
 
+ 
           {/* Desktop Links */}
           <div className="hidden md:flex items-center space-x-6 lg:space-x-8">
             <Link to="/" className="text-gray-700 hover:text-blue-600 text-sm sm:text-base">

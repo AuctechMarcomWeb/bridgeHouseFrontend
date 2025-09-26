@@ -217,7 +217,7 @@ const AboutUs = () => {
       
 
       {/* CTA Section */}
-      <div className="py-8 bg-gradient-to-r from-gray-900 to-blue-900">
+      {/* <div className="py-8 bg-gradient-to-r from-gray-900 to-blue-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-xl md:text-2xl 2xl:text-3xl font-bold text-white mb-6">
             Ready to Find Your Dream Property?
@@ -236,7 +236,7 @@ const AboutUs = () => {
             </Link>
           </div>
         </div>
-      </div>
+      </div> */}
 
  
     </div>

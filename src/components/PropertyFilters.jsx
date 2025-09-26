@@ -8,8 +8,7 @@ import { getRequest } from "../Helpers";
 export default function PropertyFilters({
   filters,
   setFilters,
-  openDropdowns,
-  toggleDropdown,
+
   handleApplyFilters,
   handleResetFilters,
 }) {
@@ -20,6 +19,18 @@ export default function PropertyFilters({
   const [limit] = useState(10);
   const [updateStatus, setUpdateStatus] = useState(false);
   const [category, setCategory] = useState([]);
+  const [openDropdowns, setOpenDropdowns] = useState({
+    propertyType: true,
+    bhk: true, 
+  });
+
+const toggleDropdown = (dropdown) => {
+  setOpenDropdowns((prev) => ({
+    ...prev,
+    [dropdown]: !prev[dropdown], // click karne par toggle ho
+  }));
+};
+
 
   // ✅ Fetch BHK with Pagination + Search
   useEffect(() => {
@@ -100,9 +111,8 @@ export default function PropertyFilters({
               Property Types
             </span>
             <ChevronDown
-              className={`w-4 h-4 text-gray-400 transition-transform ${
-                openDropdowns.propertyType ? "rotate-180" : ""
-              }`}
+              className={`w-4 h-4 text-gray-400 transition-transform ${openDropdowns.propertyType ? "rotate-180" : ""
+                }`}
             />
           </button>
           {openDropdowns.propertyType && (
@@ -143,38 +153,38 @@ export default function PropertyFilters({
               BHK Types
             </span>
             <ChevronDown
-              className={`w-4 h-4 text-gray-400 transition-transform ${
-                openDropdowns.bhk ? "rotate-180" : ""
-              }`}
+              className={`w-4 h-4 text-gray-400 transition-transform ${openDropdowns.bhk ? "rotate-180" : ""
+                }`}
             />
           </button>
-          {openDropdowns.bhk && (
-            <div className="space-y-3 pl-4 border-l-2 border-blue-100">
-              {bhk.length > 0 ? (
-                bhk.map((item) => (
-                  <label
-                    key={item._id} // unique id from API
-                    className="flex items-center gap-2 cursor-pointer"
-                  >
-                    <input
-                      type="radio"
-                      name="bhk"
-                      value={item.name} // ya jo API ka field ho
-                      checked={filters.bhk === item.name}
-                      onChange={(e) =>
-                        setFilters({ ...filters, bhk: e.target.value })
-                      }
-                      className="w-4 h-4 text-blue-600"
-                    />
-                    <span className="text-sm">{item.name}</span>
-                  </label>
-                ))
-              ) : (
-                <p className="text-sm text-gray-400">No BHK types found</p>
-              )}
-            </div>
-          )}
-        </div>
+
+
+
+
+
+        {openDropdowns.bhk && bhk.length > 0 && (
+  <div className="space-y-3 pl-4 border-l-2 border-blue-100">
+    {bhk.map((item) => (
+      <label
+        key={item._id}
+        className="flex items-center gap-2 cursor-pointer"
+      >
+        <input
+          type="radio"
+          name="bhk"
+          value={item.name}
+          checked={filters.bhk === item.name}
+          onChange={(e) =>
+            setFilters({ ...filters, bhk: e.target.value })
+          }
+          className="w-4 h-4 text-blue-600"
+        />
+        <span className="text-sm">{item.name}</span>
+      </label>
+    ))}
+  </div>
+)}
+</div>
 
         {/* Price Range */}
         <div className="space-y-3">

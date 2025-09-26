@@ -73,10 +73,10 @@ const PaymentHistory = () => {
   const totalPages = Math.ceil(totalPayments / limit);
   const handlePrev = () => page > 1 && setPage(page - 1);
   const handleNext = () => page < totalPages && setPage(page + 1);
-  const totalSpent = payments.reduce(
-    (sum, p) => (p.status === "completed" ? sum + (p.price || 0) : sum),
-    0
-  );
+  // const totalSpent = payments.reduce(
+  //   (sum, p) => (p.status === "completed" ? sum + (p.price || 0) : sum),
+  //   0
+  // );
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -89,7 +89,7 @@ const PaymentHistory = () => {
           </p>
 
           {/* Summary Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-6">
+          {/* <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-6">
             <div className="bg-white rounded-xl p-5 flex items-center gap-4 shadow-lg hover:scale-105 transform transition-all">
               <CreditCard className="h-10 w-10 text-blue-600" />
               <div>
@@ -109,7 +109,7 @@ const PaymentHistory = () => {
                 </p>
               </div>
             </div>
-          </div>
+          </div> */}
             <div className="absolute top-10 left-10 w-20 h-20 bg-white opacity-10 rounded-full animate-ping"></div>
           <div className="absolute bottom-10 right-20 w-32 h-32 bg-indigo-400 opacity-15 rounded-lg rotate-45 animate-bounce"></div>
           <div className="absolute top-1/2 right-10 w-16 h-16 bg-white opacity-10 rounded-full animate-ping"></div>

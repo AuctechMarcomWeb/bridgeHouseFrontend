@@ -39,7 +39,7 @@ import {
 import { useParams } from "react-router-dom";
 import { getRequest } from "../Helpers";
 import EnquiryForm from "./EnquiryForm";
-
+import { SiMercadopago } from 'react-icons/si';
 import logo from "../assets/bridge-house.png";
 
 export default function PropertyDetailPage() {
@@ -71,7 +71,7 @@ export default function PropertyDetailPage() {
       .then((res) => {
         console.log("Properties Details Pages ====", res?.data?.data);
         setProperties(res?.data?.data);
-        console.log("dssssssssssssssssssssssssssss",res.data.data)
+        console.log("dssssssssssssssssssssssssssss", res.data.data)
       })
       .catch((error) => {
         console.log("error", error);
@@ -79,7 +79,7 @@ export default function PropertyDetailPage() {
       .finally(() => {
         setLoading(false);
       });
-    
+
   }, [id]);
 
   useEffect(() => {
@@ -166,6 +166,7 @@ export default function PropertyDetailPage() {
   }
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+
       {/* Hero Header */}
       <div
         className="relative bg-cover bg-center"
@@ -227,12 +228,21 @@ export default function PropertyDetailPage() {
           <span className="bg-gradient-to-r from-amber-400 to-orange-400 text-white px-3 py-1 rounded-full text-sm flex items-center gap-1">
             <Sparkles className="w-4 h-4" />
             {properties?.status}
+
           </span>
+          {properties?.isAdopted && (
+            <span className="bg-gradient-to-r from-blue-900 to-blue-900 text-white px-3 py-1 rounded-full text-sm flex items-center gap-1">
+              <SiMercadopago className="fs-4" />
+              Adopted
+            </span>
+          )}
+
         </div>
 
         <div className="flex flex-col xl:flex-row gap-8">
           {/* Left Column */}
           <div className="flex-1">
+
             {/* Image Gallery */}
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-8">
               <div className="relative">
@@ -504,92 +514,91 @@ export default function PropertyDetailPage() {
             {/* Enquiry Form */}
             <EnquiryForm propertyId={properties?._id} />
 
-
             {/* Listing Owner */}
-<div className="bg-white rounded-2xl shadow-lg p-6">
-  <h3 className="text-xl font-bold text-gray-800 mb-6">Property Owner</h3>
+            <div className="bg-white rounded-2xl shadow-lg p-6">
+              <h3 className="text-xl font-bold text-gray-800 mb-6">Property Owner</h3>
 
-  <div className="flex items-center gap-4 mb-6">
-    {properties?.isAdopted ? (
-      //  Seller Details (addedBy)
-      <>
-        <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg overflow-hidden">
-          {properties?.addedBy?.profilepic ? (
-            <img
-              src={properties.addedBy.profilepic}
-              alt="Profile"
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            properties?.addedBy?.name?.[0]?.toUpperCase() || "U"
-          )}
-        </div>
-        <div className="flex-1">
-          <div className="font-bold text-gray-900 flex items-center gap-2">
-            {properties?.addedBy?.name || "Seller"}
-            <Verified className="w-5 h-5 text-blue-500" />
-          </div>
-        </div>
-      </>
-    ) : (
-      //  BridgeHouse User (Dummy)
-      <>
-        <div className="w-16 h-16 rounded-full overflow-hidden shadow-lg">
-          <img
-            src={logo}   // 👈 Public folder se image
-            alt="Bridge House"
-              className="w-full h-full object-contain bg-white"
+              <div className="flex items-center gap-4 mb-6">
+                {properties?.isAdopted ? (
+                  // Adopted → BridgeHouse User
+                  <>
+                    <div className="w-16 h-16 rounded-full overflow-hidden shadow-lg">
+                      <img
+                        src={logo}   // Public folder image
+                        alt="Bridge House"
+                        className="w-full h-full object-contain bg-white"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-bold text-gray-900 flex items-center gap-2">
+                        Bridge House User
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  // Not Adopted → Seller Details
+                  <>
 
-          />
-        </div>
-        <div className="flex-1">
-          <div className="font-bold text-gray-900 flex items-center gap-2">
-            Bridge House User
-            <Verified className="w-5 h-5 text-blue-500" />
-          </div>
-        </div>
-      </>
-    )}
-  </div>
+                    <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg overflow-hidden">
+                      {properties?.addedBy?.profilepic ? (
+                        <img
+                          src={properties.addedBy.profilepic}
+                          alt="Profile"
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        properties?.addedBy?.name?.[0]?.toUpperCase() || "U"
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-bold text-gray-900 flex items-center gap-2">
+                        {properties?.addedBy?.name || "Seller"}
 
-  {/* Contact Info */}
-  <div className="space-y-3 mb-6">
-    {properties?.isAdopted ? (
-      // Seller contact info
-      <>
-        <div className="flex justify-between items-center py-2">
-          <span className="text-gray-600 text-sm">Phone</span>
-          <span className="font-medium text-sm text-gray-600">
-            {properties?.addedBy?.phone || "N/A"}
-          </span>
-        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
 
-        <div className="flex justify-between items-center py-2">
-          <span className="text-gray-600 text-sm">Email</span>
-          <span className="font-medium text-sm text-gray-600">
-            {properties?.addedBy?.email || "N/A"}
-          </span>
-        </div>
-      </>
-    ) : (
-      // Dummy BridgeHouse contact
-      <>
-        <div className="flex justify-between items-center py-2">
-          <span className="text-gray-600 text-sm">Phone</span>
-          <span className="font-medium text-sm text-gray-600">
-            1234567890
-          </span>
-        </div>
-        <div className="flex justify-between items-center py-2">
-          <span className="text-gray-600 text-sm">Email</span>
-          <span className="font-medium text-sm text-gray-600">
-            bridgehouse@example.com
-          </span>
-        </div>
-      </>
-    )}
-  </div>
-</div>
+              {/* Contact Info */}
+              <div className="space-y-3 mb-6">
+                {properties?.isAdopted ? (
+                  // BridgeHouse contact info
+                  <>
+                    <div className="flex justify-between items-center py-2">
+                      <span className="text-gray-600 text-sm">Phone</span>
+                      <span className="font-medium text-sm text-gray-600">
+                        1234567890
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center py-2">
+                      <span className="text-gray-600 text-sm">Email</span>
+                      <span className="font-medium text-sm text-gray-600">
+                        bridgehouse@example.com
+                      </span>
+                    </div>
+                  </>
+                ) : (
+                  // Seller contact info
+                  <>
+                    <div className="flex justify-between items-center py-2">
+                      <span className="text-gray-600 text-sm">Phone</span>
+                      <span className="font-medium text-sm text-gray-600">
+                        {properties?.addedBy?.phone || "N/A"}
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between items-center py-2">
+                      <span className="text-gray-600 text-sm">Email</span>
+                      <span className="font-medium text-sm text-gray-600">
+                        {properties?.addedBy?.email || "N/A"}
+                      </span>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+
 
 
             {/* <div className="flex items-center gap-4 mb-6">

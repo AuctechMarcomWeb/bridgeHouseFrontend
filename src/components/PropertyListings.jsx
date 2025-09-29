@@ -25,6 +25,8 @@ import { getRequest } from "../Helpers";
 import { formatDate } from "../Utils";
 import { PropertyContext } from "../context/PropertyContext.jsx";
 import { Pagination } from "antd";
+import { Input } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 const iconMap = {
   // Facilities
   Parking: Car,
@@ -41,9 +43,8 @@ const PropertyCard = ({ property, onClick }) => {
     return Array.from({ length: 5 }, (_, i) => (
       <span
         key={i}
-        className={`text-sm ${
-          i < Math.floor(rating) ? "text-yellow-400" : "text-gray-300"
-        }`}
+        className={`text-sm ${i < Math.floor(rating) ? "text-yellow-400" : "text-gray-300"
+          }`}
       >
         ★
       </span>
@@ -53,43 +54,39 @@ const PropertyCard = ({ property, onClick }) => {
   return (
     <div
       onClick={onClick}
-      className="bg-white flex-row md:flex  rounded-lg items-center shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
+      className="bg-white w-full flex flex-col md:flex-row rounded-lg items-center shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
     >
-      <div className="relative">
-        <div className="relative h-56 bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center overflow-hidden group rounded-xl">
-          {Array.isArray(property?.gallery) && property.gallery.length > 0 ? (
-            <>
-              <img
-                src={property?.gallery[0]}
-                alt={`${property?.title || "Listing"} image`}
-                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                onError={(e) => {
-                  // Fallback if image fails to load
-                  e.target.style.display = "none";
-                  e.target.nextElementSibling.style.display = "flex";
-                }}
-              />
-              {/* Hidden fallback that shows if image fails to load */}
-              <div className="hidden absolute inset-0 items-center justify-center">
-                <Home size={50} className="text-blue-400" />
-              </div>
-              <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
-            </>
-          ) : (
-            <>
-              {/* Default fallback when no gallery images */}
-              <Home
-                size={50}
-                className="text-blue-400 transition-transform duration-300 group-hover:scale-110"
-              />
-              <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
-            </>
-          )}
-        </div>
+      {/* Image Section */}
+      <div className="relative w-ful md:w-[350px] aspect-[4/3] flex-shrink-0 bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center overflow-hidden group">
+        {Array.isArray(property?.gallery) && property.gallery.length > 0 ? (
+          <>
+            <img
+              src={property?.gallery[0]}
+              alt={`${property?.title || "Listing"} image`}
+              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+              onError={(e) => {
+                e.target.style.display = "none";
+                e.target.nextElementSibling.style.display = "flex";
+              }}
+            />
+            {/* Hidden fallback if image fails */}
+            <div className="hidden absolute inset-0 items-center justify-center">
+              <Home size={50} className="text-blue-400" />
+            </div>
+            <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+          </>
+        ) : (
+          <>
+            <Home
+              size={50}
+              className="text-blue-400 transition-transform duration-300 group-hover:scale-110"
+            />
+            <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+          </>
+        )}
 
         {/* Badges */}
         <div className="absolute top-3 left-3 right-3 flex justify-between items-center">
-          {/* Verified Badge - Left */}
           {property?.isVerified && (
             <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
               <div className="w-6 h-6 bg-white/80 rounded flex items-center justify-center">
@@ -102,9 +99,7 @@ const PropertyCard = ({ property, onClick }) => {
               </div>
             </div>
           )}
-
-          {/* Status Badge - Right */}
-          <span className="bg-green-400 text-white px-3 py-1 rounded-full text-sm flex items-center gap-1">
+          <span className="bg-green-400 text-white px-3 py-1 rounded-full text-xs sm:text-sm flex items-center gap-1">
             {property?.status}
           </span>
         </div>
@@ -116,94 +111,58 @@ const PropertyCard = ({ property, onClick }) => {
           </div>
         </div>
       </div>
-      {/* Rating */}
 
-      <div className="flex-1 p-0 px-6">
-        <div className="flex items-center gap-2 mb-1">
+      {/* Content Section */}
+      <div className="flex-1 px-4 py-3 md:px-6 md:py-4 lg:px-8 lg:py-6 flex flex-col justify-between">
+        {/* Rating */}
+        <div className="flex items-center gap-2 mb-2 sm:mb-3">
           <div className="flex">{renderStars(property.rating)}</div>
-          <span className="text-gray-600 text-sm">
+          <span className="text-gray-600 text-xs sm:text-sm md:text-base">
             {property.rating} ({property.reviewCount} Reviews)
           </span>
         </div>
 
         {/* Title and Price */}
-        <div className="flex justify-between items-start mb-0">
-          <h3 className="text-lg font-semibold text-gray-900 flex-1">
+        <div className="flex justify-between items-start mb-2">
+          <h3 className="text-base sm:text-lg md:text-xl font-semibold text-gray-900 flex-1">
             {property?.name}
           </h3>
-          <span className="text-xl font-bold text-gray-900 ml-4">
+          <span className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-gray-900 ml-4">
             ₹{property?.actualPrice}
           </span>
         </div>
 
         {/* Location */}
-        <div className="flex items-center gap-1 text-gray-600 mb-0">
+        <div className="flex items-center gap-1 text-gray-600 mb-2 sm:mb-3">
           <MapPin className="w-4 h-4" />
-          <span className="text-sm">{property?.address}</span>
+          <span className="text-xs sm:text-sm md:text-base">{property?.address}</span>
         </div>
 
         {/* Amenities */}
-        <div className="flex flex-wrap items-center gap-4 sm:gap-6 md:gap-8 lg:gap-12 text-gray-600 text-sm mb-0">
-          <div className="space-y-2">
-            {/* Facilities + Services */}
-            {/* <div className="flex flex-wrap items-center bg-gray-50 rounded-xl p-1 gap-x-6 gap-y-2">
-              {[
-                ...(property.facilities || []),
-                ...(property.services || []),
-              ].map((item, index) => {
-                const Icon = iconMap[item] || Star;
-                return (
-                  <div
-                    key={index}
-                    className="flex items-center gap-2 text-sm text-gray-600"
-                  >
-                    <Icon className="w-4 h-4 text-blue-500" />
-                    <span className="font-medium">{item}</span>
-                  </div>
-                );
-              })}
-            </div> */}
-
-            {/* Nearby */}
-            <div className="flex flex-wrap items-center bg-gray-50 rounded-xl p-1 gap-x-6 gap-y-2">
-              {property.nearby?.map((place, index) => (
-                <div
-                  key={index}
-                  className="flex items-center gap-2 text-sm text-gray-600"
-                >
-                  <MapPin className="w-4 h-4 text-red-500" />
-                  <span className="font-medium capitalize">
-                    {place.name}
-                  </span> - <span>{place.distance}</span>
-                </div>
-              ))}
-            </div>
+        <div className="flex flex-wrap items-center text-gray-600 text-xs sm:text-sm mb-3">
+          <div className="flex flex-wrap items-center bg-gray-50 rounded-xl p-2 gap-x-4 gap-y-2 w-full">
+            {property.nearby?.map((place, index) => (
+              <div
+                key={index}
+                className="flex items-center gap-2 text-xs sm:text-sm text-gray-600"
+              >
+                <MapPin className="w-4 h-4 text-red-500" />
+                <span className="font-medium capitalize">{place.name}</span> -{" "}
+                <span>{place.distance}</span>
+              </div>
+            ))}
           </div>
-          {/* <div className="flex items-center gap-1">
-            <Bed className="w-4 h-4" />
-            <span>{property.bedrooms} Bedroom</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Bath className="w-4 h-4" />
-            <span>{property.bathrooms} Bath</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Square className="w-4 h-4" />
-            <span>{property.sqft} Sq Ft</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Wind className="w-4 h-4" />
-            <span>{property.ac} AC</span>
-          </div> */}
         </div>
 
         {/* Footer */}
-        <div className="flex justify-between items-center text-sm text-gray-500">
-          <span>Listed on : {formatDate(property?.createdAt)}</span>
-          <span>Category : {property?.propertyType}</span>
+        <div className="flex justify-between items-center text-xs sm:text-sm text-gray-500">
+          <span>Listed on: {formatDate(property?.createdAt)}</span>
+          <span>Category: {property?.propertyType}</span>
         </div>
       </div>
     </div>
+
+
   );
 };
 
@@ -217,19 +176,23 @@ const PropertyListings = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("recent");
   const [isPagination, setIsPagination] = useState(true);
-  const [propertyType, setPropertyType] = useState(() => {
-    const queryParams = new URLSearchParams(location.search);
-    return queryParams.get("propertyType") || "";
-  });
+  // const [propertyType, setPropertyType] = useState(() => {
+  //   const queryParams = new URLSearchParams(location.search);
+  //   return queryParams.get("propertyType") || "";
+  // });
+
+
   const [loading, setLoading] = useState(true);
   const [properties, setProperties] = useState([]);
-  const { search } = useContext(PropertyContext);
+  const { search, propertyType } = useContext(PropertyContext);
   const [localSearch, setLocalSearch] = useState(""); // local input state
 
+  // Step 1: API se data lo (context ke search ke hisaab se)
   useEffect(() => {
     setLoading(true);
+
     getRequest(
-      `properties?page=${page}&limit=${limit}&search=${localSearch}&sortBy=${sortBy}&isPagination=${isPagination}&propertyType=${propertyType}`
+      `properties?page=${page}&limit=${limit}&search=${search}&sortBy=${sortBy}&isPagination=${isPagination}&propertyType=${propertyType}`
     )
       .then((res) => {
         setProperties(res?.data?.data?.properties || []);
@@ -237,7 +200,17 @@ const PropertyListings = () => {
       })
       .catch((err) => console.log("Api Error", err))
       .finally(() => setLoading(false));
-  }, [page, limit, localSearch, sortBy, isPagination, propertyType]);
+  }, [page, limit, search, sortBy, isPagination, propertyType]);
+
+
+
+  // Step 2: Local filter lagao (API hit nahi karni)
+
+  const filteredProperties = properties.filter((p) =>
+    p.name?.toLowerCase().includes(localSearch.toLowerCase()) ||
+    p.address?.toLowerCase().includes(localSearch.toLowerCase())
+  );
+
 
   const navigate = useNavigate();
   const handleClick = (id) => {
@@ -350,7 +323,9 @@ const PropertyListings = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="2xl:w-[70%] lg:w-[80%] w-full mx-auto px-8 flex gap-8 justify-between">
+
         <div className="w-full md:w-[80%]">
+
           {/* Header */}
           <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 gap-4">
             {/* Left side - Results Count */}
@@ -362,35 +337,32 @@ const PropertyListings = () => {
 
             {/* Right side - Filters */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
-              {/* Sort By */}
-              <div className="flex items-center border border-gray-300 rounded px-3 py-1 w-full sm:w-64">
-                {/* Search Icon */}
-                <svg
-                  className="text-gray-400 mr-2"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M21 21l-4.35-4.35M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"
-                  />
-                </svg>
 
-                {/* Search Input */}
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  className="w-full focus:outline-none text-sm text-gray-700"
-                  value={localSearch} // bind to local state
-                  onChange={(e) => setLocalSearch(e.target.value)} // setSearch should come from PropertyContext
-                />
-              </div>
+              {/* Search Input */}
+              <Input
+                placeholder="Search properties..."
+                prefix={<SearchOutlined className="text-gray-500" />}
+                value={localSearch}
+                onChange={(e) => setLocalSearch(e.target.value)}
+                className="
+    !bg-white shadow-md rounded-lg
+    !border-gray-300
+    focus:!border-gray-400 focus:!ring-0 focus:!outline-none
+    hover:!border-gray-400
+  "
+                size="large"
+              />
+
+              <style jsx global>{`
+  /* Ant Design ka default blue override karne ke liye */
+  .ant-input:focus,
+  .ant-input-focused {
+    border-color: #9ca3af !important; /* Tailwind gray-400 */
+    box-shadow: none !important;
+  }
+`}</style>
+
+
               {/* <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600 whitespace-nowrap">
                   Sort By
@@ -419,16 +391,59 @@ const PropertyListings = () => {
           </div>
 
           {/* Property Grid */}
-          <div className=" grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-6 cursor-pointer">
-            {properties.map((property) => (
+          <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-6 cursor-pointer">
+            {filteredProperties.map((property) => (
               <PropertyCard
                 key={property._id}
                 property={property}
                 onClick={() => handleClick(property?._id)}
               />
             ))}
+          
+          {/* Results Count + Pagination */}
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-white p-3 rounded-xl shadow-sm border border-gray-100">
+            {/* Left side - Results Count */}
+            <div className="text-gray-600 text-sm sm:text-base">
+              Showing{" "}
+              <span
+                className="font-semibold text-blue-600 cursor-pointer hover:underline"
+                onClick={() => setPage(1)}
+              >
+                {(page - 1) * limit + 1}
+              </span>{" "}
+              to{" "}
+              <span
+                className="font-semibold text-blue-600 cursor-pointer hover:underline"
+                onClick={() => setPage(page)}
+              >
+                {Math.min(page * limit, properties.length)}
+              </span>{" "}
+              of{" "}
+              <span
+                className="font-semibold text-blue-600 cursor-pointer hover:underline"
+                onClick={() => setPage(Math.ceil(properties.length / limit))}
+              >
+                {properties.length}
+              </span>{" "}
+              results
+            </div>
+
+            {/* Right side - Pagination */}
+            <Pagination
+              className="custom-pagination"
+              current={page}
+              pageSize={limit}
+              total={properties.length}
+              onChange={(newPage, newSize) => {
+                setPage(newPage);
+                setLimit(newSize);
+              }}
+              showSizeChanger
+              showQuickJumper
+            />
           </div>
-          {properties.length > limit && (
+          </div>
+          {/* {properties.length > limit && (
             <div className="flex justify-center mt-8">
               <Pagination
                 current={page}
@@ -439,11 +454,13 @@ const PropertyListings = () => {
                 showQuickJumper
               />
             </div>
-          )}
+          )} */}
+
         </div>
-        <div className=" hidden md:block w-[20%] relative">
+        <div className="hidden md:block w-[30%] relative max-h-[80vh] overflow-y-auto">
           <PropertySidebar />
         </div>
+
       </div>
     </div>
   );

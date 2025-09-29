@@ -176,7 +176,7 @@ export default function RentalListingApp() {
                   >
                     <div className="relative aspect-[4/3] overflow-hidden group">
                       {Array.isArray(listing?.gallery) &&
-                      listing.gallery.length > 0 ? (
+                        listing.gallery.length > 0 ? (
                         <>
                           <img
                             src={listing?.gallery[0]}
@@ -216,11 +216,10 @@ export default function RentalListingApp() {
                       {listing?.status && (
                         <div className="absolute top-4 left-4 space-y-2">
                           <div
-                            className={`px-3 py-1 rounded-full text-xs backdrop-blur-sm ${
-                              listing?.status === "Featured"
-                                ? "bg-amber-500/90 text-white shadow-lg"
-                                : "bg-blue-500/90 text-white shadow-lg"
-                            }`}
+                            className={`px-3 py-1 rounded-full text-xs backdrop-blur-sm ${listing?.status === "Featured"
+                              ? "bg-amber-500/90 text-white shadow-lg"
+                              : "bg-blue-500/90 text-white shadow-lg"
+                              }`}
                           >
                             {listing?.status}
                           </div>
@@ -340,12 +339,17 @@ export default function RentalListingApp() {
             )}
             {!loading && listings.length > 0 && (
               <div className="flex justify-end mt-6 px-4">
-                <Pagination
+                {/* <Pagination
                   current={page}
                   pageSize={limit}
                   total={total}
+
                   onChange={(newPage) => setPage(newPage)}
-                />
+
+                /> */}
+
+                <Pagination defaultCurrent={6} total={total} onChange={(newPage) => setPage(newPage)} />
+
               </div>
             )}
           </div>

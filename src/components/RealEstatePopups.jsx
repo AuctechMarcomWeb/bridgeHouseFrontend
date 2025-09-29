@@ -54,7 +54,7 @@ const RealEstatePopups = () => {
                 marginTop: `${index * 10}px`,
               }}
             >
-              <div className="relative w-60 bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100">
+              <div className="relative w-50 bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100">
                 {/* Close Button */}
                 <button
                   onClick={(e) => {
@@ -77,8 +77,9 @@ const RealEstatePopups = () => {
                   </div>
                 </div>
 
+
                 {/* Property Image */}
-                <div className="relative h-40 overflow-hidden">
+                <div className="relative h-25 overflow-hidden">
                   <img
                     src={popup?.bannerImage}
                     alt={popup?.title}
@@ -91,8 +92,9 @@ const RealEstatePopups = () => {
                   </div>
                 </div>
 
+
                 {/* Content */}
-                <div className="p-4">
+                <div className="p-2">
                   <h3 className="font-bold text-gray-900 text-sm mb-2 line-clamp-2">
                     {popup?.title}
                   </h3>
@@ -103,6 +105,7 @@ const RealEstatePopups = () => {
                       {property?.address || "Location not available"}
                     </span>
                   </div>
+
 
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-1">
@@ -121,7 +124,7 @@ const RealEstatePopups = () => {
                       className={`flex-1 bg-gradient-to-r ${gradient} text-white py-2 px-3 rounded-lg text-xs font-semibold hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5`}
                     >
                       View Details
-                    </button>
+                    </button> 
                     {/* <button className="w-10 h-8 border border-gray-300 rounded-lg flex items-center justify-center hover:bg-gray-50 transition-colors">
                       <Phone size={14} className="text-gray-600" />
                     </button> */}

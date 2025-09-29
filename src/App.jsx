@@ -15,6 +15,8 @@ import RealEstateProfile from "./pages/RealEstateProfile";
 import { ProfileProvider } from "./context/ProfileContext";
 import EnquiryPage from "./pages/EnquiryPage";
 import { Toaster } from "react-hot-toast";
+import PaymentHistory from "./pages/paymentHistory";
+import PageNotFound from "./pages/PageNotFound";
 // import Signup from "./components/Signup";
 
 function App() {
@@ -33,6 +35,7 @@ function App() {
         {/* <ProfileProvider> */}
         <Navbar />
         {/* </ProfileProvider> */}
+  
 
         <Routes>
           <Route path="/" element={<Home />} />
@@ -41,6 +44,7 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/profile" element={<RealEstateProfile />} />
           <Route path="/enquiry" element={<EnquiryPage />} />
+            <Route path="/paymentHistory" element={<PaymentHistory />} />
           <Route
             path="/terms-and-conditions"
             element={<TermsAndConditions />}
@@ -51,8 +55,13 @@ function App() {
           <Route path="/property-list" element={<PropertyListings />} />
           <Route path="/login" element={<Login />} />
           {/* <Route path="/signup" element ={<Signup/>} /> */}
+
+          {/* if url text unknown  */}
+          <Route path="*" element={<PageNotFound/>} />
         </Routes>
-      </Router>
+        <Footer/>
+         </Router>
+   
     </>
   );
 }

@@ -1,13 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Stethoscope,
-  Phone,
-  Mail,
-  MapPin,
-  ChevronDown,
-  ChevronUp,
-} from "lucide-react";
-
+import { Stethoscope, Phone, Mail, MapPin, ChevronDown, ChevronUp } from "lucide-react";
 import logo from "../assets/bridge-house.png";
 import { Link } from "react-router-dom";
 
@@ -34,84 +26,82 @@ const Footer = () => {
   return (
     <>
       {/* Footer */}
-      <footer id="contact" className="bg-gray-900 text-white py-16">
-        <div className="sm:w-full lg:w-[80%]  xl:w-[80%] 2xl:w-[70%] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center space-x-2 mb-6">
-                <div className="w-30 h-30  from-blue-600 to-cyan-600 rounded-lg flex items-center justify-center">
-                  <img src={logo} alt="" />
-                </div>
-              </div>
-              <p className="text-gray-400 leading-relaxed">
-                A Trusted Realstate In Lucknow
-              </p>
-            </div>
+      <footer id="contact" className="bg-gray-900 text-white py-10 sm:py-12 md:py-16 ">
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* GRID LAYOUT */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12 lg:gap-16">
 
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
-              <div className="space-y-2">
-                <Link
-                  to="/"
-                  className="block text-gray-400 hover:text-white transition-colors"
-                >
-                  Home
-                </Link>
-                <Link
-                  to="/"
-                  className="block text-gray-400 hover:text-white transition-colors"
-                >
-                  Services
-                </Link>
+{/* Logo + Description */}
+<div className="text-center md:text-left">
+  <div className="flex justify-center md:justify-start mb-6 ">
+    <img src={logo} alt="Bridge House Logo" className="w-28 sm:w-32 h-auto" />
+  </div>
+  <p className="text-gray-400 leading-relaxed text-sm sm:text-base max-w-xs mx-auto md:mx-0">
+    A Trusted Real Estate in Lucknow
+  </p>
+</div>
 
-                <Link
-                  to="/contact"
-                  className="block text-gray-400 hover:text-white transition-colors"
-                >
-                  Contact
-                </Link>
-              </div>
-            </div>
+{/* Quick Links */}
+<div className="text-center md:text-left">
+  <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
+  <div className="space-y-2">
+    <Link to="/" className="block text-gray-400 hover:text-white transition-colors text-sm sm:text-base">
+      Home
+    </Link>
+    <Link to="/" className="block text-gray-400 hover:text-white transition-colors text-sm sm:text-base">
+      Services
+    </Link>
+    <Link to="/contact" className="block text-gray-400 hover:text-white transition-colors text-sm sm:text-base">
+      Contact
+    </Link>
+  </div>
+</div>
 
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Services</h3>
-              <div className="space-y-2">
-                <div className="text-gray-400">Sell</div>
-                <div className="text-gray-400">Buy</div>
-                <div className="text-gray-400">Plot</div>
-                <div className="text-gray-400">Rent</div>
-              </div>
-            </div>
+{/* Services */}
+<div className="text-center md:text-left">
+  <h3 className="text-lg font-semibold mb-4">Services</h3>
+  <div className="space-y-2 text-sm sm:text-base">
+    <div className="text-gray-400 hover:text-white cursor-pointer">Sell</div>
+    <div className="text-gray-400 hover:text-white cursor-pointer">Buy</div>
+    <div className="text-gray-400 hover:text-white cursor-pointer">Plot</div>
+    <div className="text-gray-400 hover:text-white cursor-pointer">Rent</div>
+  </div>
+</div>
 
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Contact Info</h3>
-              <div className="space-y-3">
-                <div className="flex items-center space-x-3">
-                  <Phone className="w-5 h-5 text-blue-400" />
-                  <span className="text-gray-400">+919838075493</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <Mail className="w-5 h-5 text-blue-400" />
-                  <span className="text-gray-400">support@bridgehouse.com</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <MapPin className="w-5 h-5 fs-6 text-blue-400" />
-                  <span className="text-gray-400">
-                    1090, <br /> Gomti Nagar, Lucknow, Uttar Pradesh 20001
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
+{/* Contact Info */}
+<div className="text-center md:text-left">
+  <h3 className="text-lg font-semibold mb-4">Contact Info</h3>
+  <div className="space-y-4 text-sm sm:text-base">
+    <div className="flex justify-center md:justify-start items-center gap-3">
+      <Phone className="w-5 h-5 text-blue-400" />
+      <span className="text-gray-400">+91 98380 75493</span>
+    </div>
+    <div className="flex justify-center md:justify-start items-center gap-3">
+      <Mail className="w-5 h-5 text-blue-400" />
+      <span className="text-gray-400 break-all">support@bridgehouse.com</span>
+    </div>
+    <div className="flex justify-center md:justify-start items-start gap-3">
+      <MapPin className="w-5 h-5 text-blue-400" />
+      <span className="text-gray-400">
+        1090, Gomti Nagar, <br />
+        Lucknow, Uttar Pradesh 20001
+      </span>
+    </div>
+  </div>
+</div>
+</div>
 
-          <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
+          {/* Bottom Text */}
+          <div className="border-t border-gray-800 mt-10 pt-6 text-center text-gray-400 text-sm sm:text-base">
             <p>
-              &copy; 2025 Bridge House. All rights reserved. Made by Auctech
-              MarCom
+              &copy; 2025 Bridge House. All rights reserved. Made by{" "}
+              <span className="text-blue-400">Auctech MarCom</span>
             </p>
           </div>
         </div>
       </footer>
+
+
 
       {/* Scroll Toggle Button */}
       <button
@@ -119,11 +109,7 @@ const Footer = () => {
         className="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full shadow-lg transition-colors z-50"
         aria-label="Scroll toggle"
       >
-        {isAtTop ? (
-          <ChevronDown className="w-5 h-5" />
-        ) : (
-          <ChevronUp className="w-5 h-5" />
-        )}
+        {isAtTop ? <ChevronDown className="w-5 h-5" /> : <ChevronUp className="w-5 h-5" />}
       </button>
     </>
   );

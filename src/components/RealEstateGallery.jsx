@@ -347,7 +347,7 @@ const RealEstateGallery = () => {
       )}
 
       {/* Footer CTA */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-8">
+      {/* <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-8">
         <div className="max-w-4xl mx-auto text-center px-4">
           <h2 className="text-3xl font-bold mb-4">Ready to Find Your Dream Home?</h2>
           <p className="text-lg mb-8 text-blue-100">Connect with our expert agents today</p>
@@ -360,7 +360,7 @@ const RealEstateGallery = () => {
             </button>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

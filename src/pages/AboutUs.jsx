@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Home, Users, Award, TrendingUp, Heart, Shield, Star, ArrowRight } from 'lucide-react';
 import WhyChooseUs from '../components/WhyChooseUs';
+import { Link } from 'react-router-dom';
 
 const AboutUs = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -216,7 +217,7 @@ const AboutUs = () => {
       
 
       {/* CTA Section */}
-      <div className="py-8 bg-gradient-to-r from-gray-900 to-blue-900">
+      {/* <div className="py-8 bg-gradient-to-r from-gray-900 to-blue-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-xl md:text-2xl 2xl:text-3xl font-bold text-white mb-6">
             Ready to Find Your Dream Property?
@@ -225,15 +226,17 @@ const AboutUs = () => {
             Let our experienced team guide you through every step of your real estate journey
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-xl">
+          
+            <Link to="/" className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-xl">
               Start Your Journey
-            </button>
-            <button className="border-2 border-white text-white hover:bg-white hover:text-gray-900 font-bold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-105">
+            </Link>
+            <Link to="/property-list"
+             className="border-2 border-white text-white hover:bg-white hover:text-gray-900 font-bold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-105">
               View Our Properties
-            </button>
+            </Link>
           </div>
         </div>
-      </div>
+      </div> */}
 
  
     </div>

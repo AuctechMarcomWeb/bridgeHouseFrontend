@@ -9,8 +9,6 @@ import { useNavigate } from "react-router-dom";
 
 const RealEstateBanner = () => {
   const [activeTab, setActiveTab] = useState("");
-  console.log("ActiveTab state:", activeTab); // 🔹 Check activeTab state
-
   const [propertyTypes, setPropertyTypes] = useState([]);
   const { setPropertyType, setUpdateStatus } = useContext(PropertyContext);
   const navigate = useNavigate();
@@ -21,6 +19,7 @@ const RealEstateBanner = () => {
     minPrice: "",
     maxPrice: "",
   });
+
   const iconsMap = {
     residential: Home,
     plot: Home,
@@ -29,11 +28,8 @@ const RealEstateBanner = () => {
   };
 
   const handleTabSwitch = (tab) => {
-    console.log("===Tab clicked:", tab); // 🔹 Which tab was clicked
     setActiveTab(tab);
-    console.log("@@@@ActiveTab before setPropertyType:", activeTab); // 🔹 current state (still old value because setState is async)
-    setPropertyType(tab); // ✅ update context
-    console.log("P####ropertyType set in context:", tab); // 🔹 confirm what is sent to context
+    setPropertyType(tab); // update context
   };
 
   const handleInputChange = (field, value) => {
@@ -44,7 +40,7 @@ const RealEstateBanner = () => {
   };
 
   useEffect(() => {
-    getRequest("category?type=all") // or your API endpoint
+    getRequest("category?type=all")
       .then((res) => {
         let data = res?.data?.data?.categories || [];
         data = data.slice(0, 4); // limit to 4 items
@@ -54,9 +50,7 @@ const RealEstateBanner = () => {
       })
       .catch((err) => console.log("Error fetching categories:", err));
   }, []);
-  useEffect(() => {
-    console.log("ActiveTab updated:", activeTab);
-  }, [activeTab]);
+
   const formatPrice = (value) => {
     const numericValue = value.replace(/\D/g, "");
     if (numericValue) {
@@ -70,46 +64,11 @@ const RealEstateBanner = () => {
     handleInputChange(field, formattedValue);
   };
 
-  // const handleSearch = () => {
-  //   const searchParams = {
-  //     type: activeTab,
-  //     ...formData,
-  //   };
-
-  //   alert(
-  //     `Searching for ${searchParams.type} properties...\n\nCity: ${
-  //       searchParams.city || "Any"
-  //     }\nType: ${searchParams.propertyType || "Any"}\nLocation: ${
-  //       searchParams.address || "Any"
-  //     }\nPrice Range: ${searchParams.minPrice || "$0"} - ${
-  //       searchParams.maxPrice || "$∞"
-  //     }`
-  //   );
-
-  //   console.log("Search Parameters:", searchParams);
-  // };
-
-  // const cityOptions = [
-  //   { value: "", label: "Select" },
-  //   { value: "lucnkow ", label: "Lucnkow" },
-  //   { value: "barabanki", label: "Barabanki  " },
-  //   { value: "sitapur", label: "Sitapur" },
-  //   { value: "hardoi", label: "Hardoi" },
-  //   { value: "kanpur", label: "Kanpur" },
-  // ];
-
-  // const propertyTypeOptions = [
-  //   { value: "", label: "Select" },
-  //   { value: "1-bhk", label: "1 BHK" },
-  //   { value: "2-bhk", label: "2 BHK" },
-  //   { value: "3-bhk", label: "3 BHK" },
-  //   { value: "villa", label: "Villa" },
-  //   { value: "townhouse", label: "Townhouse" },
-  // ];
-
   return (
     <div
-      className="relative items-center justify-center w-full  flex items-center   px-6 md:px-10 lg:px-20 py-16 md:py-24 lg:py-30 "
+      className="relative flex items-center justify-center w-full 
+                 px-4 sm:px-6 md:px-10 lg:px-20 
+                 py-12 sm:py-16 md:py-24 lg:py-30"
       id="home"
       style={{
         backgroundImage: `url(${bannerBg})`,
@@ -119,8 +78,11 @@ const RealEstateBanner = () => {
       }}
     >
       {/* Main Content */}
-      <div className="w-full lg:w-[80%] xl:w-[75%] 2xl:w-[70%] z-10">
-        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-slate-900 leading-tight mb-5">
+      <div className="w-full sm:w-[90%] md:w-[85%] lg:w-[80%] xl:w-[75%] 2xl:w-[70%] z-10">
+        <h1
+          className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl 
+                     font-extrabold text-slate-900 leading-tight mb-4 sm:mb-5"
+        >
           {activeTab === "buy" ? (
             <>
               Find Your Best Dream House
@@ -136,127 +98,53 @@ const RealEstateBanner = () => {
           )}
         </h1>
 
-        <p className="text-slate-600 text-base mb-10 leading-relaxed">
-          Properties for buy / rent in in your location. We have more than 3000+
+        <p
+          className="text-slate-600 text-sm sm:text-base md:text-lg 
+                     mb-6 sm:mb-8 md:mb-10 leading-relaxed"
+        >
+          Properties for buy / rent in your location. We have more than 3000+
           listings for you to choose
         </p>
 
-        {/* Tab Buttons */}
-        <div className=" ">
-          <div className="flex flex-wrap gap-2 pb-2">
-            {propertyTypes.length > 0 ? (
-              propertyTypes.map((type) => {
-                const iconKey = type.name?.toLowerCase().trim();
-                const Icon = iconsMap[iconKey] || Home;
+{/* Tab Buttons */}
+<div className="w-full sm:w-[95%] md:w-full lg:w-[80%] xl:w-[75%] 2xl:w-[70%] z-10">
+  <div className="flex flex-wrap justify-start gap-2 pb-2">
+    {propertyTypes.length > 0 ? (
+      propertyTypes.map((type) => {
+        const iconKey = type.name?.toLowerCase().trim();
+        const Icon = iconsMap[iconKey] || Home;
 
-                return (
-                  <button
-                    key={type._id}
-                    onClick={() => handleTabSwitch(type.name)}
-                    className={`flex items-center gap-2 px-4 py-3 font-medium text-sm rounded-lg transition-all duration-300 ${
-                      activeTab === type.name
-                        ? "bg-teal-500 text-white shadow-lg"
-                        : "bg-slate-200 text-slate-700 hover:bg-slate-300"
-                    }`}
-                  >
-                    <Icon size={18} />
-                    {type.name}
-                  </button>
-                );
-              })
-            ) : (
-              <p className="text-gray-500">No property types found</p>
-            )}
-          </div>
-
-          {/* Pass activeTab to SearchBar */}
-          <SearchBar activeTab={activeTab} />
-        </div>
-
-        {/* Search Form */}
-        {/* <div className="bg-white rounded-xl p-8 shadow-xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4 sm:gap-5 items-end">
-          <div className="flex flex-col">
-            <label className="text-sm text-slate-600 mb-2 font-medium">
-              City
-            </label>
-            <select
-              value={formData.city}
-              onChange={(e) => handleInputChange("city", e.target.value)}
-              className="px-4 py-3 border-2 border-slate-200 rounded-lg text-sm bg-white text-slate-700 transition-colors focus:outline-none focus:border-teal-500 cursor-pointer"
-            >
-              {cityOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="flex flex-col">
-            <label className="text-sm text-slate-600 mb-2 font-medium">
-              Property Type
-            </label>
-            <select
-              value={formData.propertyType}
-              onChange={(e) =>
-                handleInputChange("propertyType", e.target.value)
-              }
-              className="px-4 py-3 border-2 border-slate-200 rounded-lg text-sm bg-white text-slate-700 transition-colors focus:outline-none focus:border-teal-500 cursor-pointer"
-            >
-              {propertyTypeOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="flex flex-col">
-            <label className="text-sm text-slate-600 mb-2 font-medium">
-              Min Price
-            </label>
-            <input
-              type="text"
-              value={formData.minPrice}
-              onChange={(e) => handlePriceChange("minPrice", e.target.value)}
-              placeholder="₹"
-              className="px-4 py-3 border-2 border-slate-200 rounded-lg text-sm text-slate-700 transition-colors focus:outline-none focus:border-teal-500"
-            />
-          </div>
-
-          <div className="flex flex-col">
-            <label className="text-sm text-slate-600 mb-2 font-medium">
-              Max Price
-            </label>
-            <input
-              type="text"
-              value={formData.maxPrice}
-              onChange={(e) => handlePriceChange("maxPrice", e.target.value)}
-              placeholder="₹"
-              className="px-4 py-3 border-2 border-slate-200 rounded-lg text-sm text-slate-700 transition-colors focus:outline-none focus:border-teal-500"
-            />
-          </div>
-
-          <div className="flex flex-col">
-            <label className="text-sm text-slate-600 mb-2 font-medium">
-              Search
-            </label>
-            <input
-              type="text"
-              value={formData.address}
-              onChange={(e) => handleInputChange("address", e.target.value)}
-              placeholder="Enter name,city or anything..."
-              className="px-4 py-3 border-2 border-slate-200 rounded-lg text-sm text-slate-700 transition-colors focus:outline-none focus:border-teal-500"
-            />
-          </div>
-
+        return (
           <button
-            onClick={handleSearch}
-            className="bg-teal-500 text-white px-2 py-3 rounded-lg hover:bg-teal-600 transition-all duration-300 hover:-translate-y-1 shadow-lg hover:shadow-xl flex items-center justify-center cursor-pointer"
+            key={type._id}
+            onClick={() => handleTabSwitch(type.name)}
+            className={`flex items-center gap-2 
+                        px-3 sm:px-4 py-2 sm:py-3 
+                        text-xs sm:text-sm md:text-base 
+                        font-medium rounded-lg 
+                        transition-all duration-300 
+                        flex-1 sm:flex-auto min-w-[100px] ${
+                          activeTab === type.name
+                            ? "bg-teal-500 text-white shadow-lg"
+                            : "bg-slate-200 text-slate-700 hover:bg-slate-300"
+                        }`}
           >
-            <Search size={20} />
+            <Icon size={16} className="sm:w-5 sm:h-5" />
+            {type.name}
           </button>
-        </div> */}
+        );
+      })
+    ) : (
+      <p className="text-gray-500">No property types found</p>
+    )}
+  </div>
+
+  {/* SearchBar */}
+  <div className="w-full flex flex-col sm:flex-row sm:items-center gap-3 mt-4">
+    <SearchBar activeTab={activeTab} />
+  </div>
+</div>
+
       </div>
     </div>
   );

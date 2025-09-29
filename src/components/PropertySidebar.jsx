@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import { MapPin, Check, Star, Home, Calendar, IndianRupee } from "lucide-react";
 import { getRequest } from "../Helpers";
@@ -39,6 +40,7 @@ const PropertySidebar = () => {
   const navigate = useNavigate();
 
   // const properties = [
+
   //   {
   //     id: 1,
   //     title: "Sahu City Phase 2",

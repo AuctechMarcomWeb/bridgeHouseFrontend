@@ -34,7 +34,7 @@ const RealEstateLeftPopups = () => {
   };
 
   return (
-    <div className="hidden md:block absolute left-0 w-full h-full pointer-events-none z-50 ">
+    <div className="hidden md:block absolute left-0 w-full h-full pointer-events-none z-5 ">
       <div className="absolute left-4 top-4 space-y-4 pointer-events-auto cursor-pointer">
         {popups.map((popup, index) => {
           const property = popup?.propertyId;
@@ -49,7 +49,7 @@ const RealEstateLeftPopups = () => {
                 marginTop: `${index * 10}px`,
               }}
             >
-              <div className="relative w-60 bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100">
+              <div className="relative w-50 bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100">
                 {/* Close Button */}
                 <button
                   onClick={(e) => {
@@ -73,22 +73,22 @@ const RealEstateLeftPopups = () => {
                 </div>
 
                 {/* Property Image */}
-                <div className="relative h-40 overflow-hidden">
+                <div className="relative h-25 overflow-hidden">
                   <img
                     src={popup?.bannerImage}
                     alt={popup?.title}
                     className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                   />
                   <div className="absolute top-3 left-3">
+
                     <span className="bg-white/90 backdrop-blur-sm text-gray-800 px-2 py-1 rounded-lg text-xs font-semibold">
-                      {property?.propertyType || "Property"}
-                    </span>
+                      {property?.propertyType || "Property"}                    </span>
                   </div>
                 </div>
 
                 {/* Content */}
-                <div className="p-4">
-                  <h3 className="font-bold text-gray-900 text-sm mb-2 line-clamp-2">
+                <div className="p-2">
+                  <h3 className="font-bold text-gray-900 text-sm  line-clamp-2">
                     {popup?.title}
                   </h3>
 
@@ -112,7 +112,7 @@ const RealEstateLeftPopups = () => {
                     onClick={() =>
                       navigate(`/property-detail/${property?._id}`)
                     }
-                    className={`w-full bg-gradient-to-r ${gradient} text-white py-2 px-3 rounded-lg text-xs font-semibold hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5`}
+                    className={`w-full bg-gradient-to-r ${gradient} text-white py-2 px rounded-lg text-xs font-semibold hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5`}
                   >
                     View Details
                   </button>

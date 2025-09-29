@@ -50,7 +50,7 @@ import CreatePasswordModal from "../components/CreatePasswordModal";
 import PropertyDetailsModal from "../components/PropertyDetailsModal";
 
 export default function RealEstateProfile() {
-  const { user, isLoggedIn } = useContext(ProfileContext);
+  const { user, isLoggedIn, setUser } = useContext(ProfileContext);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [userProfile, setUserProfile] = useState({});
@@ -135,6 +135,17 @@ export default function RealEstateProfile() {
             console.log("Delete response:", res?.data);
             Swal.fire("Deleted!", "The property has been deleted.", "success");
             setProperties((prev) => prev.filter((prop) => prop._id !== id));
+
+            setUserProfile((prev) => ({
+              ...prev,
+              consumeListing: prev.consumeListing > 0 ? prev.consumeListing - 1 : 0,
+            }));
+
+            setUser((prev) => ({
+              ...prev,
+              consumeListing: prev.consumeListing > 0 ? prev.consumeListing - 1 : 0,
+            }));
+
           })
           .catch((err) => {
             console.error("Delete error:", err);
@@ -220,50 +231,59 @@ export default function RealEstateProfile() {
                   </div>
                 </div>
 
-                {user?.accountType !== "Buyer" &&
-                  user?.consumeListing >= user?.PropertyListing && (
-                    <div className="w-full">
-                      {/* Left side message */}
-                      <div className="text-center sm:text-left text-white">
-                        <h4 className=" mt-8 text-lg font-bold flex items-center gap-2">
-                          Limit Reached
-                        </h4>
-                        <p className="text-sm text-white/80 text-left">
-                          You’ve used your property listings. Upgrade now to
-                          unlock more properties!
-                        </p>
+                {user?.accountType !== "Buyer" && (
+                  <div className="w-full">
+                    <div className="text-center sm:text-left text-white">
+                      <h4 className=" mt-8 text-lg font-bold flex items-center gap-2">
 
-                        {/* Numbers Section */}
-                        <div className="flex items-center gap-4 mt-4">
-                          {/* Used */}
-                          <div className="px-4 py-2 rounded-xl bg-white/20 backdrop-blur-sm">
-                            <p className="text-xs text-white/80">Used</p>
-                            <p className="text-xl font-bold text-white">
-                              {user?.PropertyListing}
-                            </p>
-                          </div>
 
-                          {/* Total */}
-                          <div className="px-4 py-2 rounded-xl bg-white/20 backdrop-blur-sm">
-                            <p className="text-xs text-white/80">Total</p>
-                            <p className="text-xl font-bold text-white">
-                              {user?.consumeListing}
-                            </p>
-                          </div>
 
-                          {/* Remaining */}
-                          <div className="px-4 py-2 rounded-xl bg-white/20 backdrop-blur-sm">
-                            <p className="text-xs text-white/80">Remaining</p>
-                            <p className="text-xl font-bold text-white">
-                              {user?.consumeListing - user?.PropertyListing}
-                            </p>
-                          </div>
+                        {user?.consumeListing >= user?.PropertyListing
+                          ? "Limit Reached"
+                          : "Your Plan Usage"}
+                      </h4>
+                      <p className="text-sm text-white/80 text-left">
+                        {user?.consumeListing >= user?.PropertyListing
+                          ? "You’ve used your property listings. Upgrade now to unlock more properties!"
+                          : "Here is your current usage summary."}
+                      </p>
+
+                      {/* Numbers Section */}
+                      <div className="flex items-center gap-4 mt-4">
+                        {/* Used */}
+                        <div className="px-4 py-2 rounded-xl bg-white/20 backdrop-blur-sm">
+                          <p className="text-xs text-white/80">Used</p>
+                          <p className="text-xl font-bold text-white">
+                            {user?.consumeListing || 0}
+                          </p>
+                        </div>
+
+                        {/* Total */}
+                        <div className="px-4 py-2 rounded-xl bg-white/20 backdrop-blur-sm">
+                          <p className="text-xs text-white/80">Total</p>
+                          <p className="text-xl font-bold text-white">
+                            {user?.PropertyListing || 0}
+                          </p>
+                        </div>
+
+                        {/* Remaining */}
+                        <div className="px-4 py-2 rounded-xl bg-white/20 backdrop-blur-sm">
+                          <p className="text-xs text-white/80">Remaining</p>
+                          <p className="text-xl font-bold text-white">
+                            {Math.max(
+                              (user?.PropertyListing || 0) - (user?.consumeListing || 0),
+                              0
+                            )}
+                          </p>
+
                         </div>
                       </div>
-                      {/* Right side button */}
                     </div>
-                  )}
+                  </div>
+                )}
               </div>
+
+
 
               <div className="flex flex-col gap-4">
                 <button
@@ -282,9 +302,7 @@ export default function RealEstateProfile() {
                   Edit Profile
                 </button>
 
-                {/* ✅ Upgrade button yaha hoga */}
-                {user?.accountType !== "Buyer" &&
-                  user?.consumeListing >= user?.PropertyListing && (
+                {user?.accountType !== "Buyer" && (
                     <button
                       onClick={() => setUpgradeModal(true)}
                       className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:scale-105 transition-all duration-300"
@@ -353,7 +371,7 @@ export default function RealEstateProfile() {
                     <div className="relative overflow-hidden">
                       <div className="relative h-56 bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center overflow-hidden group rounded-xl">
                         {Array.isArray(property?.gallery) &&
-                        property?.gallery?.length > 0 ? (
+                          property?.gallery?.length > 0 ? (
                           <>
                             <img
                               src={property?.gallery[0]}
@@ -393,15 +411,14 @@ export default function RealEstateProfile() {
                       {/* Approval Status Badge – RIGHT TOP */}
                       {property?.approvalStatus && (
                         <div
-                          className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs backdrop-blur-sm shadow-lg text-white ${
-                            property.approvalStatus === "Published"
-                              ? "bg-green-500/90"
-                              : property.approvalStatus === "Pending"
+                          className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs backdrop-blur-sm shadow-lg text-white ${property.approvalStatus === "Published"
+                            ? "bg-green-500/90"
+                            : property.approvalStatus === "Pending"
                               ? "bg-amber-500/90"
                               : property.approvalStatus === "Rejected"
-                              ? "bg-red-500/90"
-                              : "bg-blue-500/90"
-                          }`}
+                                ? "bg-red-500/90"
+                                : "bg-blue-500/90"
+                            }`}
                         >
                           {property.approvalStatus}
                         </div>
@@ -414,11 +431,10 @@ export default function RealEstateProfile() {
                           {property?.name}
                         </h3>
                         <span
-                          className={`text-xs font-semibold px-3 py-1 rounded-full ${
-                            property?.status === "For Sale"
-                              ? "bg-green-100 text-green-800"
-                              : "bg-blue-100 text-blue-800"
-                          }`}
+                          className={`text-xs font-semibold px-3 py-1 rounded-full ${property?.status === "For Sale"
+                            ? "bg-green-100 text-green-800"
+                            : "bg-blue-100 text-blue-800"
+                            }`}
                         >
                           {property?.status}
                         </span>
@@ -542,6 +558,8 @@ export default function RealEstateProfile() {
                           onClick={(e) => {
                             e.stopPropagation();
                             handleDelete(property._id);
+
+
                           }}
                           className="flex-1 py-2.5 text-sm font-medium bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-all duration-200"
                         >
@@ -619,7 +637,7 @@ export default function RealEstateProfile() {
                     <div className="relative overflow-hidden">
                       <div className="relative h-56 bg-gradient-to-br from-green-100 to-blue-100 flex items-center justify-center overflow-hidden group rounded-xl">
                         {Array.isArray(property?.gallery) &&
-                        property?.gallery?.length > 0 ? (
+                          property?.gallery?.length > 0 ? (
                           <>
                             <img
                               src={property?.gallery[0]}
@@ -651,11 +669,10 @@ export default function RealEstateProfile() {
                           {property?.name}
                         </h3>
                         <span
-                          className={`text-xs font-semibold px-3 py-1 rounded-full ${
-                            property?.status === "For Sale"
-                              ? "bg-green-100 text-green-800"
-                              : "bg-blue-100 text-blue-800"
-                          }`}
+                          className={`text-xs font-semibold px-3 py-1 rounded-full ${property?.status === "For Sale"
+                            ? "bg-green-100 text-green-800"
+                            : "bg-blue-100 text-blue-800"
+                            }`}
                         >
                           {property?.status}
                         </span>
@@ -737,6 +754,7 @@ export default function RealEstateProfile() {
             )}
           </div>
         )}
+        
         {/* Add Property Modal*/}
         {user?.accountType !== "Buyer" && isModalOpen && (
           <AddPropertyModal

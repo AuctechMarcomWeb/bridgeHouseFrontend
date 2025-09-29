@@ -11,34 +11,50 @@ export const ProfileProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   console.log("isLoggedIn", isLoggedIn);
-  useEffect(() => {
-    getRequest(`auth/profile`)
-      .then((res) => {
-        setIsLoggedIn(true);
-        setUser(res?.data?.data);
-        console.log("dfg res", res?.data?.data);
-      })
-      .catch((error) => {
-        if (error?.response.status == 401) {
-          setIsLoggedIn(false);
-          console.log("error", error);
-          setUser(null);
-        }
-      });
-  }, [updateStatus]);
 
-    const login = (token, userData) => {
-    setCookie("token-bridge-house", token, 30); 
-    setUser(userData);
-    setIsLoggedIn(true);
+  //  Profile fetcher function
+  const fetchProfile = async () => {
+    try {
+      const res = await getRequest("auth/profile");
+      setIsLoggedIn(true);
+      setUser(res?.data?.data);
+      console.log("Profile Data ===>", res?.data?.data);
+    } catch (error) {
+      if (error?.response?.status === 401) {
+        setIsLoggedIn(false);
+        setUser(null);
+        console.log("Unauthorized:", error);
+      }
+    }
   };
 
+
+  //  Run on mount and whenever updateStatus changes
+  useEffect(() => {
+    fetchProfile();
+  }, [updateStatus]);
+
+  
+  //  Login function
+  const login = async (token, userData) => {
+    setCookie("token-bridge-house", token, 30);
+    setIsLoggedIn(true);
+    setUser(userData);
+
+
+    //  Turant backend se fresh profile la lo
+
+    await fetchProfile();
+  };
+
+  //  Logout function
   const logout = () => {
     setUser(null);
     setIsLoggedIn(false);
     deleteCookie("token-bridge-house");
-    console.log("user Loggout");
+    console.log("User Logged Out");
   };
+
   return (
     <ProfileContext.Provider
       value={{

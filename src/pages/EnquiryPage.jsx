@@ -1,38 +1,35 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Table, Input, Button, Space, Modal } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
-import { Home, Users, Award, TrendingUp, Heart, Shield, Star, ArrowRight } from 'lucide-react';
+import {
+  Home,
+  Users,
+  Award,
+  TrendingUp,
+  Heart,
+  Shield,
+  Star,
+  ArrowRight,
+} from "lucide-react";
 import { ProfileContext } from "../context/ProfileContext";
 import axios from "axios";
 import { getRequest } from "../Helpers";
 import EnquiryViewModal from "../components/EnquiryModals/EnquiryViewModal";
 import EnquiryEditModal from "../components/EnquiryModals/EnquiryEditModal";
 import { Eye, Edit } from "lucide-react";
+import ExportButton from "./ExportButton";
 
 const EnquiryPage = () => {
-
-
-
-  const { user } = useContext(ProfileContext)
-  console.log("user ka data context ke through=====", user)
-
+  const { user } = useContext(ProfileContext);
   const [searchText, setSearchText] = useState("");
-  const [enquiries, setEnquiries] = useState([])
-
-  const [modalData, setModalData] = useState("")
-  const [viewModalStatus, setViewModalStatus] = useState(false)
-  const [editModalStatus, setEditModalStatus] = useState(false)
-
-
-
-
-  console.log("modalData", modalData);
+  const [enquiries, setEnquiries] = useState([]);
+  const [modalData, setModalData] = useState("");
+  const [viewModalStatus, setViewModalStatus] = useState(false);
+  const [editModalStatus, setEditModalStatus] = useState(false);
 
   const handleCancel = () => {
     setViewModalStatus(false);
   };
-
-
   const columns = [
     {
       title: "Name",
@@ -64,99 +61,80 @@ const EnquiryPage = () => {
       dataIndex: "property",
       key: "property",
       responsive: ["lg"],
-      render: ((item) => {
-
-        return (
-          <>{item?.name}</>
-        )
-      })
+      render: (item) => {
+        return <>{item?.name}</>;
+      },
     },
     {
       title: "Property Code",
       dataIndex: "property",
       key: "property",
       responsive: ["lg"],
-      render: ((item) => {
-
-        return (
-          <>{item?.propertyCode}</>
-        )
-      })
+      render: (item) => {
+        return <>{item?.propertyCode}</>;
+      },
     },
     {
       title: "status",
       dataIndex: "status",
       key: "status",
       responsive: ["lg"],
-      render: ((_, item) => {
-
+      render: (_, item) => {
         console.log("item", item);
 
-        return (
-          <>{item?.status}</>
-        )
-      })
+        return <>{item?.status}</>;
+      },
     },
-    
+
     {
       title: "Action",
       dataIndex: "property",
       key: "property",
       responsive: ["lg"],
-      render: ((_, item) => {
-
-
+      render: (_, item) => {
         return (
           <>
+            <div className="flex gap-3">
+              {/* View Button with Icon */}
+              <button
+                onClick={() => {
+                  setModalData(item);
+                  setViewModalStatus(true);
+                }}
+                className="p-2 rounded-full hover:bg-blue-100 transition"
+              >
+                <Eye className="text-blue-600 w-5 h-5" />
+              </button>
 
-             <div className="flex gap-3">
-    {/* View Button with Icon */}
-    <button
-      onClick={() => {
-        setModalData(item);
-        setViewModalStatus(true);
-      }}
-      className="p-2 rounded-full hover:bg-blue-100 transition"
-    >
-      <Eye className="text-blue-600 w-5 h-5" />
-    </button>
-
-    {/* Edit Button with Icon */}
-    <button
-      onClick={() => {
-        setModalData(item);
-        setEditModalStatus(true);
-      }}
-      className="p-2 rounded-full hover:bg-green-100 transition"
-    >
-      <Edit className="text-green-600 w-5 h-5" />
-    </button>
-  </div>
+              {/* Edit Button with Icon */}
+              <button
+                onClick={() => {
+                  setModalData(item);
+                  setEditModalStatus(true);
+                }}
+                className="p-2 rounded-full hover:bg-green-100 transition"
+              >
+                <Edit className="text-green-600 w-5 h-5" />
+              </button>
+            </div>
           </>
-        )
-      })
+        );
+      },
     },
   ];
 
-
   useEffect(() => {
-
-      getRequest(`enquiry?addedBy=${user?._id}`).then((res) => {
-      setEnquiries(res?.data?.data?.enquiries)
-   
-    }).catch((error) => {
-      console.log("error", error);
-
-    })
-
-
-
-  }, [user])
-
+    getRequest(`enquiry?addedBy=${user?._id}`)
+      .then((res) => {
+        setEnquiries(res?.data?.data?.enquiries);
+      })
+      .catch((error) => {
+        console.log("error", error);
+      });
+  }, [user]);
 
   return (
     <>
-
       {/* Top Info Section */}
       <div className="relative overflow-hidden bg-gradient-to-r from-gray-900 to-blue-900 w-full shadow-lg mb-6">
         {/* Overlay */}
@@ -171,7 +149,8 @@ const EnquiryPage = () => {
 
             {/* Subtitle */}
             <p className="md:text-xl text-base text-blue-100 mb-8 max-w-3xl mx-auto leading-relaxed">
-              Manage and track all your property enquiries in a comprehensive table view
+              Manage and track all your property enquiries in a comprehensive
+              table view
             </p>
           </div>
         </div>
@@ -180,12 +159,13 @@ const EnquiryPage = () => {
         <div className="absolute top-1/2 right-10 w-16 h-16 bg-white opacity-10 rounded-full animate-ping"></div>
       </div>
 
-
       {/* Filter / Search Section */}
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white shadow-2xl rounded-2xl p-6 md:p-8 mb-6 border border-gray-100">
           {/* Heading */}
-          <h2 className="text-2xl font-bold text-purple-400 mb-4">Filter Enquiries</h2>
+          <h2 className="text-2xl font-bold text-blue-900 mb-4">
+            Filter Enquiries
+          </h2>
 
           {/* Form Controls */}
           <div className="flex flex-wrap items-center gap-4">
@@ -198,25 +178,31 @@ const EnquiryPage = () => {
               className="flex-1 min-w-[200px] md:min-w-[250px] rounded-xl border border-gray-300 
                    focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all duration-300"
             />
-
             {/* Status Dropdown */}
-            <select className="min-w-[150px] rounded-xl border border-gray-300 p-2 
-                         focus:ring-2 focus:ring-cyan-400 transition-all duration-300">
+            <select
+              className="min-w-[150px] rounded-xl border border-gray-300 p-2 
+                         focus:ring-2 focus:ring-cyan-400 transition-all duration-300"
+            >
               <option>All Status</option>
               <option>New</option>
               <option>Contacted</option>
               <option>Interested</option>
               <option>Closed</option>
             </select>
-
             {/* Export Button */}
-            <Button
+            {/* <Button
               type="primary"
               className="bg-gradient-to-r from-cyan-400 to-teal-500 
                    hover:scale-105 transition-transform duration-300"
+              onClick={handleExport}
             >
               Export
-            </Button>
+            </Button> */}{" "}
+            <ExportButton
+              enquiries={enquiries}
+              fileName="Enquiry.xlsx"
+              sheetName="Enquiry"
+            />
           </div>
         </div>
       </div>
@@ -236,33 +222,21 @@ const EnquiryPage = () => {
         </div>
       </div>
 
-
-      {
-        viewModalStatus && (
-
-
-
-          <EnquiryViewModal openModal={viewModalStatus} modalData={modalData} setModal={setViewModalStatus} />
-
-
-        )
-      }
-      {
-        editModalStatus && (
-
-
-
-          <EnquiryEditModal openModal={editModalStatus} modalData={modalData} setModal={setEditModalStatus} />
-
-
-        )
-      }
-
-
-
+      {viewModalStatus && (
+        <EnquiryViewModal
+          openModal={viewModalStatus}
+          modalData={modalData}
+          setModal={setViewModalStatus}
+        />
+      )}
+      {editModalStatus && (
+        <EnquiryEditModal
+          openModal={editModalStatus}
+          modalData={modalData}
+          setModal={setEditModalStatus}
+        />
+      )}
     </>
-
-
   );
 };
 

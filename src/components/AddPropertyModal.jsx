@@ -611,20 +611,20 @@ const AddPropertyModal = ({
             <hr className="m-0 p-0 my-3" />
 
             {/* ======================= */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               {/* Address */}
               <div>
                 <label className="form-label fw-bold">Address *</label>
                 <Addressform
                   value={formData?.address || modalData?.address}
                   onSelect={handleLocationSelect}
-                  className="w-full p-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                  className="w-full p-1 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                   required
                 />
               </div>
 
               {/* Property Code */}
-              <div>
+              {/* <div>
                 <label className="form-label fw-bold">Property Code *</label>
                 <input
                   type="text"
@@ -640,7 +640,7 @@ const AddPropertyModal = ({
                 {errors?.propertyCode && (
                   <div className="invalid-feedback">{errors.propertyCode}</div>
                 )}
-              </div>
+              </div> */}
             </div>
             <div className="grid grid-cols-2 gap-4">
               {/* Facilities */}

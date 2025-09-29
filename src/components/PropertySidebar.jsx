@@ -204,14 +204,6 @@ const PropertySidebar = () => {
           <PropertyCard key={property.id} property={property} />
         ))}
       </div>
-      {/* 
-      <div className="mt-6 p-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg text-white text-center">
-        <h3 className="font-bold mb-2">Looking to sell?</h3>
-        <p className="text-sm mb-3">Get the best price for your property</p>
-        <button className="bg-white text-blue-600 px-4 py-2 rounded-md font-semibold text-sm hover:bg-gray-100 transition-colors">
-          Get Free Valuation
-        </button>
-      </div> */}
     </div>
   );
 };

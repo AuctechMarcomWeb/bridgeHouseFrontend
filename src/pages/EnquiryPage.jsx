@@ -1,11 +1,27 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Table, Input, Button } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
+import {
+  Home,
+  Users,
+  Award,
+  TrendingUp,
+  Heart,
+  Shield,
+  Star,
+  ArrowRight,
+} from "lucide-react";
 import { Eye, Edit } from "lucide-react";
 import { ProfileContext } from "../context/ProfileContext";
 import { getRequest } from "../Helpers";
 import EnquiryViewModal from "../components/EnquiryModals/EnquiryViewModal";
 import EnquiryEditModal from "../components/EnquiryModals/EnquiryEditModal";
+import { Eye, Edit } from "lucide-react";
+import ExportButton from "./ExportButton";
+
+const EnquiryPage = () => {
+  const { user } = useContext(ProfileContext);
+  const [searchText, setSearchText] = useState("");
 
 const EnquiryPage = () => {
   const { user } = useContext(ProfileContext);
@@ -16,6 +32,9 @@ const EnquiryPage = () => {
   const [viewModalStatus, setViewModalStatus] = useState(false);
   const [editModalStatus, setEditModalStatus] = useState(false);
 
+  const handleCancel = () => {
+    setViewModalStatus(false);
+  };
   const columns = [
     { title: "Name", dataIndex: "name", key: "name" },
     { title: "Email", dataIndex: "email", key: "email" },
@@ -31,18 +50,84 @@ const EnquiryPage = () => {
       title: "Property Name",
       dataIndex: "property",
       key: "property",
+      responsive: ["lg"],
+      render: (item) => {
+        return <>{item?.name}</>;
+      },
       render: (item) => <>{item?.name}</>,
     },
     {
       title: "Property Code",
       dataIndex: "property",
       key: "property",
+      responsive: ["lg"],
+      render: (item) => {
+        return <>{item?.propertyCode}</>;
+      },
       render: (item) => <>{item?.propertyCode}</>,
     },
     {
       title: "Status",
       dataIndex: "status",
       key: "status",
+      responsive: ["lg"],
+      render: (_, item) => {
+        console.log("item", item);
+
+        return <>{item?.status}</>;
+      },
+    },
+
+    {
+      title: "Action",
+      dataIndex: "property",
+      key: "property",
+      responsive: ["lg"],
+      render: (_, item) => {
+        return (
+          <>
+            <div className="flex gap-3">
+              {/* View Button with Icon */}
+              <button
+                onClick={() => {
+                  setModalData(item);
+                  setViewModalStatus(true);
+                }}
+                className="p-2 rounded-full hover:bg-blue-100 transition"
+              >
+                <Eye className="text-blue-600 w-5 h-5" />
+              </button>
+
+              {/* Edit Button with Icon */}
+              <button
+                onClick={() => {
+                  setModalData(item);
+                  setEditModalStatus(true);
+                }}
+                className="p-2 rounded-full hover:bg-green-100 transition"
+              >
+                <Edit className="text-green-600 w-5 h-5" />
+              </button>
+            </div>
+          </>
+        );
+      },
+    },
+  ];
+
+  useEffect(() => {
+    getRequest(`enquiry?addedBy=${user?._id}`)
+      .then((res) => {
+        setEnquiries(res?.data?.data?.enquiries);
+      })
+      .catch((error) => {
+        console.log("error", error);
+      });
+  }, [user]);
+
+  return (
+    <>
+      {/* Top Info Section */}
       render: (_, item) => <>{item?.status}</>,
     },
     {
@@ -104,6 +189,11 @@ const EnquiryPage = () => {
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
               Property Enquiries
             </h1>
+
+            {/* Subtitle */}
+            <p className="md:text-xl text-base text-blue-100 mb-8 max-w-3xl mx-auto leading-relaxed">
+              Manage and track all your property enquiries in a comprehensive
+              table view
             <p className="md:text-xl text-base text-blue-100 mb-8 max-w-3xl mx-auto">
               Manage and track all your property enquiries in a comprehensive table view
             </p>
@@ -111,6 +201,15 @@ const EnquiryPage = () => {
         </div>
       </div>
 
+      {/* Filter / Search Section */}
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-white shadow-2xl rounded-2xl p-6 md:p-8 mb-6 border border-gray-100">
+          {/* Heading */}
+          <h2 className="text-2xl font-bold text-blue-900 mb-4">
+            Filter Enquiries
+          </h2>
+
+          {/* Form Controls */}
       {/* Filters */}
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white shadow-2xl rounded-2xl p-6 md:p-8 mb-6 border border-gray-100">
@@ -124,6 +223,23 @@ const EnquiryPage = () => {
               onChange={(e) => setSearchText(e.target.value)}
               className="flex-1 min-w-[200px] md:min-w-[250px] rounded-xl border border-gray-300"
             />
+            {/* Status Dropdown */}
+            <select
+              className="min-w-[150px] rounded-xl border border-gray-300 p-2 
+                         focus:ring-2 focus:ring-cyan-400 transition-all duration-300"
+            >
+              <option>All Status</option>
+              <option>New</option>
+              <option>Contacted</option>
+              <option>Interested</option>
+              <option>Closed</option>
+            </select>
+            {/* Export Button */}
+            {/* <Button
+              type="primary"
+              className="bg-gradient-to-r from-cyan-400 to-teal-500 
+                   hover:scale-105 transition-transform duration-300"
+              onClick={handleExport}
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
@@ -136,7 +252,12 @@ const EnquiryPage = () => {
             </select>
             <Button type="primary" className="!bg-[#004d88] text-white rounded-lg shadow-md">
               Export
-            </Button>
+            </Button> */}{" "}
+            <ExportButton
+              enquiries={enquiries}
+              fileName="Enquiry.xlsx"
+              sheetName="Enquiry"
+            />
           </div>
         </div>
       </div>
@@ -168,6 +289,7 @@ const EnquiryPage = () => {
         <EnquiryEditModal
           openModal={editModalStatus}
           modalData={modalData}
+          setModal={setEditModalStatus}
           setModal={(status) => {
             setEditModalStatus(status);
             if (!status) fetchEnquiries();

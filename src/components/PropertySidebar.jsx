@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import { MapPin, Check, Star, Home, Calendar, IndianRupee } from "lucide-react";
 import { getRequest } from "../Helpers";
@@ -86,7 +87,6 @@ const PropertySidebar = () => {
           </div>
         </div>
       )}
-      
 
       <div className="flex items-start space-x-3 mb-4">
         <img
@@ -206,7 +206,6 @@ const PropertySidebar = () => {
           <PropertyCard key={property.id} property={property} />
         ))}
       </div>
-
     </div>
   );
 };

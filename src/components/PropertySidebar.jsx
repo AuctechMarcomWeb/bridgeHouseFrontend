@@ -190,14 +190,14 @@ const PropertySidebar = () => {
   );
 
   return (
-    <div className="   w-80  bg-gray-50 min-h-screen overflow-y-auto shadow-xl z-10">
+    <div className="w-80 bg-gray-50  overflow-y-auto shadow-xl z-10">
       <div className="mb-6">
         {/* {agents.map((agent) => (
           <AgentCard key={agent.id} agent={agent} />
         ))} */}
       </div>
 
-      <div>
+      <div >
         <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
           <Home className="w-5 h-5 mr-2 text-blue-500" />
           Featured Properties

@@ -124,7 +124,7 @@ export default function RentalListingApp() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      <div className="w-full   2xl:w-[70%] mx-auto px-4 2xl:px-0 py-4 md:py-8">
+      <div className="w-full 2xl:w-[70%] lg:w-[80%] xl:w-[75%] 2xl:w-[70%]  mx-auto px-4 2xl:px-0 py-4 md:py-8">
         {/* Header */}
         <div className="text-center mb-6 md:mb-12">
           <div className="inline-flex items-center justify-center mb-4">
@@ -348,7 +348,7 @@ export default function RentalListingApp() {
 
                 /> */}
 
-                <Pagination defaultCurrent={6} total={total} onChange={(newPage) => setPage(newPage)} />
+                <Pagination defaultCurrent={page} total={total} onChange={(newPage) => setPage(newPage)} />
 
               </div>
             )}

@@ -76,14 +76,22 @@ const SearchBar = () => {
   };
 
   return (
-    <div className="flex flex-wrap items-center justify-start">
-      <div className="bg-white rounded-full shadow-xl flex items-center md:max-w-2xl w-full transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+    // <div className="flex flex-wrap items-center justify-start">
+    <div className="flex flex-col sm:flex-row items-center gap-2 w-full">
+
+      <div className="bg-white sm:flex-row items-center w-full rounded-full shadow-xl flex items-center md:max-w-2xl w-full transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+
+
+
         {/* State Dropdown */}
 
         {/* State Dropdown using native select */}
         <div className="relative flex items-center px-2 md:px-5 border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors duration-200">
           <select
-            className="form-select text-sm md:font-semibold text-gray-700 w-30 border-none focus:outline-none focus:ring-0"
+            // className="form-select text-sm md:font-semibold text-gray-700 w-30 border-none focus:outline-none focus:ring-0"
+              className="form-select text-sm md:font-semibold text-gray-700 w-full md:w-32 border-none focus:outline-none focus:ring-0"
+
+
             value={selectedLocation}
             onChange={(e) => handleLocationSelect(e.target.value)}
             aria-label="Select state"
@@ -98,7 +106,9 @@ const SearchBar = () => {
         </div>
 
         {/* Address Search */}
-        <div className="flex-1 md:px-3">
+        {/* <div className="flex-1 md:px-3"> */}
+        <div className="flex-1 w-full sm:flex-1 md:px-3 sm:mt-0">
+
           <Locationform
             value={searchQuery}
             onChange={(val) => setSearchQuery(val)}
@@ -113,8 +123,10 @@ const SearchBar = () => {
         {/* Search Button */}
         <button
           onClick={handleSearch}
-          className="md:px-8 md:py-5 py-2 px-2 bg-teal-500 text-white font-semibold md:text-base text-sm cursor-pointer rounded-r-full transition-all duration-200 flex items-center gap-2 hover:scale-105 active:scale-95"
+          className="md:px-8 md:py-5 py-2 flex-wrap px-2 bg-teal-500 flex flex-wrap items-center justify-start text-white font-semibold md:text-base text-sm cursor-pointer rounded-r-full transition-all duration-200 flex items-center gap-2 hover:scale-105 active:scale-95"
         >
+
+
           <svg
             className="hidden md:block"
             width="18"

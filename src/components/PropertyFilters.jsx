@@ -21,15 +21,15 @@ export default function PropertyFilters({
   const [category, setCategory] = useState([]);
   const [openDropdowns, setOpenDropdowns] = useState({
     propertyType: true,
-    bhk: true, 
+    bhk: true,
   });
 
-const toggleDropdown = (dropdown) => {
-  setOpenDropdowns((prev) => ({
-    ...prev,
-    [dropdown]: !prev[dropdown], // click karne par toggle ho
-  }));
-};
+  const toggleDropdown = (dropdown) => {
+    setOpenDropdowns((prev) => ({
+      ...prev,
+      [dropdown]: !prev[dropdown], // click karne par toggle ho
+    }));
+  };
 
 
   // ✅ Fetch BHK with Pagination + Search
@@ -67,7 +67,7 @@ const toggleDropdown = (dropdown) => {
         </div>
       </div>
 
-      <div className="p-6 space-y-6 max-h-[calc(100vh-200px)] overflow-y-auto">
+      <div className="p-6 space-y-6 ">
         {/* Search */}
         <div className="relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -162,29 +162,29 @@ const toggleDropdown = (dropdown) => {
 
 
 
-        {openDropdowns.bhk && bhk.length > 0 && (
-  <div className="space-y-3 pl-4 border-l-2 border-blue-100">
-    {bhk.map((item) => (
-      <label
-        key={item._id}
-        className="flex items-center gap-2 cursor-pointer"
-      >
-        <input
-          type="radio"
-          name="bhk"
-          value={item.name}
-          checked={filters.bhk === item.name}
-          onChange={(e) =>
-            setFilters({ ...filters, bhk: e.target.value })
-          }
-          className="w-4 h-4 text-blue-600"
-        />
-        <span className="text-sm">{item.name}</span>
-      </label>
-    ))}
-  </div>
-)}
-</div>
+          {openDropdowns.bhk && bhk.length > 0 && (
+            <div className="space-y-3 pl-4 border-l-2 border-blue-100">
+              {bhk.map((item) => (
+                <label
+                  key={item._id}
+                  className="flex items-center gap-2 cursor-pointer"
+                >
+                  <input
+                    type="radio"
+                    name="bhk"
+                    value={item.name}
+                    checked={filters.bhk === item.name}
+                    onChange={(e) =>
+                      setFilters({ ...filters, bhk: e.target.value })
+                    }
+                    className="w-4 h-4 text-blue-600"
+                  />
+                  <span className="text-sm">{item.name}</span>
+                </label>
+              ))}
+            </div>
+          )}
+        </div>
 
         {/* Price Range */}
         <div className="space-y-3">

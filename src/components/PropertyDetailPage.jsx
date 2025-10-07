@@ -408,105 +408,120 @@ export default function PropertyDetailPage() {
             </div>
 
             {/* facilities */}
-            <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-bold text-gray-800">Amenities</h3>
-                <button
-                  onClick={() => setshowFacilities(!showFacilities)}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                  {showFacilities ? (
-                    <ChevronUp className="w-6 h-6" />
-                  ) : (
-                    <ChevronDown className="w-6 h-6" />
-                  )}
-                </button>
-              </div>
-              {showFacilities && (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {properties?.facilities?.map((facility, index) => (
-                    <div
-                      key={index}
-                      className="group p-2 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl hover:shadow-md transition-all duration-300 hover:-translate-y-1"
+            {Array.isArray(properties?.facilities) &&
+              properties.facilities.length > 0 && (
+                <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
+                  <div className="flex justify-between items-center mb-6">
+                    <h3 className="text-xl font-bold text-gray-800">
+                      Amenities
+                    </h3>
+                    <button
+                      onClick={() => setshowFacilities(!showFacilities)}
+                      className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
                     >
-                      <div className="flex items-center gap-3">
-                        <div className="w-5 h-5 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center text-white shadow-md">
-                          <span className="text-xs ">✓</span>
+                      {showFacilities ? (
+                        <ChevronUp className="w-6 h-6" />
+                      ) : (
+                        <ChevronDown className="w-6 h-6" />
+                      )}
+                    </button>
+                  </div>
+                  {showFacilities && (
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                      {properties.facilities.map((facility, index) => (
+                        <div
+                          key={index}
+                          className="group p-2 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl hover:shadow-md transition-all duration-300 hover:-translate-y-1"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-5 h-5 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center text-white shadow-md">
+                              <span className="text-xs">✓</span>
+                            </div>
+                            <span className="text-base text-gray-500">
+                              {facility}
+                            </span>
+                          </div>
                         </div>
-                        <span className="text-base text-gray-500">
-                          {facility}
-                        </span>
-                      </div>
+                      ))}
                     </div>
-                  ))}
+                  )}
                 </div>
               )}
-            </div>
 
             {/* Property Services services */}
-            <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-bold text-gray-800">Services</h3>
-                <button
-                  onClick={() => setshowServices(!showServices)}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                  {showServices ? (
-                    <ChevronUp className="w-6 h-6" />
-                  ) : (
-                    <ChevronDown className="w-6 h-6" />
-                  )}
-                </button>
-              </div>
-              {showServices && properties?.services?.length > 0 && (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {properties?.services.map((service, index) => (
-                    <div
-                      key={index}
-                      className="group p-2  rounded-xl hover:shadow-md transition-all duration-300 hover:-translate-y-1"
+            {Array.isArray(properties?.services) &&
+              properties.services.length > 0 && (
+                <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
+                  <div className="flex justify-between items-center mb-6">
+                    <h3 className="text-xl font-bold text-gray-800">
+                      Services
+                    </h3>
+                    <button
+                      onClick={() => setshowServices(!showServices)}
+                      className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
                     >
-                      <div className="flex items-center gap-3">
-                        <div className="w-6 h-6 bg-gradient-to-br from-red-800 to-pink-400 rounded-lg flex items-center justify-center text-white shadow-lg">
-                          {/* {const Icon = serviceIcons[service] || Star;} */}
-                          <span className="text-xs ">✓</span>
+                      {showServices ? (
+                        <ChevronUp className="w-6 h-6" />
+                      ) : (
+                        <ChevronDown className="w-6 h-6" />
+                      )}
+                    </button>
+                  </div>
+
+                  {showServices && (
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                      {properties.services.map((service, index) => (
+                        <div
+                          key={index}
+                          className="group p-2 rounded-xl hover:shadow-md transition-all duration-300 hover:-translate-y-1"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-6 h-6 bg-gradient-to-br from-red-800 to-pink-400 rounded-lg flex items-center justify-center text-white shadow-lg">
+                              <span className="text-xs">✓</span>
+                            </div>
+                            <div className="text-sm text-gray-600">
+                              {service}
+                            </div>
+                          </div>
                         </div>
-                        <div className="text-sm  text-gray-600">{service}</div>
-                      </div>
+                      ))}
                     </div>
-                  ))}
+                  )}
                 </div>
               )}
-            </div>
 
             {/* Nearby Section */}
-            <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-bold text-gray-800">Nearby</h3>
-                <button
-                  onClick={() => setShowNearby(!showNearby)}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                  {showNearby ? (
-                    <ChevronUp className="w-6 h-6" />
-                  ) : (
-                    <ChevronDown className="w-6 h-6" />
-                  )}
-                </button>
-              </div>
+            {Array.isArray(properties?.nearby) &&
+              properties.nearby.length > 0 && (
+                <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
+                  <div className="flex justify-between items-center mb-6">
+                    <h3 className="text-xl font-bold text-gray-800">Nearby</h3>
+                    <button
+                      onClick={() => setShowNearby(!showNearby)}
+                      className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                    >
+                      {showNearby ? (
+                        <ChevronUp className="w-6 h-6" />
+                      ) : (
+                        <ChevronDown className="w-6 h-6" />
+                      )}
+                    </button>
+                  </div>
 
-              {showNearby && (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {properties?.nearby?.map((place) => (
-                    <div key={place._id} className="flex items-start gap-3">
-                      <div className="w-2 h-2 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full mt-3 flex-shrink-0"></div>
-                      <span className="text-base text-gray-500">
-                        {place.distance} Km from {place.name}
-                      </span>
+                  {showNearby && (
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                      {properties.nearby.map((place) => (
+                        <div key={place._id} className="flex items-start gap-3">
+                          <div className="w-2 h-2 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full mt-3 flex-shrink-0"></div>
+                          <span className="text-base text-gray-500">
+                            {place.distance} Km from {place.name}
+                          </span>
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                  )}
                 </div>
               )}
-            </div>
           </div>
 
           {/* Right Column */}

@@ -252,7 +252,7 @@ setPropertyType(id);
 
 
         {/* Main Content */}
-        <div className="w-full lg:w-[120%] flex flex-col">
+        <div className="w-full lg:w-[128%] flex flex-col">
 
           {/* Header */}
           <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 gap-4">
@@ -307,11 +307,11 @@ setPropertyType(id);
         </div>
 
         {/* Sidebar */}
-     <div className="2xl:w-[70%] lg:w-[80%] w-full mx-auto px-4 flex flex-col lg:flex-row gap-8 justify-between overflow-y-auto lg:max-h-[125vh]">
-
-
+<div className="2xl:w-[70%] lg:w-[80%] w-full mx-auto px-4 flex flex-col lg:flex-row gap-8 justify-between overflow-y-auto lg:max-h-[125vh]">
           <PropertySidebar />
         </div>
+
+
 
 {/* <div className="hidden lg:block w-[30%] relative max-h-[98vh] overflow-y-auto">
   <PropertySidebar />

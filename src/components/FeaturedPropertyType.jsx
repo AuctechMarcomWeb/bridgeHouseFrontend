@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import React, {useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import RealEstatePopups from "./RealEstatePopups";
 import {
@@ -15,41 +15,6 @@ import RealEstateLeftPopups from "./RealEstateLeftPopups";
 import FloatingPopup from "./FloatingPopup.jsx";
 import { PropertyContext } from "../context/PropertyContext.jsx";
 
-//     id: 1,
-//     icon: Building,
-//     name: "Buy",
-//     count: "288 Property",
-//     img: "https://i.pinimg.com/736x/cf/b0/b7/cfb0b750bb44819aba2f11b28e5ff08e.jpg",
-//   },
-//   {
-//     id: 2,
-//     icon: Home,
-//     name: "Rent",
-//     count: "300 Property",
-//     img: "https://i.pinimg.com/736x/2a/f6/a4/2af6a4fff643de299760095e2ed4f47f.jpg",
-//   },
-//   {
-//     id: 3,
-//     icon: TreePine,
-//     name: "Plot",
-//     count: "250 Property",
-//     img: "https://i.pinimg.com/736x/f8/e8/0f/f8e80ffde554c1ff3aade2eadb7f88b0.jpg",
-//   },
-//   {
-//     id: 4,
-//     icon: Building2,
-//     name: "Apartments",
-//     count: "230 Property",
-//     img: "https://i.pinimg.com/1200x/40/ce/f2/40cef26967e2bf8263a2694331efb168.jpg",
-//   },
-//   {
-//     id: 5,
-//     icon: Copy,
-//     name: "Duplexes",
-//     count: "320 Property",
-//     img: "https://i.pinimg.com/1200x/ec/97/34/ec9734d469899a77d5b000cb2be75498.jpg",
-//   },
-// ];
 
 export default function FeaturedPropertyType() {
   const [categories, setCategories] = useState([]);
@@ -96,7 +61,7 @@ export default function FeaturedPropertyType() {
 
   const navigate = useNavigate();
   function handleClick(name) {
-    setPropertyType(name); 
+    setPropertyType(name);
     console.log("categoryname", name);
 
     navigate(`/property-list?propertyType=${name}`);

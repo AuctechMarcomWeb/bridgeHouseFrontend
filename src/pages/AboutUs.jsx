@@ -49,11 +49,7 @@ const AboutUs = () => {
             <p className="md:text-xl text-base text-blue-100 mb-8 max-w-3xl mx-auto leading-relaxed">
               Connecting Dreams to Reality Through Premier Real Estate Excellence
             </p>
-            
-            {/* <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-gray-700 to-blue-800 bg-opacity-20 backdrop-blur-sm rounded-full px-6 py-3 text-white">
-              <span className="text-base font-medium">Building Futures Since 2008</span>
-              <ArrowRight className="w-5 h-5" />
-            </div> */}
+       
 
           </div>
         </div>
@@ -211,34 +207,8 @@ const AboutUs = () => {
         </div>
       </div>
 
-      {/* Team Section */}
-      
+  
 
-      
-
-      {/* CTA Section */}
-      {/* <div className="py-8 bg-gradient-to-r from-gray-900 to-blue-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-xl md:text-2xl 2xl:text-3xl font-bold text-white mb-6">
-            Ready to Find Your Dream Property?
-          </h2>
-          <p className="text-lg text-blue-100 mb-8 max-w-2xl mx-auto">
-            Let our experienced team guide you through every step of your real estate journey
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          
-            <Link to="/" className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-xl">
-              Start Your Journey
-            </Link>
-            <Link to="/property-list"
-             className="border-2 border-white text-white hover:bg-white hover:text-gray-900 font-bold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-105">
-              View Our Properties
-            </Link>
-          </div>
-        </div>
-      </div> */}
-
- 
     </div>
   );
 };

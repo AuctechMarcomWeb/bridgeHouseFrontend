@@ -211,7 +211,7 @@ export default function PropertyFilters({
           {/* Apply Button */}
           <button
             onClick={handleApplyFilters}
-            className="w-full bg-teal-500 text-white py-2 rounded-xl font-semibold hover:bg-teal-600 transition-all"
+            className="w-full bg-[#004f8a] text-white py-2 rounded-xl font-semibold hover:bg-[#004f8a] transition-all"
           >
             Apply Filters
           </button>
@@ -219,7 +219,7 @@ export default function PropertyFilters({
           {/* Reset Button */}
           <button
             onClick={handleResetFilters}
-            className="w-full bg-teal-500 text-white py-2 rounded-xl font-semibold hover:bg-teal-600 transition-all"
+            className="w-full bg-[#004f8a] text-white py-2 rounded-xl font-semibold hover:bg-[#004f8a] transition-all"
           >
             Reset All Filters
           </button>

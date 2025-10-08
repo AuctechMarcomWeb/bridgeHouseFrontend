@@ -37,6 +37,7 @@ export default function RentalListingApp() {
   });
   const [appliedFilters, setAppliedFilters] = useState(filters);
 
+  // 🔹 Fetch data when filters or page change
   useEffect(() => {
     fetchProperties();
   }, [page, approvalStatus, appliedFilters]);
@@ -61,7 +62,7 @@ export default function RentalListingApp() {
         setListing(res?.data?.data?.properties || []);
         setTotal(res?.data?.data?.totalProperties || 0);
       })
-      .catch((err) => console.log("Api Error", err))
+      .catch((err) => console.log("API Error:", err))
       .finally(() => setLoading(false));
   };
 
@@ -101,7 +102,7 @@ export default function RentalListingApp() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       <div className="w-full 2xl:w-[70%] xl:w-[80%] lg:w-[85%] mx-auto px-4 py-6 md:py-10">
-        {/* Header */}
+        {/* ✅ Header */}
         <div className="text-center mb-8 md:mb-12">
           <div className="inline-flex items-center justify-center mb-3">
             <div className="h-1 w-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full"></div>
@@ -249,7 +250,7 @@ export default function RentalListingApp() {
 
                       <button
                         onClick={() => handleClick(listing?._id)}
-                        className="mt-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-2 rounded-lg text-sm font-semibold hover:from-blue-700 hover:to-indigo-700 transition-transform duration-300 hover:-translate-y-1 shadow-md"
+                        className="mt-4 bg-gradient-to-r from-[#004f8a]  to-[#004f8a]  text-white py-2 rounded-lg text-sm font-semibold hover:from-[#004f8a] hover:from[#004f8a]  transition-transform duration-300 hover:-translate-y-1 shadow-md"
                       >
                         View Details
                       </button>
@@ -259,6 +260,7 @@ export default function RentalListingApp() {
               </div>
             )}
 
+            {/* ✅ Pagination - no dots, right aligned */}
             {!loading && listings.length > 0 && (
               <div className="flex justify-end mt-8">
                 <Pagination
@@ -267,6 +269,15 @@ export default function RentalListingApp() {
                   total={total}
                   onChange={(newPage) => setPage(newPage)}
                   showSizeChanger={false}
+                  showLessItems
+                  itemRender={(pageNum, type, originalElement) => {
+                    if (type === "prev" || type === "next")
+                      return originalElement;
+                    if (typeof pageNum === "number") {
+                      return <span>{pageNum}</span>; // hides dots
+                    }
+                    return null;
+                  }}
                 />
               </div>
             )}

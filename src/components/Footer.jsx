@@ -71,7 +71,7 @@ const Footer = () => {
             {/* Contact Info */}
             <div className=" md:text-left">
               <h3 className="text-lg font-semibold mb-4">Contact Info</h3>
-              <div className="space-y-4 text-sm sm:text-2xl">
+              <div className="space-y-4 text-sm sm:text-base">
                 <div className="flex  md:justify-start items-center gap-3">
                   <Phone className="w-5 h-5 text-blue-400" />
                   <span className="text-gray-400">+91 98380 75493</span>
@@ -106,7 +106,7 @@ const Footer = () => {
       {/* Scroll Toggle Button */}
       <button
         onClick={handleScrollToggle}
-        className="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full shadow-lg transition-colors z-50"
+        className="fixed bottom-6 right-6 bg-[#004f8a] hover:bg-[#004f8a] text-white p-3 rounded-full shadow-lg transition-colors z-50"
         aria-label="Scroll toggle"
       >
         {isAtTop ? <ChevronDown className="w-5 h-5" /> : <ChevronUp className="w-5 h-5" />}

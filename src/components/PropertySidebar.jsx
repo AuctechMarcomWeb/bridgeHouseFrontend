@@ -39,7 +39,7 @@ const PropertySidebar = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // const properties = [
+
 
   //   {
   //     id: 1,

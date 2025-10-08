@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Home, Award, Users, TrendingUp, Shield, Clock, MapPin, Star } from 'lucide-react';
+import { getRequest } from '../Helpers';
 
 export default function WhyChooseUs() {
   const [hoveredCard, setHoveredCard] = useState(null);
@@ -9,66 +10,67 @@ export default function WhyChooseUs() {
       icon: Home,
       title: "Extensive Property Network",
       description: "Access to over 10,000+ premium properties across prime locations with exclusive listings you won't find elsewhere.",
-    
+
       color: "bg-gradient-to-r from-gray-900 to-blue-900"
     },
     {
       icon: Award,
       title: "Award-Winning Service",
       description: "Recognized as the #1 real estate agency for 3 consecutive years with industry-leading customer satisfaction.",
-     
+
       color: "bg-gradient-to-r from-gray-900 to-blue-900"
     },
     {
       icon: Users,
       title: "Expert Team",
       description: "Our certified real estate professionals have 15+ years average experience and deep local market knowledge.",
-    
+
       color: "bg-gradient-to-r from-gray-900 to-blue-900"
     },
     {
       icon: TrendingUp,
       title: "Market Insights",
       description: "Advanced analytics and market intelligence to help you make informed decisions and maximize your investment.",
-   
+
       color: "bg-gradient-to-r from-gray-900 to-blue-900"
     },
     {
       icon: Shield,
       title: "Secure Transactions",
       description: "End-to-end transaction security with legal compliance and comprehensive insurance coverage.",
-  
+
       color: "bg-gradient-to-r from-gray-900 to-blue-900"
     },
     {
       icon: Clock,
       title: "24/7 Support",
       description: "Round-the-clock customer support and emergency assistance whenever you need us most.",
-     
+
       color: "bg-gradient-to-r from-gray-900 to-blue-900"
     }
   ];
 
-  const testimonials = [
-    {
-      name: "Sarah Johnson",
-      role: "First-time Buyer",
-      content: "They made buying my first home stress-free and guided me through every step.",
-      rating: 5
-    },
-    {
-      name: "Michael Chen",
-      role: "Property Investor",
-      content: "Exceptional market knowledge helped me find the perfect investment property.",
-      rating: 5
-    },
-    {
-      name: "Emily Rodriguez",
-      role: "Home Seller",
-      content: "Sold my house above asking price in just 2 weeks. Outstanding service!",
-      rating: 5
-    }
-  ];
+
+
+  const [loading, setLoading] = useState(false);
+  const [testimonials, setTestimonials] = useState([]);
+
+  useEffect(() => {
+    setLoading(true);
+    getRequest(`testimonials`)
+      .then((res) => {
+        const fetched = res.data?.data?.testimonials || [];
+        setTestimonials(fetched);
+        console.log("Testimonials fetched:", fetched);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching testimonials:", err.response || err);
+        setLoading(false);
+      });
+  }, []);
+
+
 
   return (
     <section className="py-20 bg-gradient-to-br from-slate-50 to-blue-50 relative overflow-hidden">
@@ -89,7 +91,7 @@ export default function WhyChooseUs() {
             Why Choose <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">PropertyPro</span>?
           </h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            With over a decade of excellence in real estate, we deliver unmatched service, 
+            With over a decade of excellence in real estate, we deliver unmatched service,
             expertise, and results that exceed expectations every time.
           </p>
         </div>
@@ -101,9 +103,8 @@ export default function WhyChooseUs() {
             return (
               <div
                 key={index}
-                className={`group relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-100 ${
-                  hoveredCard === index ? 'scale-105' : ''
-                }`}
+                className={`group relative bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-100 ${hoveredCard === index ? 'scale-105' : ''
+                  }`}
                 onMouseEnter={() => setHoveredCard(index)}
                 onMouseLeave={() => setHoveredCard(null)}
               >
@@ -128,7 +129,7 @@ export default function WhyChooseUs() {
           })}
         </div>
 
-     
+
 
         {/* Testimonials */}
         <div className="text-center mb-12">
@@ -137,30 +138,57 @@ export default function WhyChooseUs() {
             Don't just take our word for it - hear from the families we've helped find their perfect home
           </p>
         </div>
+        <div className="relative grid md:grid-cols-3 gap-8 mb-16">
+          {loading && (
+            <div className="absolute inset-0 flex justify-center items-center bg-white/70 z-20">
+              <div className="flex flex-col items-center">
+                <div className="w-12 h-12 border-4 border-t-blue-500 border-b-blue-500 border-gray-200 rounded-full animate-spin"></div>
+                <p className="mt-4 text-gray-600 font-medium">Loading Testimonials...</p>
+              </div>
+            </div>
+          )}
 
-        <div className="grid md:grid-cols-3 gap-8 mb-16">
-          {testimonials.map((testimonial, index) => (
-            <div key={index} className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-100">
+          {testimonials.map((testimonial) => (
+            <div
+              key={testimonial._id}
+              className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl border border-gray-100 relative"
+            >
               {/* Stars */}
               <div className="flex mb-4">
                 {[...Array(testimonial.rating)].map((_, i) => (
                   <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
                 ))}
               </div>
-              
+
               {/* Content */}
-              <p className="text-gray-700 mb-4 italic">
-                "{testimonial.content}"
-              </p>
-              
+              <p className="text-gray-700 mb-4 italic">"{testimonial.discription}"</p>
+
               {/* Author */}
-              <div className="border-t pt-4">
-                <div className="font-semibold text-gray-900">{testimonial.name}</div>
-                <div className="text-sm text-gray-500">{testimonial.role}</div>
+              {/* Author */}
+              <div className="flex items-center gap-3 border-t pt-4">
+                {testimonial.profileImage ? (
+                  <img
+                    src={testimonial.profileImage}
+                    alt={testimonial.title}
+                    className="w-12 h-12 rounded-full object-cover border border-gray-200"
+                  />
+                ) : (
+                  <div className="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center text-gray-500 border border-gray-200">
+                    <span>?</span> {/* Placeholder if no image */}
+                  </div>
+                )}
+                <div className="flex flex-col">
+                  <span className="font-semibold text-gray-900">{testimonial.title}</span>
+                  {testimonial.role && (
+                    <span className="text-sm text-gray-500">{testimonial.role}</span>
+                  )}
+                </div>
               </div>
+
             </div>
           ))}
         </div>
+
 
       </div>
     </section>

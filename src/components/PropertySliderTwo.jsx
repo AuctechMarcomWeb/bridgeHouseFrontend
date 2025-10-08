@@ -11,11 +11,15 @@ const PropertySliderTwo = () => {
   const [properties, setProperties] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const navigate = useNavigate();
-  const swiperRef = useRef(null); // ✅ Reference to Swiper
+  const swiperRef = useRef(null);
 
+  // ✅ Fetch only verified properties once
   useEffect(() => {
     getRequest(`properties?isVerified=true&limit=10`)
-      .then((res) => setProperties(res?.data?.data?.properties || []))
+      .then((res) => {
+        setProperties(res?.data?.data?.properties || []);
+        console.log("✅ Verified Properties", res?.data?.data?.properties);
+      })
       .catch((err) => console.log("API Error:", err));
   }, []);
 
@@ -77,7 +81,7 @@ const PropertySliderTwo = () => {
 
         <button
           onClick={() => handleClick(property?._id)}
-          className="w-full bg-teal-500 text-white py-2 sm:py-3 rounded-lg sm:rounded-xl text-sm sm:text-base font-semibold transition-all duration-300 hover:bg-gradient-to-r hover:from-blue-700 hover:to-purple-700 hover:shadow-lg transform hover:-translate-y-1"
+          className="w-full bg-[#004f8a]  text-white py-2 sm:py-3 rounded-lg sm:rounded-xl text-sm sm:text-base font-semibold transition-all duration-300 hover:bg-[#004f8a] hover:shadow-lg transform hover:-translate-y-1"
         >
           View Details
         </button>
@@ -106,7 +110,7 @@ const PropertySliderTwo = () => {
         spaceBetween={20}
         slidesPerView={1.2}
         loop={true}
-        onSwiper={(swiper) => (swiperRef.current = swiper)} // ✅ store instance
+        onSwiper={(swiper) => (swiperRef.current = swiper)}
         onSlideChange={(swiper) => setCurrentIndex(swiper.realIndex)}
         autoplay={{
           delay: 3000,
@@ -128,14 +132,14 @@ const PropertySliderTwo = () => {
         ))}
       </Swiper>
 
-      {/* ✅ Custom Dot Pagination */}
+      {/* Dot Pagination */}
       <div className="flex justify-center mt-6 sm:mt-8 space-x-2 sm:space-x-3">
         {properties.map((_, index) => (
           <button
             key={index}
             onClick={() => {
               if (swiperRef.current) {
-                swiperRef.current.slideToLoop(index); // ✅ Go to that slide
+                swiperRef.current.slideToLoop(index);
               }
               setCurrentIndex(index);
             }}

@@ -9,7 +9,7 @@ const RealEstateGallery = () => {
   const [galleryData, setGalleryData] = useState([])
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
-  const [limit, setLimit] = useState(6)
+  const [limit, setLimit] = useState(10)
   const [search, setSearch] = useState("")
 
 
@@ -27,7 +27,7 @@ const RealEstateGallery = () => {
       })
       .catch(err => console.error("API Error:", err))
       .finally(() => setLoading(false));
-  }, [page, limit, search]);
+  }, [page, limit, search ]);
 
 
   // Search handler

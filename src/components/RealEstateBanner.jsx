@@ -125,7 +125,7 @@ const RealEstateBanner = () => {
                         transition-all duration-300 
                         flex-1 sm:flex-auto min-w-[100px] ${
                           activeTab === type.name
-                            ? "bg-teal-500 text-white shadow-lg"
+                            ? "bg-[#004f8a]  text-white shadow-lg"
                             : "bg-slate-200 text-slate-700 hover:bg-slate-300"
                         }`}
           >

@@ -15,76 +15,76 @@ const Home = () => {
   const footerRef = useRef(null);
   const [popupStyle, setPopupStyle] = useState({});
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (
-        !bannerRef.current ||
-        !featuredRef.current ||
-        !containerRef.current ||
-        !footerRef.current
-      )
-        return;
+useEffect(() => {
+  const handleScroll = () => {
+    if (
+      !bannerRef.current ||
+      !featuredRef.current ||
+      !containerRef.current ||
+      !footerRef.current
+    )
+      return;
 
-      const scrollY = window.scrollY;
-      console.log("ScrollY:", scrollY);
+    const scrollY = window.scrollY;
+    const featuredBottom =
+      featuredRef.current.offsetTop + featuredRef.current.offsetHeight;
+    const footerTop = footerRef.current.offsetTop;
+    const containerTop = containerRef.current.offsetTop;
+    const popupHeight = 250;
+    const extraOffset = 60;
 
-      const featuredBottom =
-        featuredRef.current.offsetTop + featuredRef.current.offsetHeight;
+    //  Responsive adjustment
+    const windowWidth = window.innerWidth;
+    let responsiveTop = 10;
+    if (windowWidth >= 1024 && windowWidth <= 1530) {
+      responsiveTop = 120; // shift popup downward on medium-large screens
+    }
 
-      const footerTop = footerRef.current.offsetTop;
-      const containerTop = containerRef.current.offsetTop;
-      const popupHeight = 250; // popup height approx
-      const extraOffset = 60; // popup ki height + 30px margin
-      console.log("Featured OffsetTop:", featuredRef.current.offsetTop);
-      console.log("Featured Height:", featuredRef.current.offsetHeight);
-      console.log("Featured Bottom:", featuredBottom);
-      console.log("ScrollY:", scrollY);
+    // Hidden before featured
+    if (scrollY < featuredBottom + extraOffset) {
+      setPopupStyle({
+        position: "fixed",
+        top: `${responsiveTop}px`,
+        left: "20px",
+        width: "250px",
+        zIndex: 1000,
+        opacity: 0,
+        pointerEvents: "none",
+      });
+    }
+    // Between featured and footer → fixed
+    else if (scrollY + popupHeight + 10 < footerTop) {
+      setPopupStyle({
+        position: "fixed",
+        top: `${responsiveTop}px`,
+        left: "20px",
+        width: "250px",
+        zIndex: 1000,
+        opacity: 1,
+        pointerEvents: "auto",
+        transition: "opacity 0.3s ease-in-out",
+      });
+    }
+    // Footer ke paas → absolute
+    else {
+      const stopPoint = footerTop - popupHeight - containerTop;
+      setPopupStyle({
+        position: "absolute",
+        top: `${stopPoint}px`,
+        left: "20px",
+        width: "250px",
+        zIndex: 1000,
+        opacity: 1,
+        pointerEvents: "auto",
+      });
+    }
+  };
 
-      // Featured section ke thoda neeche tak popup hidden
-      if (scrollY < featuredBottom + extraOffset) {
-        setPopupStyle({
-          position: "fixed",
-          top: "10px",
-          left: "20px",
-          width: "250px",
-          zIndex: 1000,
-          opacity: 0,
-          pointerEvents: "none",
-        });
-      }
-      // Between featured section and footer → fixed popup
-      else if (scrollY + popupHeight + 10 < footerTop) {
-        setPopupStyle({
-          position: "fixed",
-          top: "10px",
-          left: "20px",
-          width: "250px",
-          zIndex: 1000,
-          opacity: 1,
-          pointerEvents: "auto",
-          transition: "opacity 0.3s ease-in-out",
-        });
-      }
-      // Footer ke paas → absolute
-      else {
-        const stopPoint = footerTop - popupHeight - containerTop;
-        setPopupStyle({
-          position: "absolute",
-          top: `${stopPoint}px`,
-          left: "20px",
-          width: "250px",
-          zIndex: 1000,
-          opacity: 1,
-          pointerEvents: "auto",
-        });
-      }
-    };
+  window.addEventListener("scroll", handleScroll, { passive: true });
+  handleScroll();
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  return () => window.removeEventListener("scroll", handleScroll);
+}, []);
 
   return (
     <>

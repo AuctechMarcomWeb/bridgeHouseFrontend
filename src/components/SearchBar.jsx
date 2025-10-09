@@ -123,7 +123,7 @@ const SearchBar = () => {
         {/* Search Button */}
         <button
           onClick={handleSearch}
-          className="md:px-8 md:py-5 py-2  px-2 bg-teal-500  items-center  justify-start text-white font-semibold md:text-base text-sm cursor-pointer rounded-r-full transition-all duration-200 flex items-center gap-2 hover:scale-105 active:scale-95"
+          className="md:px-8 md:py-5 py-2  px-2 bg-[#004f8a] items-center  justify-start text-white font-semibold md:text-base text-sm cursor-pointer rounded-r-full transition-all duration-200 flex items-center gap-2 hover:scale-105 active:scale-95"
         >
        
   

@@ -663,7 +663,7 @@ const AddPropertyModal = ({
             </div>
             <div className="grid grid-cols-2 gap-4">
               {/* Facilities */}
-              <div>
+              <div className={`${formData?.propertyType==="Plot" ? "opacity-40" : ""}`}>
                 <label className="form-label fw-bold">Facilities *</label>
                 <Select
                   value={formData?.facilities}
@@ -672,6 +672,7 @@ const AddPropertyModal = ({
                   style={{ width: "100%" }}
                   required
                   placeholder="Enter/Select Your Facilities"
+                  disabled={formData?.propertyType === "Plot"}
                   onChange={(value) => {
                     setFormData({
                       ...formData,
@@ -686,7 +687,7 @@ const AddPropertyModal = ({
               </div>
 
               {/* Services */}
-              <div>
+              <div className={`${formData?.propertyType==="Plot" ? "opacity-40" : ""}`}>
                 <label className="form-label fw-bold">Services *</label>
                 <Select
                   value={formData?.services}
@@ -695,6 +696,7 @@ const AddPropertyModal = ({
                   style={{ width: "100%" }}
                   placeholder="Enter/Select Your Services"
                   required
+                  disabled={formData?.propertyType === "Plot"}
                   onChange={(value) => {
                     setFormData({
                       ...formData,

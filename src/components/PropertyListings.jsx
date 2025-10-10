@@ -57,7 +57,7 @@ const PropertyCard = ({ property, onClick }) => {
               <div className="w-6 h-6 bg-white/80 rounded flex items-center justify-center">
                 <img
                   width="24"
-                  height="24"
+                  height="240"
                   src="https://img.icons8.com/color/48/verified-account--v1.png"
                   alt="verified"
                 />

@@ -714,7 +714,7 @@ const AddPropertyModal = ({
             <div className="grid grid-cols-2 gap-4">
               {/*BHK*/}
               <div className={`space-y-3 ${formData?.propertyType==="Plot" ? "opacity-40" : ""}`}>
-                <label className="form-label fw-bold">Property Type *</label>
+                <label className="form-label fw-bold">BHK</label>
                 <select
                   className="w-full p-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                   name="bhk"

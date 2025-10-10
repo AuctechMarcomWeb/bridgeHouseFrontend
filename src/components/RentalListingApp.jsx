@@ -4,6 +4,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Spin, Pagination } from "antd";
+import { SiMercadopago } from 'react-icons/si';
 import {
   MapPin,
   Home,
@@ -150,7 +151,7 @@ export default function RentalListingApp() {
                     {/* Image */}
                     <div className="relative aspect-[4/3] overflow-hidden">
                       {Array.isArray(listing?.gallery) &&
-                      listing.gallery.length > 0 ? (
+                        listing.gallery.length > 0 ? (
                         <img
                           src={listing.gallery[0]}
                           alt="property"
@@ -190,6 +191,17 @@ export default function RentalListingApp() {
                           <IndianRupee size={16} /> {listing?.actualPrice}
                         </div>
                       </div>
+
+                      {listing?.isAdopted && (
+                        <div className="absolute bottom-4 right-4 bg-white/70 rounded-full p-1">
+                          <span className="bg-gradient-to-r from-blue-900 to-blue-900 text-white px-1 py-1 rounded-full text-sm flex items-center gap-1">
+                            <SiMercadopago className="fs-4" />
+                          </span>
+                        </div>
+                      )}
+
+
+
                     </div>
 
                     {/* Content */}

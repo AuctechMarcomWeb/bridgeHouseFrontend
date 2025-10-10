@@ -63,6 +63,9 @@ export default function PropertyDetailPage() {
   const [interestRate, setInterestRate] = useState(15);
   const [isFavorite, setIsFavorite] = useState(false);
   const [properties, setProperties] = useState(false);
+  const [bridgehouseDetails, setBridgehouseDetails] = useState([])
+  const [showFullNotes, setShowFullNotes] = useState(false);
+
   const { id } = useParams();
 
   useEffect(() => {
@@ -89,8 +92,22 @@ export default function PropertyDetailPage() {
     }
   }, [properties]);
 
+  useEffect(() => {
+    getRequest(`bridgehouseDetails?status=true`)
+      .then((res) => {
+        setBridgehouseDetails(res?.data?.data?.bridgeHouses?.[0] || []);
+      })
+      .catch((error) => {
+        console.log("error", error);
+      });
+  }, []);
+
+  useEffect(() => {
+    console.log("bridgehouseDetails updated:", bridgehouseDetails);
+  }, [bridgehouseDetails]);
+
   const handleShare = async () => {
-    const url = window.location.href; 
+    const url = window.location.href;
     const shareText = `Check out this property: ${properties?.name} ${url}`;
 
     if (navigator.share) {
@@ -112,9 +129,6 @@ export default function PropertyDetailPage() {
       window.open(whatsappUrl, "_blank");
     }
   };
-
-
-
 
   const serviceIcons = {
     "Water Supply": <Droplet className="w-5 h-5" />,
@@ -526,14 +540,15 @@ export default function PropertyDetailPage() {
                   <>
                     <div className="w-16 h-16 rounded-full overflow-hidden shadow-lg">
                       <img
-                        src={logo}   // Public folder image
+                        src={bridgehouseDetails.profile}
                         alt="Bridge House"
-                        className="w-full h-full object-contain bg-white"
+                        className="w-full h-full object-cover bg-white"
                       />
                     </div>
+
                     <div className="flex-1">
                       <div className="font-bold text-gray-900 flex items-center gap-2">
-                        Bridge House User
+                        {bridgehouseDetails?.name || "Bridge House"}
                       </div>
                     </div>
                   </>
@@ -567,28 +582,62 @@ export default function PropertyDetailPage() {
                 {properties?.isAdopted ? (
                   // BridgeHouse contact info
                   <>
+
                     <div className="flex justify-between items-center py-2">
                       <span className="text-gray-600 text-sm">Phone</span>
                       <span className="font-medium text-sm text-gray-600">
-                        1234567890
+                        {bridgehouseDetails?.phone || "N/A"}
                       </span>
                     </div>
+
                     <div className="flex justify-between items-center py-2">
                       <span className="text-gray-600 text-sm">Email</span>
                       <span className="font-medium text-sm text-gray-600">
-                        bridgehouse@example.com
+                        {bridgehouseDetails?.email || "N/A"}
                       </span>
                     </div>
+
+                    {/* <div className="flex justify-between items-center py-2">
+                      <span className="text-gray-600 text-sm">Notes</span>
+                      <span className="font-medium text-sm text-gray-600">
+                        {bridgehouseDetails?.notes || "N/A"}
+                      </span>
+                    </div> */}
+
+
+
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start py-2 gap-2">
+                      {/* Label */}
+                      <span className="text-gray-600 text-sm flex-shrink-0 w-24">Notes</span>
+
+                      {/* Content */}
+                      <span
+                        className={`font-medium text-sm text-gray-700 break-words cursor-pointer ${!showFullNotes ? "line-clamp-1 sm:line-clamp-none" : ""
+                          }`}
+                        onClick={() => setShowFullNotes(!showFullNotes)}
+                        title={bridgehouseDetails?.notes}
+                      >
+                        {bridgehouseDetails?.notes || "N/A"}
+                      </span>
+                    </div>
+
+
+
+
+
                   </>
                 ) : (
                   // Seller contact info
                   <>
-                    <div className="flex justify-between items-center py-2">
+                    <div className="flex justify-between gap-2 items-center py-2">
                       <span className="text-gray-600 text-sm">Phone</span>
                       <span className="font-medium text-sm text-gray-600">
                         {properties?.addedBy?.phone || "N/A"}
                       </span>
                     </div>
+
+
+
 
                     <div className="flex justify-between items-center py-2">
                       <span className="text-gray-600 text-sm">Email</span>

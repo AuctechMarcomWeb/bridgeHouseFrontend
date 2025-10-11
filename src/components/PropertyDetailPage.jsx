@@ -663,7 +663,7 @@ export default function PropertyDetailPage() {
                   </label>
                   <input
                     type="number"
-                    value={totalAmount}
+                    value={properties?.actualPrice || "N/A"}
                     onChange={(e) => setTotalAmount(Number(e.target.value))}
                     className="w-full p-3 text-sm text-gray-700 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   />

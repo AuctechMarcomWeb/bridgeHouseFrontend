@@ -172,7 +172,7 @@ const PropertyListings = () => {
   );
 
   const handleClick = (id) => {
-    navigate(`?propertyType=${id}`);
+    navigate(`/property-detail/${id}`);
     setPropertyType(id);
   };
 
@@ -182,22 +182,22 @@ const PropertyListings = () => {
         {/* Main Content */}
         <div className="w-full lg:w-[128%] flex flex-col">
           {/* Search */}
-          
-            {!loading &&  (
-          <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-            <Input
-              placeholder="Search properties..."
-              prefix={<SearchOutlined className="text-gray-500" />}
-              value={localSearch}
-              onChange={(e) => setLocalSearch(e.target.value)}
-              className="!bg-white shadow-md rounded-lg !border-gray-300 
+
+          {!loading && (
+            <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+              <Input
+                placeholder="Search properties..."
+                prefix={<SearchOutlined className="text-gray-500" />}
+                value={localSearch}
+                onChange={(e) => setLocalSearch(e.target.value)}
+                className="!bg-white shadow-md rounded-lg !border-gray-300 
              focus:!border-gray-400 focus:!ring-0 focus:!outline-none 
              hover:!border-gray-400 w-full sm:w-auto"
-              size="large"
-            />
+                size="large"
+              />
 
-          </div>
- )}
+            </div>
+          )}
           {/* Property Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-6">
             {filteredProperties.map((property) => (

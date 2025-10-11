@@ -282,14 +282,14 @@ export default function RentalListingApp() {
                   onChange={(newPage) => setPage(newPage)}
                   showSizeChanger={false}
                   showLessItems
-                  itemRender={(pageNum, type, originalElement) => {
-                    if (type === "prev" || type === "next")
-                      return originalElement;
-                    if (typeof pageNum === "number") {
-                      return <span>{pageNum}</span>; // hides dots
-                    }
-                    return null;
-                  }}
+                  // itemRender={(pageNum, type, originalElement) => {
+                  //   if (type === "prev" || type === "next")
+                  //     return originalElement;
+                  //   if (typeof pageNum === "number") {
+                  //     return <span>{pageNum}</span>; // hides dots
+                  //   }
+                  //   return null;
+                  // }}
                 />
               </div>
             )}

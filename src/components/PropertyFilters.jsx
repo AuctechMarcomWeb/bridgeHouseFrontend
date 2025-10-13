@@ -8,7 +8,6 @@ import { getRequest } from "../Helpers";
 export default function PropertyFilters({
   filters,
   setFilters,
-
   handleApplyFilters,
   handleResetFilters,
 }) {
@@ -21,18 +20,17 @@ export default function PropertyFilters({
   const [category, setCategory] = useState([]);
   const [openDropdowns, setOpenDropdowns] = useState({
     propertyType: true,
-    bhk: true, 
+    bhk: true,
   });
 
-const toggleDropdown = (dropdown) => {
-  setOpenDropdowns((prev) => ({
-    ...prev,
-    [dropdown]: !prev[dropdown], // click karne par toggle ho
-  }));
-};
+  const toggleDropdown = (dropdown) => {
+    setOpenDropdowns((prev) => ({
+      ...prev,
+      [dropdown]: !prev[dropdown],
+    }));
+  };
 
-
-  // ✅ Fetch BHK with Pagination + Search
+  //  Fetch BHK
   useEffect(() => {
     getRequest(`bhk?search=${searchTerm}&page=${page}&limit=${limit}`)
       .then((res) => {
@@ -40,12 +38,10 @@ const toggleDropdown = (dropdown) => {
         setBhk(responseData?.bhks || []);
         setTotal(responseData?.totalBhks || 0);
       })
-      .catch((error) => {
-        console.log("error", error);
-      });
+      .catch((error) => console.log("error", error));
   }, [page, limit, searchTerm, updateStatus]);
 
-  // ✅ Fetch Property Type with Pagination + Search
+  //  Fetch Property Type
   useEffect(() => {
     getRequest(`category?search=${searchTerm}&page=${page}&limit=${limit}`)
       .then((res) => {
@@ -53,10 +49,13 @@ const toggleDropdown = (dropdown) => {
         setCategory(responseData?.categories || []);
         setTotal(responseData?.totalCategories || 0);
       })
-      .catch((error) => {
-        console.log("error", error);
-      });
+      .catch((error) => console.log("error", error));
   }, [page, limit, searchTerm, updateStatus]);
+
+  //  Check if selected property type is "Plot"
+  const isPlotSelected =
+    filters.propertyType?.toLowerCase() === "plot" ||
+    filters.propertyType?.toLowerCase() === "plots";
 
   return (
     <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden sticky top-8">
@@ -67,7 +66,7 @@ const toggleDropdown = (dropdown) => {
         </div>
       </div>
 
-      <div className="p-6 space-y-6 max-h-[calc(100vh-200px)] overflow-y-auto">
+      <div className="p-6 space-y-6 ">
         {/* Search */}
         <div className="relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -117,6 +116,19 @@ const toggleDropdown = (dropdown) => {
           </button>
           {openDropdowns.propertyType && (
             <div className="space-y-3 pl-4 border-l-2 border-blue-100">
+              {/*  Added "All" option */}
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="propertyType"
+                  value=""
+                  checked={!filters.propertyType}
+                  onChange={() => setFilters({ ...filters, propertyType: "" })}
+                  className="w-4 h-4 text-blue-600"
+                />
+                <span className="text-sm">All</span>
+              </label>
+
               {category.length > 0 ? (
                 category.map((cat) => (
                   <label
@@ -144,7 +156,7 @@ const toggleDropdown = (dropdown) => {
         </div>
 
         {/* BHK Types */}
-        <div className="space-y-3">
+        <div className={`space-y-3`}>
           <button
             className="flex items-center justify-between w-full text-left group"
             onClick={() => toggleDropdown("bhk")}
@@ -158,33 +170,44 @@ const toggleDropdown = (dropdown) => {
             />
           </button>
 
+          {openDropdowns.bhk && (
+            <div className={`space-y-3 pl-4 border-l-2 border-blue-100 ${isPlotSelected ? "opacity-50" : ""}`}>
+              {/* "All" option */}
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="bhk"
+                  value=""
+                  checked={!filters.bhk}
+                  onChange={() => setFilters({ ...filters, bhk: "" })}
+                  className="w-4 h-4 text-blue-600"
+                  disabled={isPlotSelected}
+                />
+                <span className="text-sm">All</span>
+              </label>
 
+              {bhk.length > 0 ? (
+                bhk.map((item) => (
+                  <label key={item._id} className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="bhk"
+                      value={item.name}
+                      checked={filters.bhk === item.name}
+                      onChange={(e) => setFilters({ ...filters, bhk: e.target.value })}
+                      className="w-4 h-4 text-blue-600"
+                      disabled={isPlotSelected}
+                    />
+                    <span className="text-sm">{item.name}</span>
+                  </label>
+                ))
+              ) : (
+                <p className="text-sm text-gray-400">No BHK types found</p>
+              )}
+            </div>
+          )}
+        </div>
 
-
-
-        {openDropdowns.bhk && bhk.length > 0 && (
-  <div className="space-y-3 pl-4 border-l-2 border-blue-100">
-    {bhk.map((item) => (
-      <label
-        key={item._id}
-        className="flex items-center gap-2 cursor-pointer"
-      >
-        <input
-          type="radio"
-          name="bhk"
-          value={item.name}
-          checked={filters.bhk === item.name}
-          onChange={(e) =>
-            setFilters({ ...filters, bhk: e.target.value })
-          }
-          className="w-4 h-4 text-blue-600"
-        />
-        <span className="text-sm">{item.name}</span>
-      </label>
-    ))}
-  </div>
-)}
-</div>
 
         {/* Price Range */}
         <div className="space-y-3">
@@ -208,18 +231,15 @@ const toggleDropdown = (dropdown) => {
         </div>
 
         <div className="flex flex-col gap-2">
-          {/* Apply Button */}
           <button
             onClick={handleApplyFilters}
-            className="w-full bg-teal-500 text-white py-2 rounded-xl font-semibold hover:bg-teal-600 transition-all"
+            className="w-full bg-[#004f8a] text-white py-2 rounded-xl font-semibold hover:bg-[#004f8a] transition-all"
           >
             Apply Filters
           </button>
-
-          {/* Reset Button */}
           <button
             onClick={handleResetFilters}
-            className="w-full bg-teal-500 text-white py-2 rounded-xl font-semibold hover:bg-teal-600 transition-all"
+            className="w-full bg-[#004f8a] text-white py-2 rounded-xl font-semibold hover:bg-[#004f8a] transition-all"
           >
             Reset All Filters
           </button>

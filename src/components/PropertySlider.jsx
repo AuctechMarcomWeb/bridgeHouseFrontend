@@ -16,7 +16,6 @@ const PropertySlider = () => {
   const [direction, setDirection] = useState("next");
   const [bannerType, setBannerType] = useState("top");
 
-  // Fetch banners
   useEffect(() => {
     setLoading(true);
     getRequest(`banner?bannerType=${bannerType}`)
@@ -67,8 +66,8 @@ const PropertySlider = () => {
 
         {/* Slider */}
         <div className="relative overflow-hidden">
-          <div className="relative rounded-3xl shadow-xl bg-white h-96">
-            {/* Loader Overlay */}
+          <div className="relative rounded-3xl shadow-xl bg-white min-h-[400px]">
+            {/* Loader */}
             {loading && (
               <div className="absolute inset-0 flex flex-col justify-center items-center bg-white/80 z-20">
                 <div className="w-12 h-12 border-4 border-t-blue-500 border-b-blue-500 border-gray-200 rounded-full animate-spin"></div>
@@ -78,98 +77,98 @@ const PropertySlider = () => {
               </div>
             )}
 
-            {/* Show banners when loaded */}
-            {!loading && banners.length > 0
-              ? banners.map((banner, index) => {
-                  const property = banner?.propertyId;
-                  return (
-                    <div
-                      key={banner?._id}
-                      onClick={() => property && handleClick(property._id)}
-                      className={`absolute inset-0 flex transition-all duration-700 ease-in-out ${
-                        index === currentSlide
-                          ? "opacity-100 translate-x-0 z-10"
-                          : direction === "next"
-                          ? "opacity-0 -translate-x-full"
-                          : "opacity-0 translate-x-full"
-                      }`}
-                    >
-                      {/* Left Content */}
-                      <div className="w-1/2 rounded-l-2xl bg-gradient-to-br from-teal-600 via-teal-400 to-teal-200 text-white p-2 md:p-14 flex flex-col justify-center relative overflow-hidden">
-                        <div className="relative z-10">
-                          <h2 className="text-lg lg:text-2xl text-black font-bold mb-2 md:mb-2 leading-tight">
-                            {banner?.title}
-                          </h2>
-                          <p className="text-white/90 text-base mb-2 md:mb-4 font-medium">
-                            {property?.address || "Location not available"}
-                          </p>
-                          <div className="mb-2 md:mb-4">
-                            <p className="text-white/90 mb-2">
-                              {property
-                                ? `Property Type: ${property?.propertyType}`
-                                : ""}
-                            </p>
-                            <p className="md:text-xl font-bold">
-                              {property ? `₹${property?.sellingPrice}` : ""}
-                            </p>
-                          </div>
+            {!loading && banners.length > 0 ? (
+              banners.map((banner, index) => {
+                const property = banner?.propertyId;
+                return (
+                  <div
+                    key={banner?._id}
+                    onClick={() => property && handleClick(property._id)}
+                    className={`absolute inset-0 flex flex-col-reverse lg:flex-row transition-all duration-700 ease-in-out ${index === currentSlide
+                      ? "opacity-100 translate-x-0 z-10"
+                      : direction === "next"
+                        ? "opacity-0 -translate-x-full"
+                        : "opacity-0 translate-x-full"
+                      } h-full`}
+                  >
+                    {/* CONTENT */}
+                  <div className="w-full lg:w-1/2 flex flex-col justify-center
+    p-2 sm:p-3 md:p-6 lg:p-10
+    bg-gradient-to-br from-teal-600 via-teal-400 to-teal-200
+    lg:rounded-tr-none h-auto
+    md:min-h-[300px]  // Tablet ke liye min height
+    sm:min-h-[250px]  // Small mobile ke liye min height
+">
+  <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl text-black font-bold mb-2 sm:mb-2 md:mb-3 leading-tight">
+    {banner?.title}
+  </h2>
+  <p className="text-white/90 text-sm sm:text-base md:text-base mb-2 sm:mb-3 font-medium">
+    {property?.address || "Location not available"}
+  </p>
 
-                          <div className="space-y-3 md:mb-6 mb-3">
-                            {property?.facilities?.map((feature, idx) => (
-                              <div
-                                key={idx}
-                                className="flex items-start space-x-3"
-                              >
-                                <Check
-                                  className="w-5 h-5 text-white mt-1 flex-shrink-0"
-                                  strokeWidth={2.5}
-                                />
-                                <span className="text-white/95 text-sm leading-relaxed">
-                                  {feature}
-                                </span>
-                              </div>
-                            ))}
-                          </div>
+  {property && (
+    <>
+      <p className="text-white/90 text-xs sm:text-sm md:text-sm mb-1 sm:mb-2">
+        Property Type: {property?.propertyType}
+      </p>
+      <p className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-black mb-2 sm:mb-3">
+        ₹{property?.sellingPrice}
+      </p>
+    </>
+  )}
 
-                          <button
-                            onClick={() => handleClick(property?._id)}
-                            className="bg-black text-white px-3 py-1 md:px-6 md:py-3 rounded-lg font-semibold hover:bg-gray-800 transition-colors duration-200 cursor-pointer"
-                          >
-                            See Details
-                          </button>
-                        </div>
-                      </div>
+  <div className="space-y-1 sm:space-y-2 md:space-y-3 mb-2 sm:mb-3 md:mb-4">
+    {property?.facilities?.slice(0, 4).map((feature, idx) => (
+      <div key={idx} className="flex items-start space-x-1 sm:space-x-2 md:space-x-3">
+        <Check className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 text-white mt-1 flex-shrink-0" strokeWidth={2.5} />
+        <span className="text-white/95 text-xs sm:text-sm md:text-sm leading-relaxed">{feature}</span>
+      </div>
+    ))}
+  </div>
 
-                      {/* Right Image */}
-                      <div className="w-1/2 relative">
-                        <img
-                          src={banner?.bannerImage}
-                          alt={banner?.title}
-                          className="w-full h-full object-cover rounded-r-2xl"
-                        />
-                      </div>
+  <button
+    onClick={() => handleClick(property?._id)}
+    className="bg-black text-white px-3 py-1 sm:px-4 sm:py-2 md:px-6 md:py-3 rounded-lg font-semibold hover:bg-gray-800 transition-all duration-300 self-start text-xs sm:text-sm md:text-base"
+  >
+    See Details
+  </button>
+</div>
+
+
+                    {/* IMAGE */}
+                    <div className="w-full lg:w-1/2 h-64 sm:h-72 md:h-80 lg:h-auto relative rounded-t-2xl lg:rounded-r-2xl lg:rounded-l-none overflow-hidden">
+                      <img
+                        src={banner?.bannerImage}
+                        alt={banner?.title}
+                        className="w-full h-full object-cover"
+                      />
                     </div>
-                  );
-                })
-              : !loading && (
-                  <div className="absolute inset-0 flex items-center justify-center text-gray-500 font-medium">
-                    No banners available
                   </div>
-                )}
+
+
+                );
+              })
+            ) : (
+              !loading && (
+                <div className="absolute inset-0 flex flex-col lg:flex-row  items-center justify-center text-gray-500 font-medium">
+                  No banners available
+                </div>
+              )
+            )}
           </div>
 
-          {/* Navigation Arrows */}
+          {/* Navigation */}
           {!loading && banners.length > 0 && (
             <>
               <button
                 onClick={prevSlide}
-                className="absolute left-1 top-1/2 transform -translate-y-1/2 bg-white shadow-lg hover:shadow-xl text-gray-600 hover:text-gray-800 rounded-full p-3 transition-all duration-200 z-20"
+                className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white shadow-lg hover:shadow-xl text-gray-600 hover:text-gray-800 rounded-full p-3 transition-all duration-200 z-20"
               >
                 <ChevronLeft className="w-5 h-5" strokeWidth={2} />
               </button>
               <button
                 onClick={nextSlide}
-                className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-white shadow-lg hover:shadow-xl text-gray-600 hover:text-gray-800 rounded-full p-3 transition-all duration-200 z-20"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white shadow-lg hover:shadow-xl text-gray-600 hover:text-gray-800 rounded-full p-3 transition-all duration-200 z-20"
               >
                 <ChevronRight className="w-5 h-5" strokeWidth={2} />
               </button>
@@ -184,9 +183,8 @@ const PropertySlider = () => {
               <button
                 key={index}
                 onClick={() => setCurrentSlide(index)}
-                className={`w-2 h-2 rounded-full transition-all duration-200 ${
-                  index === currentSlide ? "bg-pink-400 w-6" : "bg-gray-300"
-                }`}
+                className={`w-2 h-2 rounded-full transition-all duration-200 ${index === currentSlide ? "bg-pink-400 w-6" : "bg-gray-300"
+                  }`}
               />
             ))}
           </div>

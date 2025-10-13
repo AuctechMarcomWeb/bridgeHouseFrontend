@@ -35,6 +35,7 @@ import {
   Layers,
   Compass,
   IndianRupee,
+
 } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { getRequest } from "../Helpers";
@@ -62,6 +63,9 @@ export default function PropertyDetailPage() {
   const [interestRate, setInterestRate] = useState(15);
   const [isFavorite, setIsFavorite] = useState(false);
   const [properties, setProperties] = useState(false);
+  const [bridgehouseDetails, setBridgehouseDetails] = useState([])
+  const [showFullNotes, setShowFullNotes] = useState(false);
+
   const { id } = useParams();
 
   useEffect(() => {
@@ -88,40 +92,43 @@ export default function PropertyDetailPage() {
     }
   }, [properties]);
 
-  //if (!images || images.length === 0) return null;
+  useEffect(() => {
+    getRequest(`bridgehouseDetails?status=true`)
+      .then((res) => {
+        setBridgehouseDetails(res?.data?.data?.bridgeHouses?.[0] || []);
+      })
+      .catch((error) => {
+        console.log("error", error);
+      });
+  }, []);
 
-  // const images = [
-  //   "https://i.pinimg.com/1200x/8e/cf/f7/8ecff71ffd6b62d82084f18cbe08f205.jpg",
-  //   "https://i.pinimg.com/1200x/2b/76/cc/2b76cc89c6c9553288e83f48495a5357.jpg",
-  //   "https://i.pinimg.com/1200x/4e/aa/83/4eaa8389a96a657e7f08c7ca52fc8e36.jpg",
-  //   "https://i.pinimg.com/1200x/4e/aa/83/4eaa8389a96a657e7f08c7ca52fc8e36.jpg",
-  //   "https://i.pinimg.com/1200x/e2/87/22/e28722ecaf7884ece3f2d56d025f17ad.jpg",
-  //   "https://i.pinimg.com/1200x/5f/cf/18/5fcf18af55889a6328d7a9ba69b78b0e.jpg",
-  //   "https://i.pinimg.com/1200x/1c/df/70/1cdf709620dbdb2b1abc1369d2c02d0e.jpg",
-  // ];
+  useEffect(() => {
+    console.log("bridgehouseDetails updated:", bridgehouseDetails);
+  }, [bridgehouseDetails]);
 
-  // const service = [
-  //   { icon: <Bed className="w-5 h-5" />, label: "Bedrooms", value: "3" },
-  //   { icon: <Bath className="w-5 h-5" />, label: "Bathrooms", value: "2" },
-  //   { icon: <Car className="w-5 h-5" />, label: "Parking", value: "1" },
-  //   {
-  //     icon: <Droplet className="w-5 h-5" />,
-  //     label: "Water Supply",
-  //     value: "Yes",
-  //   },
-  //   {
-  //     icon: <Square className="w-5 h-5" />,
-  //     label: "Floor",
-  //     value: "5th of 12",
-  //   },
-  //   { icon: "Wrench", label: "Maintenance", value: "1" },
-  //   { icon: "📺", label: "TV", value: "4" },
-  //   { icon: "💧", label: "Water Purifier", value: "2" },
-  //   { icon: "🔥", label: "Microwave", value: "2" },
-  //   { icon: "❄️", label: "AC", value: "4" },
-  //   { icon: "🍽️", label: "Fridge", value: "1" },
-  //   { icon: "🏠", label: "Curtains", value: "yes" },
-  // ];
+  const handleShare = async () => {
+    const url = window.location.href;
+    const shareText = `Check out this property: ${properties?.name} ${url}`;
+
+    if (navigator.share) {
+      // Native share available
+      try {
+        await navigator.share({
+          title: properties?.name,
+          text: shareText,
+
+        });
+        console.log("Shared successfully");
+      } catch (err) {
+        console.log("Share failed:", err);
+      }
+    } else {
+      // Fallback: WhatsApp link
+
+      const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`;
+      window.open(whatsappUrl, "_blank");
+    }
+  };
 
   const serviceIcons = {
     "Water Supply": <Droplet className="w-5 h-5" />,
@@ -173,8 +180,11 @@ export default function PropertyDetailPage() {
         style={{
           backgroundImage:
             "url('https://dreamsestate.dreamstechnologies.com/html/assets/img/bg/breadcrumb-bg.jpg')",
+
         }}
+
       >
+
         {/* Overlay */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-black/20 to-transparent" />
 
@@ -202,21 +212,7 @@ export default function PropertyDetailPage() {
                 </div>
                 {/* <div className="text-sm text-gray-300">Total Visits: 45</div> */}
               </div>
-              {/* 
-              <button
-                onClick={() => setIsFavorite(!isFavorite)}
-                className={`p-2 rounded-full shadow-lg transition-all ${
-                  isFavorite
-                    ? "bg-red-500 text-white scale-110"
-                    : "bg-white/90 text-gray-700 hover:bg-gray-200"
-                }`}
-              >
-                <Heart
-                  className={`w-6 h-6 ${
-                    isFavorite ? "fill-current" : ""
-                  } transition-transform`}
-                />
-              </button> */}
+
             </div>
           </div>
         </div>
@@ -253,22 +249,26 @@ export default function PropertyDetailPage() {
                 />
                 {/* Top-right overlay: Camera + Verified */}
                 <div className="absolute top-4 right-4 flex items-center gap-2 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
-                  {/* Verified Icon */}
                   {properties?.isVerified && (
-                    <img
-                      width="20"
-                      height="20"
-                      src="https://img.icons8.com/color/48/verified-account--v1.png"
-                      alt="verified-account"
-                    />
+                    <img width="20" height="20" src="https://img.icons8.com/color/48/verified-account--v1.png" alt="verified-account" />
                   )}
-
-                  {/* Camera + counter */}
                   <div className="flex items-center gap-1">
                     <Camera className="w-4 h-4" />
                     {selectedImage + 1} / {images.length}
                   </div>
                 </div>
+
+                {/* Bottom-right Share button */}
+                <button
+                  onClick={() => handleShare()}
+                  className="absolute bottom-4 right-4 flex items-center gap-1 bg-black/50 text-white px-3 py-1 rounded-full hover:bg-black/70 transition-colors"
+                >
+                  <Share2 className="w-4 h-4" />
+                  Share
+                </button>
+
+
+
               </div>
               <div className="p-6">
                 <div className="flex gap-3 overflow-x-auto pb-2">
@@ -311,6 +311,7 @@ export default function PropertyDetailPage() {
                 </div>
               )}
             </div>
+
 
             {/* Property Details */}
             <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
@@ -539,14 +540,15 @@ export default function PropertyDetailPage() {
                   <>
                     <div className="w-16 h-16 rounded-full overflow-hidden shadow-lg">
                       <img
-                        src={logo}   // Public folder image
+                        src={bridgehouseDetails.profile}
                         alt="Bridge House"
-                        className="w-full h-full object-contain bg-white"
+                        className="w-full h-full object-cover bg-white"
                       />
                     </div>
+
                     <div className="flex-1">
                       <div className="font-bold text-gray-900 flex items-center gap-2">
-                        Bridge House User
+                        {bridgehouseDetails?.name || "Bridge House"}
                       </div>
                     </div>
                   </>
@@ -580,28 +582,62 @@ export default function PropertyDetailPage() {
                 {properties?.isAdopted ? (
                   // BridgeHouse contact info
                   <>
+
                     <div className="flex justify-between items-center py-2">
                       <span className="text-gray-600 text-sm">Phone</span>
                       <span className="font-medium text-sm text-gray-600">
-                        1234567890
+                        {bridgehouseDetails?.phone || "N/A"}
                       </span>
                     </div>
+
                     <div className="flex justify-between items-center py-2">
                       <span className="text-gray-600 text-sm">Email</span>
                       <span className="font-medium text-sm text-gray-600">
-                        bridgehouse@example.com
+                        {bridgehouseDetails?.email || "N/A"}
                       </span>
                     </div>
+
+                    {/* <div className="flex justify-between items-center py-2">
+                      <span className="text-gray-600 text-sm">Notes</span>
+                      <span className="font-medium text-sm text-gray-600">
+                        {bridgehouseDetails?.notes || "N/A"}
+                      </span>
+                    </div> */}
+
+
+
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start py-2 gap-2">
+                      {/* Label */}
+                      <span className="text-gray-600 text-sm flex-shrink-0 w-24">Notes</span>
+
+                      {/* Content */}
+                      <span
+                        className={`font-medium text-sm text-gray-700 break-words cursor-pointer ${!showFullNotes ? "line-clamp-1 sm:line-clamp-none" : ""
+                          }`}
+                        onClick={() => setShowFullNotes(!showFullNotes)}
+                        title={bridgehouseDetails?.notes}
+                      >
+                        {bridgehouseDetails?.notes || "N/A"}
+                      </span>
+                    </div>
+
+
+
+
+
                   </>
                 ) : (
                   // Seller contact info
                   <>
-                    <div className="flex justify-between items-center py-2">
+                    <div className="flex justify-between gap-2 items-center py-2">
                       <span className="text-gray-600 text-sm">Phone</span>
                       <span className="font-medium text-sm text-gray-600">
                         {properties?.addedBy?.phone || "N/A"}
                       </span>
                     </div>
+
+
+
 
                     <div className="flex justify-between items-center py-2">
                       <span className="text-gray-600 text-sm">Email</span>
@@ -613,57 +649,6 @@ export default function PropertyDetailPage() {
                 )}
               </div>
             </div>
-
-
-
-            {/* <div className="flex items-center gap-4 mb-6">
-                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg overflow-hidden">
-                  {properties?.addedBy?.profilepic ? (
-                    <img
-                      src={properties.addedBy.profilepic}
-                      alt="Profile"
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    // Fallback to first letter of name
-                    properties?.addedBy?.name?.[0]?.toUpperCase() || "U"
-                  )}
-                </div>
-
-                <div className="flex-1">
-                  <div className="font-bold text-gray-900 flex items-center gap-2">
-                    {properties?.addedBy?.name}
-                    <Verified className="w-5 h-5 text-blue-500" />
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-3 mb-6">
-                {[
-                  { label: "Phone", value: properties?.addedBy?.phone },
-                  { label: "Email", value: properties?.addedBy?.email },
-                ].map((item, index) => (
-                  <div
-                    key={index}
-                    className="flex justify-between items-center py-2"
-                  >
-                    <span className="text-gray-600 text-sm">{item.label}</span>
-                    <span className="font-medium text-sm text-gray-600">
-                      {item.value}
-                    </span>
-                  </div>
-                ))}
-              </div> */}
-
-            {/* <div className="flex gap-2">
-                <button className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 rounded-xl font-medium hover:shadow-lg transition-all duration-300">
-                  WhatsApp
-                </button>
-                <button className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-3 rounded-xl font-medium hover:shadow-lg transition-all duration-300">
-                  Chat Now
-                </button>
-              </div> */}
-
 
             {/* Mortgage Calculator */}
             <div className="bg-white rounded-2xl shadow-lg p-6">
@@ -678,7 +663,7 @@ export default function PropertyDetailPage() {
                   </label>
                   <input
                     type="number"
-                    value={totalAmount}
+                    value={properties?.actualPrice || "N/A"}
                     onChange={(e) => setTotalAmount(Number(e.target.value))}
                     className="w-full p-3 text-sm text-gray-700 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   />
@@ -730,36 +715,9 @@ export default function PropertyDetailPage() {
                 </div>
               </div>
             </div>
-
-            {/* Share Property */}
-            {/* <div className="bg-white rounded-2xl shadow-lg p-6">
-              <h3 className="text-xl font-bold text-gray-800 mb-6">
-                Share Property
-              </h3>
-              <div className="flex gap-3 flex-wrap">
-                {[
-                  { icon: Facebook, color: "bg-blue-600" },
-                  { icon: Twitter, color: "bg-sky-500" },
-                  { icon: Linkedin, color: "bg-blue-700" },
-                  {
-                    icon: Instagram,
-                    color: "bg-gradient-to-br from-pink-500 to-orange-400",
-                  },
-                  { icon: Youtube, color: "bg-red-600" },
-                  { icon: Share2, color: "bg-gray-600" },
-                ].map((social, index) => (
-                  <button
-                    key={index}
-                    className={`p-3 ${social.color} text-white rounded-xl hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1`}
-                  >
-                    <social.icon className="w-4 h-4" />
-                  </button>
-                ))}
-              </div>
-            </div> */}
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 }

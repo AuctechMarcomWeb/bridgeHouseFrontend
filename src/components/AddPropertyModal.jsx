@@ -233,7 +233,7 @@ const AddPropertyModal = ({
         .then((res) => {
           setFormData((prev) => ({
             ...prev,
-            gallery: [...(prev.gallery || []), res.data?.data?.imageUrl], // ✅ Push into gallery array
+            gallery: [...(prev.gallery || []), res.data?.data?.imageUrl], //  Push into gallery array
           }));
           console.log("res data pic ", res?.data);
         })
@@ -532,7 +532,7 @@ const AddPropertyModal = ({
                 </div>
 
                 {/* Bedrooms */}
-                <div>
+                <div className={` ${formData?.propertyType==="Plot" ? "opacity-40" : ""}`}>
                   <label className="form-label fw-bold">Bedrooms</label>
                   <input
                     type="number"
@@ -540,6 +540,7 @@ const AddPropertyModal = ({
                     name="bedrooms"
                     data-nested="propertyDetails"
                     value={formData?.propertyDetails?.bedrooms || ""}
+                    disabled={formData?.propertyType==="Plot"}
                     onChange={(e) => {
                       if (e.target.value <= 100) {
                         handleChange(e);
@@ -547,12 +548,12 @@ const AddPropertyModal = ({
                     }}
                     placeholder="Enter number of bedrooms"
                     required
-              
+
                   />
                 </div>
 
                 {/* Bathrooms */}
-                <div>
+                <div className={`  ${formData?.propertyType==="Plot" ? "opacity-40" : ""}`}>
                   <label className="form-label fw-bold">Bathrooms</label>
                   <input
                     type="number"
@@ -560,6 +561,7 @@ const AddPropertyModal = ({
                     name="bathrooms"
                     data-nested="propertyDetails"
                     value={formData?.propertyDetails?.bathrooms || ""}
+                    disabled={formData?.propertyType ==="Plot"}
                     onChange={(e) => {
                       if (e.target.value <= 100) {
                         handleChange(e);
@@ -567,12 +569,12 @@ const AddPropertyModal = ({
                     }}
                     placeholder="Enter number of bathrooms"
                     required
-                   
+
                   />
                 </div>
 
                 {/* Floors */}
-                <div>
+                <div className={` ${formData?.propertyType==="Plot" ? "opacity-40"  : ""}`}>
                   <label className="form-label fw-bold">Floors</label>
                   <input
                     type="number"
@@ -580,6 +582,7 @@ const AddPropertyModal = ({
                     name="floors"
                     data-nested="propertyDetails"
                     value={formData?.propertyDetails?.floors || ""}
+                    disabled={formData?.propertyType ==="Plot"}
                     onChange={(e) => {
                       if (e.target.value <= 100) {
                         handleChange(e);
@@ -587,7 +590,7 @@ const AddPropertyModal = ({
                     }}
                     placeholder="Enter number of floors"
                     required
-                    
+
                   />
                 </div>
 
@@ -608,7 +611,7 @@ const AddPropertyModal = ({
                 </div>
 
                 {/* Built Year */}
-                <div>
+                <div className={`space-y-3 ${formData?.propertyType==="Plot" ? "opacity-40" : ""}`}>
                   <label className="form-label fw-bold">Built Year</label>
                   <input
                     type="number"
@@ -616,6 +619,7 @@ const AddPropertyModal = ({
                     name="builtYear"
                     data-nested="propertyDetails"
                     value={formData?.propertyDetails?.builtYear || ""}
+                    disabled={formData?.propertyType ==="Plot"}
                     onChange={handleChange}
                     placeholder="Enter year built"
                     required
@@ -659,7 +663,7 @@ const AddPropertyModal = ({
             </div>
             <div className="grid grid-cols-2 gap-4">
               {/* Facilities */}
-              <div>
+              <div className={`${formData?.propertyType==="Plot" ? "opacity-40" : ""}`}>
                 <label className="form-label fw-bold">Facilities *</label>
                 <Select
                   value={formData?.facilities}
@@ -668,6 +672,7 @@ const AddPropertyModal = ({
                   style={{ width: "100%" }}
                   required
                   placeholder="Enter/Select Your Facilities"
+                  disabled={formData?.propertyType === "Plot"}
                   onChange={(value) => {
                     setFormData({
                       ...formData,
@@ -682,7 +687,7 @@ const AddPropertyModal = ({
               </div>
 
               {/* Services */}
-              <div>
+              <div className={`${formData?.propertyType==="Plot" ? "opacity-40" : ""}`}>
                 <label className="form-label fw-bold">Services *</label>
                 <Select
                   value={formData?.services}
@@ -691,6 +696,7 @@ const AddPropertyModal = ({
                   style={{ width: "100%" }}
                   placeholder="Enter/Select Your Services"
                   required
+                  disabled={formData?.propertyType === "Plot"}
                   onChange={(value) => {
                     setFormData({
                       ...formData,
@@ -707,19 +713,22 @@ const AddPropertyModal = ({
 
             <div className="grid grid-cols-2 gap-4">
               {/*BHK*/}
-              <div>
-                <label className="form-label fw-bold">Property Type *</label>
+              <div className={`space-y-3 ${formData?.propertyType==="Plot" ? "opacity-40" : ""}`}>
+                <label className="form-label fw-bold">BHK</label>
                 <select
                   className="w-full p-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                   name="bhk"
                   value={formData?.bhk || ""}
                   required
                   onChange={handleChange}
+                  disabled={formData?.propertyType === "Plot"} 
                 >
                   <option value="">Select BHK</option>
                   {bhkOption}
                 </select>
               </div>
+
+
               {/* Property Images Upload */}
               <div>
                 <label className="form-label fw-bold">Property Images *</label>

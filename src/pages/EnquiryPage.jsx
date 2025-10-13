@@ -58,18 +58,21 @@ const EnquiryPage = () => {
       dataIndex: "property",
       key: "propertyName",
       render: (item) => <>{item?.name}</>,
+      responsive: ["lg"],
     },
     {
       title: "Property Code",
       dataIndex: "property",
       key: "propertyCode",
       render: (item) => <>{item?.propertyCode}</>,
+      responsive: ["lg"],
     },
     {
       title: "Status",
       dataIndex: "status",
       key: "status",
       render: (_, item) => <>{item?.status}</>,
+      responsive: ["lg"],
     },
     {
       title: "Action",
@@ -96,12 +99,13 @@ const EnquiryPage = () => {
           </button>
         </div>
       ),
+      responsive: ["lg"],
     },
   ];
 
   return (
     <>
-      {/* Header */}
+      {/* Header Section */}
       <div className="relative overflow-hidden bg-gradient-to-r from-gray-900 to-blue-900 w-full shadow-lg mb-6">
         <div className="absolute inset-0 bg-black opacity-20"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
@@ -122,7 +126,7 @@ const EnquiryPage = () => {
           </h2>
           <div className="flex flex-wrap items-center gap-4">
             <Input
-              placeholder="Search by name, email, phone"
+              placeholder="Search by name, email, or phone"
               prefix={<SearchOutlined />}
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
@@ -150,7 +154,7 @@ const EnquiryPage = () => {
         </div>
       </div>
 
-      {/* Table */}
+      {/* Table Section */}
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white shadow-2xl rounded-2xl p-6 md:p-8 mb-6 border border-gray-100">
           <Table

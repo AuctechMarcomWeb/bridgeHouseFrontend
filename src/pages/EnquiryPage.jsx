@@ -17,31 +17,32 @@ const EnquiryPage = () => {
   const [viewModalStatus, setViewModalStatus] = useState(false);
   const [editModalStatus, setEditModalStatus] = useState(false);
 
-  // ✅ Fetch Enquiries
+  // Fetch Enquiries
   const fetchEnquiries = () => {
     if (!user?._id) return;
-    getRequest(`enquiry?addedBy=${user._id}`)
+    getRequest(`enquiry?addedBy=${user?._id}`)
       .then((res) => setEnquiries(res?.data?.data?.enquiries || []))
-      .catch((error) => console.log("error", error));
+      .catch((err) => console.error("Error fetching enquiries:", err));
   };
 
   useEffect(() => {
     fetchEnquiries();
   }, [user]);
 
-  // ✅ Filters
+  // Filter logic
   const filteredEnquiries = enquiries.filter((enquiry) => {
+    const matchesSearch =
+      enquiry?.name?.toLowerCase().includes(searchText.toLowerCase()) ||
+      enquiry?.email?.toLowerCase().includes(searchText.toLowerCase()) ||
+      enquiry?.phone?.toLowerCase().includes(searchText.toLowerCase());
+
     const matchesStatus =
       statusFilter === "All" || enquiry?.status === statusFilter;
-    const search = searchText.toLowerCase();
-    const matchesSearch =
-      enquiry?.name?.toLowerCase().includes(search) ||
-      enquiry?.email?.toLowerCase().includes(search) ||
-      enquiry?.phone?.toLowerCase().includes(search);
-    return matchesStatus && matchesSearch;
+
+    return matchesSearch && matchesStatus;
   });
 
-  // ✅ Table Columns
+  // Table columns
   const columns = [
     { title: "Name", dataIndex: "name", key: "name" },
     { title: "Email", dataIndex: "email", key: "email" },
@@ -117,10 +118,12 @@ const EnquiryPage = () => {
         </div>
       </div>
 
-      {/* Filter Section */}
+      {/* Filters */}
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white shadow-2xl rounded-2xl p-6 md:p-8 mb-6 border border-gray-100">
-          <h2 className="text-2xl font-bold text-[#004d88] mb-4">Filter Enquiries</h2>
+          <h2 className="text-2xl font-bold text-[#004d88] mb-4">
+            Filter Enquiries
+          </h2>
           <div className="flex flex-wrap items-center gap-4">
             <Input
               placeholder="Search by name, email, or phone"
@@ -129,11 +132,11 @@ const EnquiryPage = () => {
               onChange={(e) => setSearchText(e.target.value)}
               className="flex-1 min-w-[200px] md:min-w-[250px] rounded-xl border border-gray-300"
             />
+
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="min-w-[150px] rounded-xl border border-gray-300 p-2 
-                         focus:ring-2 focus:ring-cyan-400 transition-all duration-300"
+              className="min-w-[150px] rounded-xl border border-gray-300 p-2 focus:ring-2 focus:ring-cyan-400 transition-all duration-300"
             >
               <option>All</option>
               <option>new</option>
@@ -143,7 +146,7 @@ const EnquiryPage = () => {
             </select>
 
             <ExportButton
-              enquiries={enquiries}
+              enquiries={filteredEnquiries}
               fileName="Enquiry.xlsx"
               sheetName="Enquiry"
             />
@@ -161,7 +164,7 @@ const EnquiryPage = () => {
             rowKey="_id"
             pagination={{ pageSize: 5 }}
             scroll={{ x: true }}
-            className="rounded-xl font-bold"
+            className="rounded-xl font-medium"
           />
         </div>
       </div>
@@ -181,7 +184,7 @@ const EnquiryPage = () => {
           modalData={modalData}
           setModal={(status) => {
             setEditModalStatus(status);
-            if (!status) fetchEnquiries();
+            if (!status) fetchEnquiries(); // refresh data after edit
           }}
         />
       )}

@@ -191,7 +191,7 @@ const Contact = () => {
                   </div>
                 ) : (
                   <form className="space-y-3 sm:space-y-4" onSubmit={handleSubmit}>
-                    <label className="block font-medium mb-2">Name</label>
+                    <label className="block font-medium mb-1">Name</label>
                     <input
                       type="text"
                       name="name"
@@ -201,7 +201,7 @@ const Contact = () => {
                       placeholder="Your Name"
                       required
                     />
-                    <label className="block font-medium mb-2">Email</label>
+                    <label className="block font-medium mb-1">Email</label>
                     <input
                       type="email"
                       name="email"
@@ -211,7 +211,7 @@ const Contact = () => {
                       placeholder="Email Address"
                       required
                     />
-                    <label className="block font-medium mb-2">Phone Number</label>
+                    <label className="block font-medium mb-1">Phone Number</label>
                     <input
                       type="tel"
                       name="phone"
@@ -226,9 +226,10 @@ const Contact = () => {
                     <Addressform
                       value={formData.address}
                       onSelect={handleAddressSelect}
-                      className="w-full"
+                     className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0B63F6]"
+                      placeholder="Phone Number"
                     />
-                    <label className="block font-medium mb-2">Message</label>
+                    <label className="block font-medium mb-1">Message</label>
                     <textarea
                       name="notes"
                       value={formData.notes}
@@ -241,9 +242,9 @@ const Contact = () => {
                     <button
                       type="submit"
                       disabled={isSending}
-                      className={`w-full bg-[#0B63F6] text-white font-bold py-2 sm:py-3 px-3 sm:px-4 rounded-lg transition-all duration-300 transform flex items-center justify-center gap-2 sm:gap-3 ${isSending
+                      className={`w-full bg-[#004f8a] text-white font-bold py-2 sm:py-3 px-3 sm:px-4 rounded-lg transition-all duration-300 transform flex items-center justify-center gap-2 sm:gap-3 ${isSending
                         ? "opacity-70 cursor-not-allowed"
-                        : "hover:bg-blue-700 hover:scale-105"
+                        : "hover:bg-[#004f8a] hover:scale-105"
                         }`}
                     >
                       <Send className="w-4 h-4 sm:w-5 sm:h-5" />

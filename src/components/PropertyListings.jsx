@@ -103,8 +103,9 @@ const PropertyCard = ({ property, onClick }) => {
                 className="flex items-center gap-2 text-xs sm:text-sm text-gray-600"
               >
                 <MapPin className="w-4 h-4 text-red-500" />
-                <span className="font-medium capitalize">{place.name}</span> -{" "}
-                <span>{place.distance}</span>
+                <span className="font-medium capitalize">
+                  {place.name}
+                </span> - <span>{place.distance}</span>
               </div>
             ))}
           </div>
@@ -177,7 +178,7 @@ const PropertyListings = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10">
+    <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 md:px-8 lg:px-10 xl:px-16">
       <div className="max-w-[1440px] w-full mx-auto px-4 sm:px-6 md:px-8 flex flex-col lg:flex-row gap-6 lg:gap-8 justify-between">
         {/* Main Content */}
         <div className="w-full lg:w-[128%] flex flex-col">
@@ -195,7 +196,6 @@ const PropertyListings = () => {
              hover:!border-gray-400 w-full sm:w-auto"
                 size="large"
               />
-
             </div>
           )}
           {/* Property Grid */}
@@ -233,8 +233,7 @@ const PropertyListings = () => {
                 <span className="font-semibold text-blue-600">
                   {Math.min(page * limit, total)}
                 </span>{" "}
-                of{" "}
-                <span className="font-semibold text-blue-600">{total}</span>{" "}
+                of <span className="font-semibold text-blue-600">{total}</span>{" "}
                 results
               </div>
 
@@ -250,18 +249,13 @@ const PropertyListings = () => {
         </div>
 
         {/* Sidebar */}
-        <div className="2xl:w-[70%] lg:w-[80%] w-full mx-auto px-4 flex flex-col lg:flex-row gap-8 justify-between overflow-y-auto lg:max-h-[125vh]">
+        <div className=" w-full lg:w-[50%] xl:w-[50%] 2xl:w-[50%] lg:w-[50%] px-4 flex flex-col lg:flex-row gap-8 justify-between overflow-y-auto lg:max-h-[125vh]">   
           <PropertySidebar />
-        </div>
+        </div> 
+       
       </div>
     </div>
   );
 };
 
 export default PropertyListings;
-
-
-
-
-
-

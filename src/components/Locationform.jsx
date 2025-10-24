@@ -82,7 +82,7 @@ const Locationform = ({ value, onSelect }) => {
         value={searchTerm}
         onChange={handleSearch}
         placeholder="Search for locality, landmark, project, or builder"
-        className="flex-1 md:px-5 md:py-5 py-2 md:text-base text-sm text-gray-700 placeholder-gray-400 border-none focus:ring-blue-500 focus:border-blue-500 outline-none"
+        className="w-full flex-1 md:px-5 md:py-5 py-2 md:text-base text-sm text-gray-700 placeholder-gray-400 border-none focus:ring-blue-500 focus:border-blue-500 outline-none"
       />
 
       {/* Suggestions Dropdown */}

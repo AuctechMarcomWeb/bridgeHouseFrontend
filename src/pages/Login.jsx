@@ -409,7 +409,7 @@ export default function Login() {
                           htmlFor="name"
                           className="block mb-2 text-gray-700 font-medium"
                         >
-                          Name
+                          Name *
                         </label>
                         <div className="relative">
                           <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -433,7 +433,7 @@ export default function Login() {
                         htmlFor="email"
                         className="block mb-2 text-gray-700 font-medium"
                       >
-                        E-mail
+                        E-mail *
                       </label>
                       <div className="relative">
                         <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -458,7 +458,7 @@ export default function Login() {
                     htmlFor="phone"
                     className="block mb-2 text-gray-700 font-medium"
                   >
-                    Phone
+                    Phone *
                   </label>
                   <div className="relative">
                     <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -485,7 +485,7 @@ export default function Login() {
                       htmlFor="password"
                       className="block mb-2 text-gray-700 font-medium"
                     >
-                      Password
+                      Password *
                     </label>
 
                     <div className="relative">
@@ -527,7 +527,7 @@ export default function Login() {
                       htmlFor="occupation"
                       className="block mb-2 text-gray-700 font-medium"
                     >
-                      Occupation
+                      Occupation *
                     </label>
                     <div className="relative">
                       <Luggage className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -552,7 +552,7 @@ export default function Login() {
                       htmlFor="gender"
                       className="block mb-2 text-gray-700 font-medium"
                     >
-                      Gender
+                      Gender *
                     </label>
                     <select
                       id="gender"
@@ -572,7 +572,7 @@ export default function Login() {
                 {isNewUser && (
                   <div className="mb-4">
                     <p className="mb-2 text-gray-700 font-medium">
-                      Account Type
+                      Account Type *
                     </p>
                     <div className="flex gap-6">
                       {["Buyer", "Seller"].map((type) => (
@@ -607,7 +607,7 @@ export default function Login() {
                       htmlFor="address"
                       className="block mb-2 text-gray-700 font-medium"
                     >
-                      Address
+                      Address *
                     </label>
                     <div className="relative">
                       {/* <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" /> */}

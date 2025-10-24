@@ -122,7 +122,7 @@ export default function EditProfileModal({
       {/* Modal Box */}
       <div
         className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl sm:max-w-xl md:max-w-2xl relative flex flex-col
-                   max-h-[90vh] sm:max-h-[85vh] overflow-hidden"
+                   max-h-[900vh] sm:max-h-[85vh] overflow-hidden"
       >
         {/* Header */}
         <div className="sticky top-0 bg-white z-10 p-6 sm:p-8 border-b">

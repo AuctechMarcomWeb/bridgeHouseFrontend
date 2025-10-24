@@ -15,7 +15,6 @@ import RealEstateLeftPopups from "./RealEstateLeftPopups";
 import FloatingPopup from "./FloatingPopup.jsx";
 import { PropertyContext } from "../context/PropertyContext.jsx";
 
-
 export default function FeaturedPropertyType() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);

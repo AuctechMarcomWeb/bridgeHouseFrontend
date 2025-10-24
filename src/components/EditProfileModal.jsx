@@ -17,7 +17,6 @@ export default function EditProfileModal({
   setUpdate,
 }) {
   const { user, setUser } = useContext(ProfileContext);
-  console.log("user", user);
   const [formData, setFormData] = useState(
     user
       ? { ...user, dob: formatDateCreatedAt(user?.dob) }
@@ -34,23 +33,18 @@ export default function EditProfileModal({
         }
   );
 
-useEffect(() => {
-  if (user) {
-    setFormData({
-      ...user,
-      dob: formatDateCreatedAt(user?.dob),
-    });
-  }
-}, [user]);
-
-
-  console.log("formdata", formData);
-  console.log("occupation", formData?.occupation);
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        ...user,
+        dob: formatDateCreatedAt(user?.dob),
+      });
+    }
+  }, [user]);
 
   const [loading, setLoading] = useState(false);
   const [imageUploading, setImageUploading] = useState(false);
   const [profileImageError, setProfileImageError] = useState("");
-
   const { setCookie } = useCookie();
 
   const handleChange = (e) => {
@@ -70,46 +64,35 @@ useEffect(() => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!formData.profilepic) {
-      setProfileImageError("Profile image is required"); // show message inline
+      setProfileImageError("Profile image is required");
       return;
     }
 
-    setProfileImageError(""); // clear error if image exists
-
+    setProfileImageError("");
     setLoading(true);
     patchRequest({
       url: `auth/update/${user?._id}`,
       cred: formData,
     })
       .then((res) => {
-        console.log("Update edit profile response:", res?.data?.data);
         toast.success(res?.data?.message);
-        // ✅ Context update karo
         setUser(res?.data?.data);
         if (res?.data?.token) {
           setCookie("token-bridge-house", res?.data?.token, 30);
-          console.log("Token saved for new user:", res?.data?.token);
         }
         setUpdate((prev) => !prev);
-
-        if (onSave) {
-          onSave(res?.data?.data);
-        }
+        onSave?.(res?.data?.data);
         onClose();
       })
       .catch((err) => {
-        console.error("Update User API Error:", err);
         toast.error(err?.response?.data?.message);
       })
-      .finally(() => {
-        setLoading(false);
-      });
+      .finally(() => setLoading(false));
   };
 
   const handleFileChange = (e) => {
-    const file = e.target.files[0]; // single file only
+    const file = e.target.files[0];
     if (!file) return;
-
     setImageUploading(true);
 
     fileUpload({
@@ -120,316 +103,232 @@ useEffect(() => {
         const imageUrl = res.data?.data?.imageUrl;
         setFormData((prev) => ({
           ...prev,
-          profilepic: imageUrl, // key is profilepic
+          profilepic: imageUrl,
         }));
         setImageUploading(false);
         toast.success("Profile image uploaded successfully");
       })
-      .catch((error) => {
-        console.error("Profile upload failed:", error);
+      .catch(() => {
         toast.error("Profile upload failed");
         setImageUploading(false);
       });
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 relative">
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
-        >
-          <X size={22} />
-        </button>
+    <div
+      className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4"
+      style={{ overflow: "hidden" }}
+    >
+      {/* Modal Box */}
+      <div
+        className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl sm:max-w-xl md:max-w-2xl relative flex flex-col
+                   max-h-[90vh] sm:max-h-[85vh] overflow-hidden"
+      >
+        {/* Header */}
+        <div className="sticky top-0 bg-white z-10 p-6 sm:p-8 border-b">
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+          >
+            <X size={22} />
+          </button>
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
+            Edit Profile
+          </h2>
+        </div>
 
-        <h2 className="text-xl font-bold text-gray-900 mb-6">Edit Profile</h2>
-        <hr className="my-2 py-2" />
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* First Row: Full Name + Phone */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col">
-              <label
-                htmlFor="name"
-                className="block mb-2 font-medium text-gray-700"
-              >
-                Full Name
-              </label>
-              <input
-                id="name"
-                type="text"
-                name="name"
-                value={formData?.name}
-                onChange={handleChange}
-                placeholder="Enter your full name"
-                className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none h-12"
-                required
-              />
-            </div>
+        {/* Scrollable Content */}
+        <div className="px-6 sm:px-8 py-4 overflow-y-auto flex-1">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* First Row */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="flex flex-col">
+                <label className="mb-2 font-medium text-gray-700">Full Name</label>
+                <input
+                  name="name"
+                  type="text"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="Enter your full name"
+                  className="p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none h-12"
+                  required
+                />
+              </div>
 
-            <div className="flex flex-col">
-              <label
-                htmlFor="phone"
-                className="block mb-2 font-medium text-gray-700"
-              >
-                Phone Number
-              </label>
-              <input
-                id="phone"
-                type="text"
-                name="phone"
-                value={formData?.phone}
-                onChange={handleChange}
-                placeholder="Enter phone number"
-                className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none h-12"
-                required
-              />
-            </div>
-          </div>
-
-          {/* Second Row: DOB + Occupation */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col">
-              <label
-                htmlFor="dob"
-                className="block mb-2 font-medium text-gray-700"
-              >
-                Date of Birth
-              </label>
-              <input
-                id="dob"
-                type="date"
-                name="dob"
-                value={formData?.dob}
-                onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none h-12"
-                required
-              />
-            </div>
-
-            <div className="flex flex-col">
-              <label
-                htmlFor="occupation"
-                className="block mb-2 font-medium text-gray-700"
-              >
-                Occupation
-              </label>
-              <input
-                id="occupation"
-                type="text"
-                name="occupation"
-                value={formData?.occupation}
-                onChange={handleChange}
-                placeholder="Enter your occupation"
-                className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none h-12"
-                required
-              />
-            </div>
-          </div>
-
-          {/* Third Row: Email + Address */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col">
-              <label
-                htmlFor="E-mail"
-                className="block mb-2 font-medium text-gray-700"
-              >
-                E-mail
-              </label>
-              <input
-                id="E-mail"
-                type="email"
-                name="email"
-                value={formData?.email}
-                onChange={handleChange}
-                placeholder="Enter your email"
-                className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none h-12"
-                required
-              />
-            </div>
-            <div className="flex flex-col">
-              <label className="block mb-2 font-medium text-gray-700">
-                Address
-              </label>
-              <div className="h-12">
-                <AddressForm
-                  value={user?.address}
-                  onSelect={handleLocationSelect}
+              <div className="flex flex-col">
+                <label className="mb-2 font-medium text-gray-700">Phone Number</label>
+                <input
+                  name="phone"
+                  type="text"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  placeholder="Enter phone number"
+                  className="p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none h-12"
                   required
                 />
               </div>
             </div>
-          </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col">
-              <label
-                htmlFor="gender"
-                className="block mb-2 font-medium text-gray-700"
-              >
-                Gender
-              </label>
-              <select
-                id="gender"
-                name="gender"
-                value={formData?.gender}
-                onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 h-12"
-                required
-              >
-                <option value="">Select Gender</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-              </select>
-            </div>
-            {/* Account Type */}
-            <div className="mb-4">
-              <p className="mb-2 text-gray-700 font-medium">Account Type</p>
-              <div className="flex items-center gap-6">
-                {["Buyer", "Seller"].map((type) => (
-                  <label
-                    key={type}
-                    className="flex items-center cursor-pointer "
-                  >
-                    <input
-                      type="radio"
-                      name="accountType"
-                      value={type}
-                      checked={formData?.accountType === type}
-                      onChange={handleChange}
-                      className="hidden"
-                      required
-                    />
-                    <div className="w-5 h-5 border border-gray-300 rounded-full flex items-center justify-center">
-                      {formData?.accountType === type && (
-                        <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                      )}
-                    </div>
-                    <span className="ml-3 text-gray-700">{type}</span>
-                  </label>
-                ))}
+            {/* Second Row */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="flex flex-col">
+                <label className="mb-2 font-medium text-gray-700">Date of Birth</label>
+                <input
+                  name="dob"
+                  type="date"
+                  value={formData.dob}
+                  onChange={handleChange}
+                  className="p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none h-12"
+                  required
+                />
+              </div>
+
+              <div className="flex flex-col">
+                <label className="mb-2 font-medium text-gray-700">Occupation</label>
+                <input
+                  name="occupation"
+                  type="text"
+                  value={formData.occupation}
+                  onChange={handleChange}
+                  placeholder="Enter your occupation"
+                  className="p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none h-12"
+                  required
+                />
               </div>
             </div>
-          </div>
 
-          {/* Profile Image */}
-          <div>
-            <label
-              htmlFor="profilepic"
-              className="block mb-2 font-medium text-gray-700"
-            >
-              Profile Image
-            </label>
-            <input
-              id="profilepic"
-              type="file"
-              name="profilepic"
-              accept="image/*"
-              onChange={(e) => {
-                handleFileChange(e);
-                setProfileImageError(""); // clear error when user selects image
-              }}
-              className="w-full"
-            />
-
-            {imageUploading ? (
-              <div className="mt-2 flex items-center gap-2">
-                <svg
-                  className="w-5 h-5 animate-spin text-blue-500"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8h4z"
-                  ></path>
-                </svg>
-                Uploading...
+            {/* Third Row */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="flex flex-col">
+                <label className="mb-2 font-medium text-gray-700">E-mail</label>
+                <input
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="Enter your email"
+                  className="p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none h-12"
+                  required
+                />
               </div>
-            ) : (
-              formData?.profilepic && (
-                <div className="mt-2 relative w-24 h-24">
-                  <img
-                    src={formData.profilepic}
-                    alt="Preview"
-                    className="w-24 h-24 object-cover rounded-full"
+
+              <div className="flex flex-col">
+                <label className="mb-2 font-medium text-gray-700">Address</label>
+                <div className="h-12">
+                  <AddressForm
+                    value={user?.address}
+                    onSelect={handleLocationSelect}
+                    required
                   />
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setFormData((prev) => ({ ...prev, profilepic: "" }))
-                    }
-                    className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
-                  >
-                    ×
-                  </button>
                 </div>
-              )
-            )}
-            {/* Inline error message */}
-            {profileImageError && (
-              <p className="text-red-500 text-sm mt-1">{profileImageError}</p>
-            )}
-          </div>
+              </div>
+            </div>
 
-          {/* Buttons */}
-          <div className="flex justify-end gap-3 mt-6">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={loading || imageUploading} // disable until image uploaded
-              className={`px-6 py-2 rounded-lg font-semibold transition ${
-                loading
-                  ? "bg-[#004f8a] cursor-not-allowed"
-                  : "bg-[#004f8a] hover:bg-[#004f8a] text-white"
-              }`}
-            >
-              {loading ? (
-                <div className="flex items-center gap-2">
-                  <svg
-                    className="w-5 h-5 animate-spin text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8h4z"
-                    ></path>
-                  </svg>
-                  Updating...
+            {/* Gender + Account Type */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="flex flex-col">
+                <label className="mb-2 font-medium text-gray-700">Gender</label>
+                <select
+                  name="gender"
+                  value={formData.gender}
+                  onChange={handleChange}
+                  className="p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none h-12"
+                  required
+                >
+                  <option value="">Select Gender</option>
+                  <option>Male</option>
+                  <option>Female</option>
+                </select>
+              </div>
+
+              <div>
+                <p className="mb-2 text-gray-700 font-medium">Account Type</p>
+                <div className="flex items-center gap-6">
+                  {["Buyer", "Seller"].map((type) => (
+                    <label key={type} className="flex items-center cursor-pointer">
+                      <input
+                        type="radio"
+                        name="accountType"
+                        value={type}
+                        checked={formData.accountType === type}
+                        onChange={handleChange}
+                        className="hidden"
+                        required
+                      />
+                      <div className="w-5 h-5 border border-gray-300 rounded-full flex items-center justify-center">
+                        {formData.accountType === type && (
+                          <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                        )}
+                      </div>
+                      <span className="ml-3 text-gray-700">{type}</span>
+                    </label>
+                  ))}
                 </div>
+              </div>
+            </div>
+
+            {/* Profile Image */}
+            <div>
+              <label className="mb-2 font-medium text-gray-700">Profile Image</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  handleFileChange(e);
+                  setProfileImageError("");
+                }}
+                className="w-full"
+              />
+              {imageUploading ? (
+                <p className="text-blue-500 mt-2 text-sm">Uploading...</p>
               ) : (
-                "Save Changes"
+                formData.profilepic && (
+                  <div className="mt-2 relative w-20 h-20 sm:w-24 sm:h-24">
+                    <img
+                      src={formData.profilepic}
+                      alt="Preview"
+                      className="w-full h-full object-cover rounded-full"
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setFormData((prev) => ({ ...prev, profilepic: "" }))
+                      }
+                      className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+                    >
+                      ×
+                    </button>
+                  </div>
+                )
               )}
-            </button>
-          </div>
-        </form>
+              {profileImageError && (
+                <p className="text-red-500 text-sm mt-1">{profileImageError}</p>
+              )}
+            </div>
+
+            {/* Buttons inside form (scroll with content) */}
+            <div className="flex flex-col sm:flex-row gap-4 sm:justify-end sm:items-center mt-6">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-6 py-3 w-full sm:w-auto rounded-lg border border-gray-300 hover:bg-gray-100"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={loading || imageUploading}
+                className={`px-8 py-3 w-full sm:w-auto rounded-lg font-semibold transition ${
+                  loading
+                    ? "bg-[#004f8a] cursor-not-allowed text-white"
+                    : "bg-[#004f8a] hover:bg-[#003b66] text-white"
+                }`}
+              >
+                {loading ? "Updating..." : "Save Changes"}
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

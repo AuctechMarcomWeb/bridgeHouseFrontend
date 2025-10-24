@@ -17,7 +17,6 @@ export const PropertyProvider = ({ children }) => {
     getRequest(`properties?search=${search}&propertyType=${propertyType}`)
       .then((res) => {
         console.log(
-          "context Properties API response:===",
           res?.data?.data?.properties
         );
         console.log("context working");

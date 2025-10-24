@@ -4,7 +4,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Spin, Pagination } from "antd";
-import { SiMercadopago } from 'react-icons/si';
+import { SiMercadopago } from "react-icons/si";
 import {
   MapPin,
   Home,
@@ -49,7 +49,7 @@ export default function RentalListingApp() {
       search: appliedFilters.search,
       page,
       limit,
-      approvalStatus,
+
       minSqft: appliedFilters.minSqft,
       maxSqft: appliedFilters.maxSqft,
       propertyType: appliedFilters.propertyType,
@@ -151,7 +151,7 @@ export default function RentalListingApp() {
                     {/* Image */}
                     <div className="relative aspect-[4/3] overflow-hidden">
                       {Array.isArray(listing?.gallery) &&
-                        listing.gallery.length > 0 ? (
+                      listing.gallery.length > 0 ? (
                         <img
                           src={listing.gallery[0]}
                           alt="property"
@@ -199,9 +199,6 @@ export default function RentalListingApp() {
                           </span>
                         </div>
                       )}
-
-
-
                     </div>
 
                     {/* Content */}

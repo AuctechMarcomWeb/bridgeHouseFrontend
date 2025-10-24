@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-const Addressform = ({ value, onSelect }) => {
+const Addressform = ({ value, onSelect ,className}) => {
   const [searchTerm, setSearchTerm] = useState(value || "");
   const [places, setPlaces] = useState([]);
   const [detailsVisible, setDetailsVisible] = useState(false);
@@ -81,7 +81,8 @@ const Addressform = ({ value, onSelect }) => {
         value={searchTerm}
         onChange={handleSearch}
         placeholder="Search location or address"
-        className="w-full p-4 border border-gray-300 rounded-xl outline-none"
+        // className="w-full p-4 border border-gray-300 rounded-xl outline-none"
+         className={`w-full p-4 border border-gray-300 rounded-xl outline-none ${className || ""}`}
       />
 
       {/* Suggestions Dropdown */}

@@ -1,18 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { MapPin, Bed, Bath, Square } from 'lucide-react';
+import React, { useEffect, useState } from "react";
+import { MapPin, Bed, Bath, Square } from "lucide-react";
 import { getRequest } from "../Helpers";
 import { Pagination } from "antd";
 
 const RealEstateGallery = () => {
-  const [viewMode, setViewMode] = useState('grid');
-  const [loading, setLoading] = useState(false)
-  const [galleryData, setGalleryData] = useState([])
-  const [total, setTotal] = useState(0)
-  const [page, setPage] = useState(1)
-  const [limit, setLimit] = useState(10)
-  const [search, setSearch] = useState("")
-
-
+  const [viewMode, setViewMode] = useState("grid");
+  const [loading, setLoading] = useState(false);
+  const [galleryData, setGalleryData] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     setLoading(true);
@@ -20,22 +18,19 @@ const RealEstateGallery = () => {
       `gallery?isPagination=true&page=${page}&limit=${limit}&search=${search}&sortBy=recent&isActive=true`
     )
       .then((res) => {
-
-        setGalleryData(res?.data?.data?.gallery || [])
+        setGalleryData(res?.data?.data?.gallery || []);
         console.log("API Response: ======================", galleryData);
         setTotal(res?.data?.data?.totalGallery || 0);
       })
-      .catch(err => console.error("API Error:", err))
+      .catch((err) => console.error("API Error:", err))
       .finally(() => setLoading(false));
-  }, [page, limit, search ]);
-
+  }, [page, limit, search]);
 
   // Search handler
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
     setPage(1); // Reset to first page for new search
   };
-
 
   const PropertyCard = ({ property }) => (
     <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 group">
@@ -115,18 +110,28 @@ const RealEstateGallery = () => {
         </div>
 
         {/* Gallery Grid or Not Found */}
-        <div className={`grid ${viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8' : 'space-y-6'}`}>
-          {galleryData.length > 0 ? (
-            galleryData.map((property) => (
-              <PropertyCard key={property._id} property={property} />
-            ))
-          ) : (
-            !loading && (
-              <div className="col-span-full text-center text-gray-500 text-lg py-12">
-                🔍 No properties found.
-              </div>
-            )
-          )}
+        <div
+          className={`grid ${
+            viewMode === "grid"
+              ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
+              : "space-y-6"
+          }`}
+        >
+          {galleryData.length > 0
+            ? galleryData.map((property) => (
+                <PropertyCard key={property._id} property={property} />
+              ))
+            : !loading && (
+                <div className="col-span-full text-center text-gray-500 text-lg py-12">
+                  <div className="text-6xl mb-4">🏠</div>
+                  <h3 className="text-2xl font-bold text-gray-800 mb-2">
+                    No Properties Found
+                  </h3>
+                  <p className="text-gray-600">
+                    Try adjusting your search or filter criteria
+                  </p>
+                </div>
+              )}
         </div>
 
         {/* Pagination: only show if data exists */}
@@ -141,7 +146,6 @@ const RealEstateGallery = () => {
             />
           </div>
         )}
-
       </div>
       {/* Loading Spinner Overlay */}
       {loading && (
@@ -157,5 +161,3 @@ const RealEstateGallery = () => {
 };
 
 export default RealEstateGallery;
-
-

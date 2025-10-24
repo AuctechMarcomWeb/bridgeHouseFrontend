@@ -80,9 +80,9 @@ const RealEstateLeftPopups = () => {
                     className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                   />
                   <div className="absolute top-3 left-3">
-
                     <span className="bg-white/90 backdrop-blur-sm text-gray-800 px-2 py-1 rounded-lg text-xs font-semibold">
-                      {property?.propertyType || "Property"}                    </span>
+                      {property?.propertyType || "Property"}{" "}
+                    </span>
                   </div>
                 </div>
 

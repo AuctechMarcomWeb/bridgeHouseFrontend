@@ -15,6 +15,7 @@ import BridgeHousepayment from "./bridgeHousepayment";
 import RenderRazorpay from "./Payment/RenderRazorpay";
 import { ProfileContext } from "../context/ProfileContext";
 
+
 const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
 
@@ -327,6 +328,7 @@ const UpgradeModal = ({ open, onClose }) => {
           amount={orderDetails.amount}
           currency={orderDetails.currency}
           orderId={orderDetails.id}
+          onClose={onClose}
           
         />
       )}

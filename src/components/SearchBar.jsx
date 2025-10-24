@@ -82,29 +82,6 @@ const SearchBar = () => {
       <div className="bg-white sm:flex-row items-center w-full rounded-full shadow-xl flex items-center md:max-w-2xl w-full transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
 
 
-
-        {/* State Dropdown */}
-
-        {/* State Dropdown using native select */}
-        <div className="relative flex items-center px-2 md:px-5 border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors duration-200">
-          <select
-            // className="form-select text-sm md:font-semibold text-gray-700 w-30 border-none focus:outline-none focus:ring-0"
-            className="form-select text-sm md:font-semibold text-gray-700 w-full md:w-32 border-none focus:outline-none focus:ring-0"
-
-
-            value={selectedLocation}
-            onChange={(e) => handleLocationSelect(e.target.value)}
-            aria-label="Select state"
-          >
-            <option value="">Select state</option>
-            {states.map((state) => (
-              <option key={state.isoCode} value={state.name}>
-                {state.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
         {/* Address Search */}
         {/* <div className="flex-1 md:px-3"> */}
         <div className="flex-1 w-full sm:flex-1 md:px-3 sm:mt-0">

@@ -39,8 +39,6 @@ const AddPropertyModal = ({
           propertyDetails: {
             area: "",
             bedrooms: "",
-            length: "",
-            width: "",
             bathrooms: "",
             floors: "",
             facing: "",
@@ -262,9 +260,98 @@ const AddPropertyModal = ({
     }
   }, [modalData]);
 
+  const isFieldRequired = (field) => {
+    if (formData.propertyType === "Commercial") {
+      if (field === "bhk" || field === "bedrooms") return false;
+    }
+    if (formData.propertyType === "Apartment") {
+      if (field === "floors" || field === "length" || field === "width")
+        return false;
+    }
+    return true; // default required
+  };
+
   //  Validate form
+  // const validateForm = () => {
+  //   let newErrors = {};
+
+  //   if (!formData.name.trim()) newErrors.name = "Property name is required";
+  //   if (!formData.address.trim()) newErrors.address = "Address is required";
+  //   if (!formData.propertyType.trim())
+  //     newErrors.propertyType = "Property type is required";
+  //   if (!formData.actualPrice || formData.actualPrice <= 0)
+  //     newErrors.actualPrice = "Valid actual price is required";
+  //   if (!formData.sellingPrice || formData.sellingPrice <= 0)
+  //     newErrors.sellingPrice = "Valid selling price is required";
+  //   if (!formData.description.trim())
+  //     newErrors.description = "Description is required";
+  //   if (!formData.propertyCode.trim())
+  //     newErrors.propertyCode = "Property code is required";
+
+  //   //  Plot logic: Agar plot hai to skip detailed fields
+  //   if (formData.propertyType !== "Plot") {
+  //     if (!formData.propertyDetails.area) newErrors.area = "Area is required";
+  //     if (!formData.propertyDetails.bedrooms)
+  //       newErrors.bedrooms = "Bedrooms required";
+  //     if (!formData.propertyDetails.bathrooms)
+  //       newErrors.bathrooms = "Bathrooms required";
+  //     if (!formData.propertyDetails.floors)
+  //       newErrors.floors = "Floors required";
+  //     if (!formData.propertyDetails.builtYear)
+  //       newErrors.builtYear = "Built year required";
+  //     if (!formData.bhk) newErrors.bhk = "BHK is required";
+  //     if (!formData.facilities?.length)
+  //       newErrors.facilities = "Select at least 1 facility";
+  //     if (!formData.services?.length)
+  //       newErrors.services = "Select at least 1 service";
+  //   }
+
+  //   // Validation
+  //   const validateForm = () => {
+  //     let newErrors = {};
+  //     if (!formData.name.trim()) newErrors.name = "Property name is required";
+  //     if (!formData.address.trim()) newErrors.address = "Address is required";
+  //     if (!formData.propertyType.trim())
+  //       newErrors.propertyType = "Property type is required";
+  //     if (!formData.actualPrice || formData.actualPrice <= 0)
+  //       newErrors.actualPrice = "Valid actual price required";
+  //     if (!formData.sellingPrice || formData.sellingPrice <= 0)
+  //       newErrors.sellingPrice = "Valid selling price required";
+  //     if (!formData.description.trim())
+  //       newErrors.description = "Description is required";
+  //     if (!formData.propertyCode.trim())
+  //       newErrors.propertyCode = "Property code is required";
+
+  //     // Conditional Validation
+  //     if (
+  //       formData.propertyType === "Apartment" ||
+  //       formData.propertyType === "Residential"
+  //     ) {
+  //       if (!formData.propertyDetails.bedrooms)
+  //         newErrors.bedrooms = "Bedrooms required";
+  //       if (!formData.propertyDetails.bathrooms)
+  //         newErrors.bathrooms = "Bathrooms required";
+  //       if (!formData.propertyDetails.floors)
+  //         newErrors.floors = "Floors required";
+  //       if (!formData.propertyDetails.builtYear)
+  //         newErrors.builtYear = "Built year required";
+  //       if (!formData.bhk) newErrors.bhk = "BHK is required";
+  //       if (!formData.facilities?.length)
+  //         newErrors.facilities = "Select at least 1 facility";
+  //       if (!formData.services?.length)
+  //         newErrors.services = "Select at least 1 service";
+  //     }
+
+  //     setErrors(newErrors);
+  //     return Object.keys(newErrors).length === 0;
+  //   };
+
+  //   setErrors(newErrors);
+  //   return Object.keys(newErrors).length === 0;
+  // };
   const validateForm = () => {
     let newErrors = {};
+    const details = formData.propertyDetails || {};
 
     if (!formData.name.trim()) newErrors.name = "Property name is required";
     if (!formData.address.trim()) newErrors.address = "Address is required";
@@ -279,63 +366,24 @@ const AddPropertyModal = ({
     if (!formData.propertyCode.trim())
       newErrors.propertyCode = "Property code is required";
 
-    //  Plot logic: Agar plot hai to skip detailed fields
     if (formData.propertyType !== "Plot") {
-      if (!formData.propertyDetails.area) newErrors.area = "Area is required";
-      if (!formData.propertyDetails.bedrooms)
+      if (isFieldRequired("area") && !details.area)
+        newErrors.area = "Area is required";
+      if (isFieldRequired("bedrooms") && !details.bedrooms)
         newErrors.bedrooms = "Bedrooms required";
-      if (!formData.propertyDetails.bathrooms)
+      if (isFieldRequired("bathrooms") && !details.bathrooms)
         newErrors.bathrooms = "Bathrooms required";
-      if (!formData.propertyDetails.floors)
+      if (isFieldRequired("floors") && !details.floors)
         newErrors.floors = "Floors required";
-      if (!formData.propertyDetails.builtYear)
+      if (isFieldRequired("builtYear") && !details.builtYear)
         newErrors.builtYear = "Built year required";
-      if (!formData.bhk) newErrors.bhk = "BHK is required";
-      if (!formData.facilities?.length)
+      if (isFieldRequired("bhk") && !formData.bhk)
+        newErrors.bhk = "BHK is required";
+      if (isFieldRequired("facilities") && !formData.facilities?.length)
         newErrors.facilities = "Select at least 1 facility";
-      if (!formData.services?.length)
+      if (isFieldRequired("services") && !formData.services?.length)
         newErrors.services = "Select at least 1 service";
     }
-
-    // Validation
-    const validateForm = () => {
-      let newErrors = {};
-      if (!formData.name.trim()) newErrors.name = "Property name is required";
-      if (!formData.address.trim()) newErrors.address = "Address is required";
-      if (!formData.propertyType.trim())
-        newErrors.propertyType = "Property type is required";
-      if (!formData.actualPrice || formData.actualPrice <= 0)
-        newErrors.actualPrice = "Valid actual price required";
-      if (!formData.sellingPrice || formData.sellingPrice <= 0)
-        newErrors.sellingPrice = "Valid selling price required";
-      if (!formData.description.trim())
-        newErrors.description = "Description is required";
-      if (!formData.propertyCode.trim())
-        newErrors.propertyCode = "Property code is required";
-
-      // Conditional Validation
-      if (
-        formData.propertyType === "Apartment" ||
-        formData.propertyType === "Residential"
-      ) {
-        if (!formData.propertyDetails.bedrooms)
-          newErrors.bedrooms = "Bedrooms required";
-        if (!formData.propertyDetails.bathrooms)
-          newErrors.bathrooms = "Bathrooms required";
-        if (!formData.propertyDetails.floors)
-          newErrors.floors = "Floors required";
-        if (!formData.propertyDetails.builtYear)
-          newErrors.builtYear = "Built year required";
-        if (!formData.bhk) newErrors.bhk = "BHK is required";
-        if (!formData.facilities?.length)
-          newErrors.facilities = "Select at least 1 facility";
-        if (!formData.services?.length)
-          newErrors.services = "Select at least 1 service";
-      }
-
-      setErrors(newErrors);
-      return Object.keys(newErrors).length === 0;
-    };
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -511,7 +559,7 @@ const AddPropertyModal = ({
                 <div>
                   <label className="form-label fw-bold">Property Type *</label>
                   <select
-                    className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                    className="w-full p-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                     name="propertyType"
                     value={formData?.propertyType || ""}
                     required
@@ -527,7 +575,7 @@ const AddPropertyModal = ({
                   <label className="form-label fw-bold">Property Code *</label>
                   <input
                     type="text"
-                    className={`w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all ${
+                    className={`w-full p-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all ${
                       errors?.propertyCode ? "is-invalid" : ""
                     }`}
                     name="propertyCode"
@@ -548,7 +596,7 @@ const AddPropertyModal = ({
                   <label className="form-label fw-bold">Property Name *</label>
                   <input
                     type="text"
-                    className={`w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all ${
+                    className={`w-full p-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all ${
                       errors?.name ? "is-invalid" : ""
                     }`}
                     name="name"
@@ -569,7 +617,7 @@ const AddPropertyModal = ({
                   </label>
                   <input
                     type="number"
-                    className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                    className="w-full p-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                     name="actualPrice"
                     value={formData?.actualPrice || ""}
                     required
@@ -585,7 +633,7 @@ const AddPropertyModal = ({
                   </label>
                   <input
                     type="number"
-                    className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                    className="w-full p-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                     name="sellingPrice"
                     value={formData?.sellingPrice || ""}
                     required
@@ -599,7 +647,7 @@ const AddPropertyModal = ({
                   <label className="form-label fw-bold">Area</label>
                   <input
                     type="number"
-                    className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                    className="w-full p-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                     name="area"
                     data-nested="propertyDetails"
                     value={formData?.propertyDetails?.area || ""}
@@ -613,7 +661,7 @@ const AddPropertyModal = ({
                 <div className="col-span-2">
                   <label className="form-label fw-bold">Description *</label>
                   <textarea
-                    className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                    className="w-full p-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                     name="description"
                     rows={3}
                     required
@@ -638,31 +686,37 @@ const AddPropertyModal = ({
                   <div className="grid grid-cols-2 gap-4">
                     {/* Length */}
                     <div>
-                      <label className="form-label fw-bold">Length (ft)</label>
+                      <label className="form-label fw-bold">
+                        Length (ft)
+                        {isFieldRequired("length") ? "*" : "(Optional)"}
+                      </label>
                       <input
                         type="number"
-                        className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                        className="w-full p-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                         name="length"
                         data-nested="propertyDetails"
                         value={formData?.propertyDetails?.length || ""}
                         onChange={handleChange}
                         placeholder="Enter Length"
-                        required
+                        required={isFieldRequired("length")}
                       />
                     </div>
 
                     {/* Width */}
                     <div>
-                      <label className="form-label fw-bold">Width (ft)</label>
+                      <label className="form-label fw-bold">
+                        Width (ft)
+                        {isFieldRequired("width") ? "*" : "(Optional)"}
+                      </label>
                       <input
                         type="number"
-                        className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                        className="w-full p-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                         name="width"
                         data-nested="propertyDetails"
                         value={formData?.propertyDetails?.width || ""}
                         onChange={handleChange}
                         placeholder="Enter Width"
-                        required
+                        required={isFieldRequired("width")}
                       />
                     </div>
                   </div>
@@ -677,10 +731,13 @@ const AddPropertyModal = ({
                         formData?.propertyType === "Plot" ? "opacity-40" : ""
                       }`}
                     >
-                      <label className="form-label fw-bold">Bedrooms</label>
+                      <label className="form-label fw-bold">
+                        Bedrooms{" "}
+                        {isFieldRequired("bedrooms") ? "*" : "(Optional)"}
+                      </label>
                       <input
                         type="number"
-                        className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                        className="w-full p-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                         name="bedrooms"
                         data-nested="propertyDetails"
                         value={formData?.propertyDetails?.bedrooms || ""}
@@ -691,7 +748,7 @@ const AddPropertyModal = ({
                           }
                         }}
                         placeholder="Enter number of bedrooms"
-                        required
+                        required={isFieldRequired("bedrooms")}
                       />
                     </div>
 
@@ -704,7 +761,7 @@ const AddPropertyModal = ({
                       <label className="form-label fw-bold">Bathrooms</label>
                       <input
                         type="number"
-                        className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                        className="w-full p-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                         name="bathrooms"
                         data-nested="propertyDetails"
                         value={formData?.propertyDetails?.bathrooms || ""}
@@ -725,10 +782,13 @@ const AddPropertyModal = ({
                         formData?.propertyType === "Plot" ? "opacity-40" : ""
                       }`}
                     >
-                      <label className="form-label fw-bold">Floors</label>
+                      <label className="form-label fw-bold">
+                        Floors
+                        {isFieldRequired("floors") ? "*" : "(Optional)"}
+                      </label>
                       <input
                         type="number"
-                        className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                        className="w-full p-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                         name="floors"
                         data-nested="propertyDetails"
                         value={formData?.propertyDetails?.floors || ""}
@@ -739,7 +799,7 @@ const AddPropertyModal = ({
                           }
                         }}
                         placeholder="Enter number of floors"
-                        required
+                        required={isFieldRequired("floors")}
                       />
                     </div>
                   </>
@@ -750,7 +810,7 @@ const AddPropertyModal = ({
                   <label className="form-label fw-bold">Facing</label>
                   <input
                     type="text"
-                    className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                    className="w-full p-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                     name="facing"
                     data-nested="propertyDetails"
                     value={formData?.propertyDetails?.facing || ""}
@@ -771,7 +831,7 @@ const AddPropertyModal = ({
                       <label className="form-label fw-bold">Built Year</label>
                       <input
                         type="number"
-                        className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                        className="w-full p-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                         name="builtYear"
                         data-nested="propertyDetails"
                         value={formData?.propertyDetails?.builtYear || ""}
@@ -794,9 +854,9 @@ const AddPropertyModal = ({
               <div>
                 <label className="form-label fw-bold">Address *</label>
                 <Addressform
+                  className="w-full !p-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                   value={formData?.address || modalData?.address}
                   onSelect={handleLocationSelect}
-                  className="w-full p-1 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                   required
                 />
               </div>
@@ -872,12 +932,15 @@ const AddPropertyModal = ({
                       formData?.propertyType === "Plot" ? "opacity-40" : ""
                     }`}
                   >
-                    <label className="form-label fw-bold">BHK</label>
+                    <label className="form-label fw-bold">
+                      BHK
+                      {isFieldRequired("bhk") ? "*" : "(Optional)"}
+                    </label>
                     <select
                       className="w-full p-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                       name="bhk"
                       value={formData?.bhk || ""}
-                      required
+                      required={isFieldRequired("bhk")}
                       onChange={handleChange}
                       disabled={formData?.propertyType === "Plot"}
                     >

@@ -81,6 +81,7 @@ const Addressform = ({ value, onSelect ,className}) => {
         value={searchTerm}
         onChange={handleSearch}
         placeholder="Search location or address"
+        required
         // className="w-full p-4 border border-gray-300 rounded-xl outline-none"
          className={`w-full p-4 border border-gray-300 rounded-xl outline-none ${className || ""}`}
       />

@@ -204,8 +204,8 @@ export default function CreatePasswordModal({ show, onClose, setUpdate }) {
               disabled={loading}
               className={`px-6 py-2 rounded-lg font-semibold transition ${
                 loading
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-blue-600 hover:bg-blue-700 text-white"
+                  ? "bg-[#004f8a] cursor-not-allowed"
+                  : "bg-[#004f8a] hover:bg-[#004f8a] text-white"
               }`}
             >
               {loading ? (

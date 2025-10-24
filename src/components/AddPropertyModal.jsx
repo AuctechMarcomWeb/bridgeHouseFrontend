@@ -1177,11 +1177,10 @@ const AddPropertyModal = ({
             <button
               type="submit"
               disabled={loading}
-              className={`px-4 py-2 rounded text-white transition-all ${
-                loading
-                  ? "bg-blue-300 cursor-not-allowed"
-                  : "bg-blue-600 hover:bg-blue-700"
-              }`}
+              className={`px-4 py-2 rounded text-white transition-all ${loading
+                ? "bg-[#004f8a] cursor-not-allowed"
+                : "bg-[#004f8a] hover:bg-[#004f8a]"
+                }`}
             >
               {loading
                 ? "Saving..."

@@ -18,7 +18,7 @@ const EnquiryEditModal = ({ openModal, modalData, setModal }) => {
   const { user } = useContext(ProfileContext);
 
   const [formData, setFormData] = useState({
-    message: "",
+    notes: "",
     status: STATUS_ENUM.NEW,
   });
 
@@ -26,7 +26,7 @@ const EnquiryEditModal = ({ openModal, modalData, setModal }) => {
   useEffect(() => {
     if (modalData) {
       setFormData({
-        message: modalData?.message || "",
+        notes: modalData?.notes || "",
         status: modalData?.status || STATUS_ENUM.NEW,
       });
     }
@@ -49,19 +49,19 @@ const EnquiryEditModal = ({ openModal, modalData, setModal }) => {
       const res = await putRequest({
         url:`enquiry/${modalData._id}`,
         cred: {
-          message: formData.message,
+          notes: formData.notes,
           status: formData.status,
         },
       });
-      toast.success(res?.data?.message || "Updated successfully!");
+      toast.success(res?.data?.notes || "Updated successfully!");
       setModal(false);
       setFormData({
-        message: "",
+        notes: "",
         status: STATUS_ENUM.NEW,
       });
     } catch (err) {
       console.error(err);
-      toast.error(err?.response?.data?.message || "Something went wrong!");
+      toast.error(err?.response?.data?.notes || "Something went wrong!");
     }
   };
 
@@ -88,11 +88,11 @@ const EnquiryEditModal = ({ openModal, modalData, setModal }) => {
         </Select>
 
         <textarea
-          name="message"
+          name="notes"
           rows="4"
-          value={formData.message}
+          value={formData.notes}
           onChange={handleChange}
-          placeholder="Your message"
+          placeholder="Your notes"
           className="w-full mt-3 text-sm p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
           required
         />

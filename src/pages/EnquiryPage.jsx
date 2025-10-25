@@ -74,6 +74,14 @@ const EnquiryPage = () => {
       render: (_, item) => <>{item?.status}</>,
       responsive: ["lg"],
     },
+    
+    {
+      title: "Notes",
+      dataIndex: "notes",
+      key: "notes",
+      render: (_, item) => <>{item?.notes}</>,
+      responsive: ["lg"],
+    },
     {
       title: "Action",
       key: "action",
@@ -113,7 +121,8 @@ const EnquiryPage = () => {
             Property Enquiries
           </h1>
           <p className="md:text-xl text-base text-blue-100 mb-8 max-w-3xl mx-auto">
-            Manage and track all your property enquiries in a comprehensive table view
+            Manage and track all your property enquiries in a comprehensive
+            table view
           </p>
         </div>
       </div>

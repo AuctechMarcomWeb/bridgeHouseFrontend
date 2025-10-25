@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { getRequest } from "../Helpers";
 import { ProfileContext } from "../context/ProfileContext";
-import { Input, Select } from "antd";
+import { Input, Select, Pagination } from "antd";
 
 const { Search } = Input;
 const { Option } = Select;
@@ -22,18 +22,21 @@ const PaymentHistory = () => {
   const [totalPayments, setTotalPayments] = useState(0);
   const [page, setPage] = useState(1);
   const limit = 10;
+  const [loading, setLoading] = useState(false);
 
   const { user } = useContext(ProfileContext);
 
   const fetchPayments = () => {
     if (!user?._id) return;
+    setLoading(true);
     getRequest(`payment/getList?userId=${user._id}&page=${page}&limit=${limit}`)
       .then((res) => {
         const list = res?.data?.data?.orders || [];
         setPayments(list);
         setTotalPayments(res?.data?.data?.totalOrders || 0);
       })
-      .catch((err) => console.log("error", err));
+      .catch((err) => console.log("error", err))
+      .finally(() => setLoading(false));
   };
 
   useEffect(() => {
@@ -47,7 +50,9 @@ const PaymentHistory = () => {
     if (searchTerm) {
       list = list.filter(
         (p) =>
-          p.razorpayPaymentId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          p.razorpayPaymentId
+            ?.toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
           p.planName?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
@@ -68,7 +73,10 @@ const PaymentHistory = () => {
     });
 
   const formatAmount = (amount) =>
-    new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(amount);
+    new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+    }).format(amount);
 
   const totalPages = Math.ceil(totalPayments / limit);
   const handlePrev = () => page > 1 && setPage(page - 1);
@@ -88,29 +96,7 @@ const PaymentHistory = () => {
             Manage and view your subscription payments
           </p>
 
-          {/* Summary Cards */}
-          {/* <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-6">
-            <div className="bg-white rounded-xl p-5 flex items-center gap-4 shadow-lg hover:scale-105 transform transition-all">
-              <CreditCard className="h-10 w-10 text-blue-600" />
-              <div>
-                <p className="text-sm text-gray-500">Total Spent</p>
-                <p className="text-xl md:text-2xl font-bold text-gray-900">
-                  {formatAmount(totalSpent)}
-                </p>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-xl p-5 flex items-center gap-4 shadow-lg hover:scale-105 transform transition-all">
-              <CheckCircle className="h-10 w-10 text-green-600" />
-              <div>
-                <p className="text-sm text-gray-500">Successful Payments</p>
-                <p className="text-xl md:text-2xl font-bold text-gray-900">
-                  {payments.filter((p) => p.status === "completed").length}
-                </p>
-              </div>
-            </div>
-          </div> */}
-            <div className="absolute top-10 left-10 w-20 h-20 bg-white opacity-10 rounded-full animate-ping"></div>
+          <div className="absolute top-10 left-10 w-20 h-20 bg-white opacity-10 rounded-full animate-ping"></div>
           <div className="absolute bottom-10 right-20 w-32 h-32 bg-indigo-400 opacity-15 rounded-lg rotate-45 animate-bounce"></div>
           <div className="absolute top-1/2 right-10 w-16 h-16 bg-white opacity-10 rounded-full animate-ping"></div>
         </div>
@@ -120,36 +106,35 @@ const PaymentHistory = () => {
       <div className="max-w-7xl mx-auto p-6 mt-8 bg-white rounded-xl shadow-lg">
         {/* Filters */}
 
-<div className="flex flex-col sm:flex-row gap-6 mb-6">
-  {/* Search Input */}
-  <div className="flex flex-col flex-1">
-    <label className="font-semibold text-gray-700 mb-1">Search</label>
-    <Input
-      placeholder="Search payments..."
-      value={searchTerm}
-      onChange={(e) => setSearchTerm(e.target.value)}
-      allowClear
-      className="custom-input"
-    />
-  </div>
+        <div className="flex flex-col sm:flex-row gap-6 mb-6">
+          {/* Search Input */}
+          <div className="flex flex-col flex-1">
+            <label className="font-semibold text-gray-700 mb-1">Search</label>
+            <Input
+              placeholder="Search payments..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              allowClear
+              className="custom-input"
+            />
+          </div>
 
-  {/* Status Filter */}
-  <div className="flex flex-col">
-    <label className="font-semibold text-gray-700 mb-1">Status</label>
-    <Select
-      value={statusFilter}
-      onChange={(val) => setStatusFilter(val)}
-      style={{ width: 200 }}
-      className="custom-input"
-    >
-      <Option value="all">All Status</Option>
-      <Option value="paid">Completed</Option>
-      <Option value="pending">Pending</Option>
-      <Option value="failed">Failed</Option>
-    </Select>
-  </div>
-</div>
-
+          {/* Status Filter */}
+          <div className="flex flex-col">
+            <label className="font-semibold text-gray-700 mb-1">Status</label>
+            <Select
+              value={statusFilter}
+              onChange={(val) => setStatusFilter(val)}
+              style={{ width: 200 }}
+              className="custom-input"
+            >
+              <Option value="all">All Status</Option>
+              <Option value="paid">Completed</Option>
+              <Option value="pending">Pending</Option>
+              <Option value="failed">Failed</Option>
+            </Select>
+          </div>
+        </div>
 
         {/* Payment Table */}
         <div className="overflow-x-auto">
@@ -193,26 +178,18 @@ const PaymentHistory = () => {
           )}
         </div>
 
-        {/* Pagination */}
-        <div className="flex justify-between items-center mt-6 text-sm text-gray-500">
-          <button
-            disabled={page === 1}
-            onClick={handlePrev}
-            className="hover:text-gray-700"
-          >
-            Previous
-          </button>
-          <span>
-            Page {page} of {totalPages}
-          </span>
-          <button
-            disabled={page === totalPages}
-            onClick={handleNext}
-            className="hover:text-gray-700"
-          >
-            Next
-          </button>
-        </div>
+        {!loading && filteredPayments.length > 0 && (
+          <div className="flex justify-end mt-8">
+            <Pagination
+              current={page}
+              pageSize={limit}
+              total={totalPayments} // totalPayments from API
+              onChange={(newPage) => setPage(newPage)}
+              showSizeChanger={false}
+              showLessItems
+            />
+          </div>
+        )}
       </div>
     </div>
   );

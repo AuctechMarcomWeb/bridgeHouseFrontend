@@ -95,6 +95,7 @@ const EnquiryViewModal = ({openModal,modalData,setModal}) => {
           value={formData?.message}
           onChange={handleChange}
           placeholder="Your Message"
+          
           className="w-full text-sm p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
           required
         />

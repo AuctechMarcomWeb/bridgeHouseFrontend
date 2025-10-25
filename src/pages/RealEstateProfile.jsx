@@ -2,6 +2,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { useContext, useEffect, useState } from "react";
 import { Modal, Button } from "antd";
+import { Pagination } from "antd";
 
 import {
   User,
@@ -58,6 +59,8 @@ export default function RealEstateProfile() {
   const [showPassword, setShowPassword] = useState(false);
   const [update, setUpdate] = useState(false);
   const [upgradeModal, setUpgradeModal] = useState(false);
+  const [page, setPage] = useState(1);
+  const limit = 3; // har page me 3 items
 
   //Redirect if not logged in
   useEffect(() => {
@@ -138,14 +141,15 @@ export default function RealEstateProfile() {
 
             setUserProfile((prev) => ({
               ...prev,
-              consumeListing: prev.consumeListing > 0 ? prev.consumeListing - 1 : 0,
+              consumeListing:
+                prev.consumeListing > 0 ? prev.consumeListing - 1 : 0,
             }));
 
             setUser((prev) => ({
               ...prev,
-              consumeListing: prev.consumeListing > 0 ? prev.consumeListing - 1 : 0,
+              consumeListing:
+                prev.consumeListing > 0 ? prev.consumeListing - 1 : 0,
             }));
-
           })
           .catch((err) => {
             console.error("Delete error:", err);
@@ -166,6 +170,10 @@ export default function RealEstateProfile() {
       setIsModalOpen(true);
     }
   };
+  const paginatedProperties = properties.slice(
+    (page - 1) * limit,
+    page * limit
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
@@ -235,9 +243,6 @@ export default function RealEstateProfile() {
                   <div className="w-full">
                     <div className="text-center sm:text-left text-white">
                       <h4 className=" mt-8 text-lg font-bold flex items-center gap-2">
-
-
-
                         {user?.consumeListing >= user?.PropertyListing
                           ? "Limit Reached"
                           : "Your Plan Usage"}
@@ -271,19 +276,17 @@ export default function RealEstateProfile() {
                           <p className="text-xs text-white/80">Remaining</p>
                           <p className="text-xl font-bold text-white">
                             {Math.max(
-                              (user?.PropertyListing || 0) - (user?.consumeListing || 0),
+                              (user?.PropertyListing || 0) -
+                                (user?.consumeListing || 0),
                               0
                             )}
                           </p>
-
                         </div>
                       </div>
                     </div>
                   </div>
                 )}
               </div>
-
-
 
               <div className="flex flex-col gap-4">
                 <button
@@ -303,13 +306,13 @@ export default function RealEstateProfile() {
                 </button>
 
                 {user?.accountType !== "Buyer" && (
-                    <button
-                      onClick={() => setUpgradeModal(true)}
-                      className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:scale-105 transition-all duration-300"
-                    >
-                      Upgrade Plan
-                    </button>
-                  )}
+                  <button
+                    onClick={() => setUpgradeModal(true)}
+                    className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:scale-105 transition-all duration-300"
+                  >
+                    Upgrade Plan
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -359,7 +362,7 @@ export default function RealEstateProfile() {
               </div>
             ) : (
               <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
-                {properties.map((property) => (
+                {paginatedProperties.map((property) => (
                   <div
                     key={property?.id}
                     onClick={() => {
@@ -371,7 +374,7 @@ export default function RealEstateProfile() {
                     <div className="relative overflow-hidden">
                       <div className="relative h-56 bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center overflow-hidden group rounded-xl">
                         {Array.isArray(property?.gallery) &&
-                          property?.gallery?.length > 0 ? (
+                        property?.gallery?.length > 0 ? (
                           <>
                             <img
                               src={property?.gallery[0]}
@@ -411,14 +414,15 @@ export default function RealEstateProfile() {
                       {/* Approval Status Badge – RIGHT TOP */}
                       {property?.approvalStatus && (
                         <div
-                          className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs backdrop-blur-sm shadow-lg text-white ${property.approvalStatus === "Published"
-                            ? "bg-green-500/90"
-                            : property.approvalStatus === "Pending"
+                          className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs backdrop-blur-sm shadow-lg text-white ${
+                            property.approvalStatus === "Published"
+                              ? "bg-green-500/90"
+                              : property.approvalStatus === "Pending"
                               ? "bg-amber-500/90"
                               : property.approvalStatus === "Rejected"
-                                ? "bg-red-500/90"
-                                : "bg-blue-500/90"
-                            }`}
+                              ? "bg-red-500/90"
+                              : "bg-blue-500/90"
+                          }`}
                         >
                           {property.approvalStatus}
                         </div>
@@ -431,10 +435,11 @@ export default function RealEstateProfile() {
                           {property?.name}
                         </h3>
                         <span
-                          className={`text-xs font-semibold px-3 py-1 rounded-full ${property?.status === "For Sale"
-                            ? "bg-green-100 text-green-800"
-                            : "bg-blue-100 text-blue-800"
-                            }`}
+                          className={`text-xs font-semibold px-3 py-1 rounded-full ${
+                            property?.status === "For Sale"
+                              ? "bg-green-100 text-green-800"
+                              : "bg-blue-100 text-blue-800"
+                          }`}
                         >
                           {property?.status}
                         </span>
@@ -558,8 +563,6 @@ export default function RealEstateProfile() {
                           onClick={(e) => {
                             e.stopPropagation();
                             handleDelete(property._id);
-
-
                           }}
                           className="flex-1 py-2.5 text-sm font-medium bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-all duration-200"
                         >
@@ -637,7 +640,7 @@ export default function RealEstateProfile() {
                     <div className="relative overflow-hidden">
                       <div className="relative h-56 bg-gradient-to-br from-green-100 to-blue-100 flex items-center justify-center overflow-hidden group rounded-xl">
                         {Array.isArray(property?.gallery) &&
-                          property?.gallery?.length > 0 ? (
+                        property?.gallery?.length > 0 ? (
                           <>
                             <img
                               src={property?.gallery[0]}
@@ -669,10 +672,11 @@ export default function RealEstateProfile() {
                           {property?.name}
                         </h3>
                         <span
-                          className={`text-xs font-semibold px-3 py-1 rounded-full ${property?.status === "For Sale"
-                            ? "bg-green-100 text-green-800"
-                            : "bg-blue-100 text-blue-800"
-                            }`}
+                          className={`text-xs font-semibold px-3 py-1 rounded-full ${
+                            property?.status === "For Sale"
+                              ? "bg-green-100 text-green-800"
+                              : "bg-blue-100 text-blue-800"
+                          }`}
                         >
                           {property?.status}
                         </span>
@@ -754,7 +758,7 @@ export default function RealEstateProfile() {
             )}
           </div>
         )}
-        
+
         {/* Add Property Modal*/}
         {user?.accountType !== "Buyer" && isModalOpen && (
           <AddPropertyModal
@@ -792,6 +796,19 @@ export default function RealEstateProfile() {
           onClose={() => setIsDetailsOpen(false)}
           property={selectedProperty}
         />
+        {/* Pagination */}
+        {properties.length > limit && (
+          <div className="flex justify-end mt-8">
+            <Pagination
+              current={page}
+              pageSize={limit}
+              total={properties.length}
+              onChange={(newPage) => setPage(newPage)}
+              showSizeChanger={false}
+              showLessItems
+            />
+          </div>
+        )}
       </div>
     </div>
   );

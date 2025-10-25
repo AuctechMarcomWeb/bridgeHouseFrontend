@@ -207,12 +207,13 @@ export default function RentalListingApp() {
                         <div className="flex items-center justify-between mb-2">
                           <h3 className="font-semibold text-gray-800 group-hover:text-blue-600 truncate">
                             {listing?.name}
+                            <br/> <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
+                          {listing?.propertyType}
+                        </span>
                           </h3>
-                          <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
-                            {listing?.propertyType}
-                          </span>
+                         
                         </div>
-
+                        
                         <div className="text-gray-600 text-sm mb-2 flex items-start">
                           <MapPin
                             className="w-4 h-4 mr-1 mt-0.5 text-gray-400 flex-shrink-0"

@@ -47,8 +47,8 @@ const EnquiryForm = ({ propertyId }) => {
         <div className="flex gap-2 mb-6">
           <button
             type="button"
-            className="flex-1 bg-gradient-to-r from-teal-500 to-cyan-600 text-white py-3 px-4 rounded-xl font-medium hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2"
-          >
+       className="flex-1 bg-[#004f8a]  bg-clip-text text-transparent py-3 px-4 rounded-xl font-bold  flex items-center justify-center gap-2"
+>
             {/* <Phone className="w-4 h-4" /> */}
             Get In Touch With Us
           </button>
@@ -96,7 +96,7 @@ const EnquiryForm = ({ propertyId }) => {
           />
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-gray-800 to-black text-white py-4 rounded-xl font-bold hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5"
+            className="w-full bg-[#004f8a] text-white py-4 rounded-xl font-bold hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5"
           >
             Send Message
           </button>

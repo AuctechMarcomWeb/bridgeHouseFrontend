@@ -25,6 +25,7 @@ const AddPropertyModal = ({
   const [services, setServices] = useState([]);
   const [facilites, setFacilites] = useState([]);
   const [documents, setDocuments] = useState([]);
+  const [files, setFiles] = useState([]);
   // const [errors,setErrors]=useState("")
 
   const [formData, setFormData] = useState(
@@ -145,7 +146,6 @@ const AddPropertyModal = ({
   const galleryInputRefs = React.useRef([]);
   const documentInputRefs = React.useRef([]);
 
-
   React.useEffect(() => {
     if (user?._id) {
       setAddBy(user._id);
@@ -240,26 +240,32 @@ const AddPropertyModal = ({
     }
   };
 
-  const handleChangeImage = (e) => {
-    const files = Array.from(e.target.files);
+const handleChangeImage = (e) => {
+  const files = Array.from(e.target.files);
+  if (files.length === 0) return;
 
-    files.forEach((file) => {
-      fileUpload({
-        url: `upload/uploadImage`,
-        cred: { file },
-      })
-        .then((res) => {
+  files.forEach((file) => {
+    fileUpload({ url: "upload/uploadImage", cred: { file } })
+      .then((res) => {
+        const uploadedUrl = res?.data?.data?.imageUrl;
+        if (uploadedUrl) {
           setFormData((prev) => ({
             ...prev,
-            gallery: [...(prev.gallery || []), res.data?.data?.imageUrl], //  Push into gallery array
+            gallery: [...(prev.gallery || []), uploadedUrl],
           }));
-          console.log("res data pic ", res?.data);
-        })
-        .catch((error) => {
-          console.error("Image upload failed:", error);
-        });
-    });
-  };
+        }
+      })
+      .catch((error) => {
+        console.error("Image upload failed:", error);
+      });
+  });
+
+  // Reset file input so user can re-upload same files
+  if (galleryInputRefs.current[0]) {
+    galleryInputRefs.current[0].value = "";
+  }
+};
+
 
   // Helper function to generate random code
   const generatePropertyCode = () => {
@@ -393,8 +399,14 @@ const AddPropertyModal = ({
         newErrors.bathrooms = "Bathrooms required";
       if (isFieldRequired("floors") && !details.floors)
         newErrors.floors = "Floors required";
-      if (isFieldRequired("builtYear") && !details.builtYear)
-        newErrors.builtYear = "Built year required";
+      if (isFieldRequired("builtYear")) {
+        if (!details.builtYear) {
+          newErrors.builtYear = "Built year required";
+        } else if (details.builtYear < 1900) {
+          newErrors.builtYear = "Built year cannot be less than 1900";
+        }
+      }
+
       if (isFieldRequired("bhk") && !formData.bhk)
         newErrors.bhk = "BHK is required";
       // if (isFieldRequired("facilities") && !formData.facilities?.length)
@@ -482,19 +494,18 @@ const AddPropertyModal = ({
       });
   };
 
-const removeDocumentImage = (index) => {
-  const updatedDocuments = [...formData.documents];
-  updatedDocuments[index].image = "";
-  setFormData((prev) => ({
-    ...prev,
-    documents: updatedDocuments,
-  }));
+  const removeDocumentImage = (index) => {
+    const updatedDocuments = [...formData.documents];
+    updatedDocuments[index].image = "";
+    setFormData((prev) => ({
+      ...prev,
+      documents: updatedDocuments,
+    }));
 
-  if (documentInputRefs.current[index]) {
-    documentInputRefs.current[index].value = ""; // reset input field
-  }
-};
-
+    if (documentInputRefs.current[index]) {
+      documentInputRefs.current[index].value = ""; // reset input field
+    }
+  };
 
   const addDocument = () => {
     setFormData((prev) => ({
@@ -745,7 +756,7 @@ const removeDocumentImage = (index) => {
 
                 {/* Area */}
                 <div>
-                  <label className="form-label fw-bold">Area</label>
+                  <label className="form-label fw-bold">Area(sqft)*</label>
                   <input
                     type="number"
                     className="w-full p-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
@@ -875,6 +886,7 @@ const removeDocumentImage = (index) => {
                         onChange={handleChange}
                         placeholder="Enter year built"
                         required
+                        min={1900}
                       />
                     </div>
                   </>
@@ -978,44 +990,46 @@ const removeDocumentImage = (index) => {
               {/* Property Images Upload */}
               <div>
                 <label className="form-label fw-bold">Property Images *</label>
+
+                {/* Native file input */}
                 <input
                   type="file"
-                  className="w-full p-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-                  name="propertyImages"
                   accept="image/*"
-                  required={!modalData}
                   multiple
-                  onChange={handleChangeImage}
+                  className="w-full p-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                   ref={(el) => (galleryInputRefs.current[0] = el)}
+                  onChange={handleChangeImage}
+                  required={!(formData?.gallery?.length > 0)}
                 />
-              </div>
 
-              {/* Gallery Preview */}
-              {formData?.gallery?.length > 0 && (
-                <div>
+                {/* Gallery Preview */}
+                {formData?.gallery?.length > 0 && (
                   <div className="flex gap-2 flex-wrap mt-2">
                     {formData.gallery.map((item, index) => (
                       <div key={index} className="relative inline-block">
-                        {/* Image */}
                         <img
                           src={item}
                           alt={`gallery-${index}`}
                           className="w-16 h-16 object-cover rounded"
                         />
-
-                        {/* Remove Button */}
                         <button
                           type="button"
                           onClick={() => {
-                            setFormData((prev) => ({
-                              ...prev,
-                              gallery: prev.gallery.filter(
+                            setFormData((prev) => {
+                              const newGallery = prev.gallery.filter(
                                 (_, i) => i !== index
-                              ),
-                            }));
-                            if (galleryInputRefs.current[0]) {
-                              galleryInputRefs.current[0].value = ""; // reset input
-                            }
+                              );
+
+                              // Reset input only if last image removed
+                              if (
+                                newGallery.length === 0 &&
+                                galleryInputRefs.current
+                              ) {
+                                galleryInputRefs.current.value = "";
+                              }
+
+                              return { ...prev, gallery: newGallery };
+                            });
                           }}
                           className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center cursor-pointer"
                         >
@@ -1024,8 +1038,8 @@ const removeDocumentImage = (index) => {
                       </div>
                     ))}
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
 
             <hr className="m-0 p-0 my-3" />
@@ -1111,6 +1125,7 @@ const removeDocumentImage = (index) => {
                       name={`documentName_${index}`}
                       value={doc?.name}
                       onChange={(e) => handleDocumentChange(e, index)}
+                      required
                       className="w-full p-2 border border-gray-300 rounded-l focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                     >
                       <option value="">Select Document</option>
@@ -1140,7 +1155,8 @@ const removeDocumentImage = (index) => {
                       accept="image/*"
                       className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none transition-all"
                       onChange={(e) => handleDocumentImageChange(e, index)}
-                        ref={(el) => (documentInputRefs.current[index] = el)}
+                      required
+                      ref={(el) => (documentInputRefs.current[index] = el)}
                     />
                   </div>
 

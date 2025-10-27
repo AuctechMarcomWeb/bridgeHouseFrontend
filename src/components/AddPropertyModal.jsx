@@ -796,6 +796,7 @@ const handleChangeImage = (e) => {
                         }}
                         placeholder="Enter number of bedrooms"
                         required={isFieldRequired("bedrooms")}
+                        min={1}
                       />
                     </div>
 
@@ -820,6 +821,7 @@ const handleChangeImage = (e) => {
                         }}
                         placeholder="Enter number of bathrooms"
                         required
+                        min={1}
                       />
                     </div>
 
@@ -847,6 +849,7 @@ const handleChangeImage = (e) => {
                         }}
                         placeholder="Enter number of floors"
                         required={isFieldRequired("floors")}
+                        min={1}
                       />
                     </div>
                   </>

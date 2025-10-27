@@ -32,32 +32,32 @@ const AddPropertyModal = ({
     modalData
       ? { ...modalData }
       : {
-          address: "",
-          addedBy: user?._id,
-          name: "",
-          propertyType: "",
-          documents: [],
-          description: "",
-          propertyDetails: {
-            area: "",
-            bedrooms: "",
-            bathrooms: "",
-            floors: "",
-            facing: "",
-            builtYear: "",
-          },
-          status: "Available",
-          isVerified: false,
-          isAdopted: false,
-          actualPrice: "",
-          sellingPrice: "",
-          facilities: [],
-          services: [],
-          nearby: [],
-          gallery: [],
-          propertyCode: "",
-          bhk: "",
-        }
+        address: "",
+        addedBy: user?._id,
+        name: "",
+        propertyType: "",
+        documents: [],
+        description: "",
+        propertyDetails: {
+          area: "",
+          bedrooms: "",
+          bathrooms: "",
+          floors: "",
+          facing: "",
+          builtYear: "",
+        },
+        status: "Available",
+        isVerified: false,
+        isAdopted: false,
+        actualPrice: "",
+        sellingPrice: "",
+        facilities: [],
+        services: [],
+        nearby: [],
+        gallery: [],
+        propertyCode: "",
+        bhk: "",
+      }
   );
 
   console.log("formData===>", formData);
@@ -240,31 +240,31 @@ const AddPropertyModal = ({
     }
   };
 
-const handleChangeImage = (e) => {
-  const files = Array.from(e.target.files);
-  if (files.length === 0) return;
+  const handleChangeImage = (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
 
-  files.forEach((file) => {
-    fileUpload({ url: "upload/uploadImage", cred: { file } })
-      .then((res) => {
-        const uploadedUrl = res?.data?.data?.imageUrl;
-        if (uploadedUrl) {
-          setFormData((prev) => ({
-            ...prev,
-            gallery: [...(prev.gallery || []), uploadedUrl],
-          }));
-        }
-      })
-      .catch((error) => {
-        console.error("Image upload failed:", error);
-      });
-  });
+    files.forEach((file) => {
+      fileUpload({ url: "upload/uploadImage", cred: { file } })
+        .then((res) => {
+          const uploadedUrl = res?.data?.data?.imageUrl;
+          if (uploadedUrl) {
+            setFormData((prev) => ({
+              ...prev,
+              gallery: [...(prev.gallery || []), uploadedUrl],
+            }));
+          }
+        })
+        .catch((error) => {
+          console.error("Image upload failed:", error);
+        });
+    });
 
-  // Reset file input so user can re-upload same files
-  if (galleryInputRefs.current[0]) {
-    galleryInputRefs.current[0].value = "";
-  }
-};
+    // Reset file input so user can re-upload same files
+    if (galleryInputRefs.current[0]) {
+      galleryInputRefs.current[0].value = "";
+    }
+  };
 
 
   // Helper function to generate random code
@@ -594,9 +594,8 @@ const handleChangeImage = (e) => {
                   <label className="form-label fw-bold">Property Code *</label>
                   <input
                     type="text"
-                    className={`w-full p-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all ${
-                      errors?.propertyCode ? "is-invalid" : ""
-                    }`}
+                    className={`w-full p-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all ${errors?.propertyCode ? "is-invalid" : ""
+                      }`}
                     name="propertyCode"
                     value={formData?.propertyCode || ""}
                     required
@@ -630,9 +629,8 @@ const handleChangeImage = (e) => {
                   <label className="form-label fw-bold">Property Name *</label>
                   <input
                     type="text"
-                    className={`w-full p-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all ${
-                      errors?.name ? "is-invalid" : ""
-                    }`}
+                    className={`w-full p-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all ${errors?.name ? "is-invalid" : ""
+                      }`}
                     name="name"
                     required
                     value={formData?.name || ""}
@@ -731,6 +729,7 @@ const handleChangeImage = (e) => {
                         onChange={handleChange}
                         placeholder="Enter Length"
                         required={isFieldRequired("length")}
+                        min={1}
                       />
                     </div>
 
@@ -749,6 +748,7 @@ const handleChangeImage = (e) => {
                         onChange={handleChange}
                         placeholder="Enter Width"
                         required={isFieldRequired("width")}
+                        min={1}
                       />
                     </div>
                   </div>
@@ -756,28 +756,28 @@ const handleChangeImage = (e) => {
 
                 {/* Area */}
                 <div>
-                  <label className="form-label fw-bold">Area(sqft) *</label>
+                  <label className="form-label fw-bold">Area (sqft) *</label>
                   <input
                     type="text"
-                    className="w-full p-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                    className="w-full p-2 border border-gray-300 bg-gray-100 rounded-xl outline-none focus:ring-0 focus:border-gray-300 transition-all text-gray-700"
                     name="area"
                     data-nested="propertyDetails"
                     value={formData?.propertyDetails?.area || ""}
                     onChange={handleChange}
                     placeholder="Enter area (e.g., 1200 sqft)"
-                    required
+
                     readOnly
                   />
                 </div>
+
 
                 {formData.propertyType !== "Plot" && (
                   <>
                     {/* Bedrooms */}
 
                     <div
-                      className={` ${
-                        formData?.propertyType === "Plot" ? "opacity-40" : ""
-                      }`}
+                      className={` ${formData?.propertyType === "Plot" ? "opacity-40" : ""
+                        }`}
                     >
                       <label className="form-label fw-bold">
                         Bedrooms{" "}
@@ -803,9 +803,8 @@ const handleChangeImage = (e) => {
 
                     {/* Bathrooms */}
                     <div
-                      className={`  ${
-                        formData?.propertyType === "Plot" ? "opacity-40" : ""
-                      }`}
+                      className={`  ${formData?.propertyType === "Plot" ? "opacity-40" : ""
+                        }`}
                     >
                       <label className="form-label fw-bold">Bathrooms *</label>
                       <input
@@ -828,9 +827,8 @@ const handleChangeImage = (e) => {
 
                     {/* Floors */}
                     <div
-                      className={` ${
-                        formData?.propertyType === "Plot" ? "opacity-40" : ""
-                      }`}
+                      className={` ${formData?.propertyType === "Plot" ? "opacity-40" : ""
+                        }`}
                     >
                       <label className="form-label fw-bold">
                         Floors
@@ -875,9 +873,8 @@ const handleChangeImage = (e) => {
                   <>
                     {/* Built Year */}
                     <div
-                      className={`space-y-3 ${
-                        formData?.propertyType === "Plot" ? "opacity-40" : ""
-                      }`}
+                      className={`space-y-3 ${formData?.propertyType === "Plot" ? "opacity-40" : ""
+                        }`}
                     >
                       <label className="form-label fw-bold">Built Year *</label>
                       <input
@@ -888,7 +885,7 @@ const handleChangeImage = (e) => {
                         value={formData?.propertyDetails?.builtYear || ""}
                         disabled={formData?.propertyType === "Plot"}
                         onChange={handleChange}
-                        placeholder="Enter year built"
+                        placeholder="Enter year built  above (1900)"
                         required
                         min={1900}
                       />
@@ -907,9 +904,8 @@ const handleChangeImage = (e) => {
                 <>
                   {/* Facilities */}
                   <div
-                    className={`${
-                      formData?.propertyType === "Plot" ? "opacity-40" : ""
-                    }`}
+                    className={`${formData?.propertyType === "Plot" ? "opacity-40" : ""
+                      }`}
                   >
                     <label className="form-label fw-bold">Facilities </label>
                     <Select
@@ -935,9 +931,8 @@ const handleChangeImage = (e) => {
 
                   {/* Services */}
                   <div
-                    className={`${
-                      formData?.propertyType === "Plot" ? "opacity-40" : ""
-                    }`}
+                    className={`${formData?.propertyType === "Plot" ? "opacity-40" : ""
+                      }`}
                   >
                     <label className="form-label fw-bold">Services </label>
                     <Select
@@ -969,9 +964,8 @@ const handleChangeImage = (e) => {
                 <>
                   {/*BHK*/}
                   <div
-                    className={`space-y-3 ${
-                      formData?.propertyType === "Plot" ? "opacity-40" : ""
-                    }`}
+                    className={`space-y-3 ${formData?.propertyType === "Plot" ? "opacity-40" : ""
+                      }`}
                   >
                     <label className="form-label fw-bold">
                       BHK
@@ -1227,17 +1221,16 @@ const handleChangeImage = (e) => {
             <button
               type="submit"
               disabled={loading}
-              className={`px-4 py-2 rounded text-white transition-all ${
-                loading
+              className={`px-4 py-2 rounded text-white transition-all ${loading
                   ? "bg-[#004f8a] cursor-not-allowed"
                   : "bg-[#004f8a] hover:bg-[#004f8a]"
-              }`}
+                }`}
             >
               {loading
                 ? "Saving..."
                 : modalData
-                ? "Update Property"
-                : "Create Property"}
+                  ? "Update Property"
+                  : "Create Property"}
             </button>
           </div>
         </form>

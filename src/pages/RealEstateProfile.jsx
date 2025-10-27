@@ -277,7 +277,7 @@ export default function RealEstateProfile() {
                           <p className="text-xl font-bold text-white">
                             {Math.max(
                               (user?.PropertyListing || 0) -
-                                (user?.consumeListing || 0),
+                              (user?.consumeListing || 0),
                               0
                             )}
                           </p>
@@ -374,7 +374,7 @@ export default function RealEstateProfile() {
                     <div className="relative overflow-hidden">
                       <div className="relative h-56 bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center overflow-hidden group rounded-xl">
                         {Array.isArray(property?.gallery) &&
-                        property?.gallery?.length > 0 ? (
+                          property?.gallery?.length > 0 ? (
                           <>
                             <img
                               src={property?.gallery[0]}
@@ -414,15 +414,14 @@ export default function RealEstateProfile() {
                       {/* Approval Status Badge – RIGHT TOP */}
                       {property?.approvalStatus && (
                         <div
-                          className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs backdrop-blur-sm shadow-lg text-white ${
-                            property.approvalStatus === "Published"
-                              ? "bg-green-500/90"
-                              : property.approvalStatus === "Pending"
+                          className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs backdrop-blur-sm shadow-lg text-white ${property.approvalStatus === "Published"
+                            ? "bg-green-500/90"
+                            : property.approvalStatus === "Pending"
                               ? "bg-amber-500/90"
                               : property.approvalStatus === "Rejected"
-                              ? "bg-red-500/90"
-                              : "bg-blue-500/90"
-                          }`}
+                                ? "bg-red-500/90"
+                                : "bg-blue-500/90"
+                            }`}
                         >
                           {property.approvalStatus}
                         </div>
@@ -435,11 +434,10 @@ export default function RealEstateProfile() {
                           {property?.name}
                         </h3>
                         <span
-                          className={`text-xs font-semibold px-3 py-1 rounded-full ${
-                            property?.status === "For Sale"
-                              ? "bg-green-100 text-green-800"
-                              : "bg-blue-100 text-blue-800"
-                          }`}
+                          className={`text-xs font-semibold px-3 py-1 rounded-full ${property?.status === "For Sale"
+                            ? "bg-green-100 text-green-800"
+                            : "bg-blue-100 text-blue-800"
+                            }`}
                         >
                           {property?.status}
                         </span>
@@ -456,39 +454,50 @@ export default function RealEstateProfile() {
                               {property?.propertyDetails?.area ?? "—"} sq ft
                             </span>
                           </div>
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <Bed className="w-4 h-4 text-blue-500" />
-                            <span className="font-medium">
-                              {property?.propertyDetails?.bedrooms ?? "—"}{" "}
-                              Bedrooms
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <Bath className="w-4 h-4 text-blue-500" />
-                            <span className="font-medium">
-                              {property?.propertyDetails?.bathrooms ?? "—"}{" "}
-                              Bathrooms
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <Layers className="w-4 h-4 text-blue-500" />
-                            <span className="font-medium">
-                              {property?.propertyDetails?.floors ?? "—"} Floors
-                            </span>
-                          </div>
+                          {property.propertyType !== "Plot" && (
+                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                              <Bed className="w-4 h-4 text-blue-500" />
+                              <span className="font-medium">
+                                {property?.propertyDetails?.bedrooms ?? "—"}{" "}
+                                Bedrooms
+                              </span>
+                            </div>
+                          )}
+                          {property.propertyType !== "Plot" && (
+
+                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                              <Bath className="w-4 h-4 text-blue-500" />
+                              <span className="font-medium">
+                                {property?.propertyDetails?.bathrooms ?? "—"}{" "}
+                                Bathrooms
+                              </span>
+
+                            </div>
+                          )}
+                          {property.propertyType !== "Plot" && (
+
+                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                              <Layers className="w-4 h-4 text-blue-500" />
+                              <span className="font-medium">
+                                {property?.propertyDetails?.floors ?? "—"} Floors
+                              </span>
+                            </div>
+                          )}
                           <div className="flex items-center gap-2 text-sm text-gray-600 capitalize">
                             <Compass className="w-4 h-4 text-blue-500" />
                             <span className="font-medium">
                               Facing {property?.propertyDetails?.facing ?? "—"}
                             </span>
                           </div>
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <Calendar className="w-4 h-4 text-blue-500" />
-                            <span className="font-medium">
-                              Built{" "}
-                              {property?.propertyDetails?.builtYear ?? "—"}
-                            </span>
-                          </div>
+                          {property.propertyType !== "Plot" && (
+                            < div className="flex items-center gap-2 text-sm text-gray-600">
+                              <Calendar className="w-4 h-4 text-blue-500" />
+                              <span className="font-medium">
+                                Built{" "}
+                                {property?.propertyDetails?.builtYear ?? "—"}
+                              </span>
+                            </div>
+                          )}
                           {/* Facilities */}
                           {(property.facilities || []).length > 0 && (
                             <div className="flex items-center gap-1 text-gray-700 mt-1 text-sm">
@@ -640,7 +649,7 @@ export default function RealEstateProfile() {
                     <div className="relative overflow-hidden">
                       <div className="relative h-56 bg-gradient-to-br from-green-100 to-blue-100 flex items-center justify-center overflow-hidden group rounded-xl">
                         {Array.isArray(property?.gallery) &&
-                        property?.gallery?.length > 0 ? (
+                          property?.gallery?.length > 0 ? (
                           <>
                             <img
                               src={property?.gallery[0]}
@@ -672,11 +681,10 @@ export default function RealEstateProfile() {
                           {property?.name}
                         </h3>
                         <span
-                          className={`text-xs font-semibold px-3 py-1 rounded-full ${
-                            property?.status === "For Sale"
-                              ? "bg-green-100 text-green-800"
-                              : "bg-blue-100 text-blue-800"
-                          }`}
+                          className={`text-xs font-semibold px-3 py-1 rounded-full ${property?.status === "For Sale"
+                            ? "bg-green-100 text-green-800"
+                            : "bg-blue-100 text-blue-800"
+                            }`}
                         >
                           {property?.status}
                         </span>
@@ -810,6 +818,6 @@ export default function RealEstateProfile() {
           </div>
         )}
       </div>
-    </div>
+    </div >
   );
 }

@@ -141,29 +141,37 @@ const PropertyDetailsModal = ({ open, onClose, property, width = 1000 }) => {
               <Square className="w-4 h-4 text-blue-500" />
               <strong>Area:</strong> {property.propertyDetails?.area ?? "—"}
             </p>
+             {property.propertyType !== "Plot" && (
             <p className="flex items-center gap-2">
               <Bed className="w-4 h-4 text-blue-500" />
               <strong>Bedrooms:</strong>{" "}
               {property.propertyDetails?.bedrooms ?? "—"}
             </p>
+             )}
+              {property.propertyType !== "Plot" && (
             <p className="flex items-center gap-2">
               <Bath className="w-4 h-4 text-blue-500" />
               <strong>Bathrooms:</strong>{" "}
               {property.propertyDetails?.bathrooms ?? "—"}
             </p>
+              )}
+               {property.propertyType !== "Plot" && (
             <p className="flex items-center gap-2">
               <Layers className="w-4 h-4 text-blue-500" />
               <strong>Floors:</strong> {property.propertyDetails?.floors ?? "—"}
             </p>
+               )}
             <p className="flex items-center gap-2">
               <Compass className="w-4 h-4 text-blue-500" />
               <strong>Facing:</strong> {property.propertyDetails?.facing ?? "—"}
             </p>
+             {property.propertyType !== "Plot" && (
             <p className="flex items-center gap-2">
               <Calendar className="w-4 h-4 text-blue-500" />
               <strong>Built Year:</strong>{" "}
               {property.propertyDetails?.builtYear ?? "—"}
             </p>
+             )}
             <p className="flex items-center gap-2">
               <IndianRupee className="w-4 h-4 text-blue-500" />
               <strong>Price:</strong> ₹{property.actualPrice ?? "—"}

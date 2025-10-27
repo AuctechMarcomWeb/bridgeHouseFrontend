@@ -720,7 +720,7 @@ const handleChangeImage = (e) => {
                     <div>
                       <label className="form-label fw-bold">
                         Length (ft)
-                        {isFieldRequired("length") ? "*" : "(Optional)"}
+                        {isFieldRequired("length") ? ` *` : "(Optional)"}
                       </label>
                       <input
                         type="number"
@@ -738,7 +738,7 @@ const handleChangeImage = (e) => {
                     <div>
                       <label className="form-label fw-bold">
                         Width (ft)
-                        {isFieldRequired("width") ? "*" : "(Optional)"}
+                        {isFieldRequired("width") ? ` *` : "(Optional)"}
                       </label>
                       <input
                         type="number"
@@ -756,7 +756,7 @@ const handleChangeImage = (e) => {
 
                 {/* Area */}
                 <div>
-                  <label className="form-label fw-bold">Area(sqft)*</label>
+                  <label className="form-label fw-bold">Area(sqft) *</label>
                   <input
                     type="number"
                     className="w-full p-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
@@ -1055,7 +1055,7 @@ const handleChangeImage = (e) => {
                 >
                   {/* Name */}
                   <div>
-                    <label className="form-label">Name</label>
+                    <label className="form-label">Name *</label>
                     <input
                       type="text"
                       name={`facilityName_${index}`}
@@ -1069,7 +1069,7 @@ const handleChangeImage = (e) => {
 
                   {/* Distance / Description */}
                   <div>
-                    <label className="form-label">Distance</label>
+                    <label className="form-label">Distance *</label>
                     <input
                       type="number"
                       name={`facilityDistance_${index}`}
@@ -1120,7 +1120,7 @@ const handleChangeImage = (e) => {
                 >
                   {/* Document Name */}
                   <div>
-                    <label className="form-label">Document Name</label>
+                    <label className="form-label">Document Name *</label>
                     <select
                       name={`documentName_${index}`}
                       value={doc?.name}
@@ -1135,7 +1135,7 @@ const handleChangeImage = (e) => {
 
                   {/* Document Number */}
                   <div>
-                    <label className="form-label">Document Number</label>
+                    <label className="form-label">Document Number *</label>
                     <input
                       type="text"
                       name={`documentNumber_${index}`}
@@ -1149,7 +1149,7 @@ const handleChangeImage = (e) => {
 
                   {/* Document Image Upload */}
                   <div>
-                    <label className="form-label">Document Image</label>
+                    <label className="form-label">Document Image *</label>
                     <input
                       type="file"
                       accept="image/*"

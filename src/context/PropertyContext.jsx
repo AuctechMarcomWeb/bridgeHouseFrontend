@@ -9,6 +9,9 @@ export const PropertyProvider = ({ children }) => {
   const [properties, setProperties] = useState([]);
   const [updateStatus, setUpdateStatus] = useState(false);
   const [propertyType, setPropertyType] = useState("");
+
+  console.log("propertyType",propertyType);
+  
   // 🔹 Search ka state
   const [search, setSearch] = useState("");
 

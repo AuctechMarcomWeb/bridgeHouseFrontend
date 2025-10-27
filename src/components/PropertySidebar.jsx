@@ -197,6 +197,7 @@ const PropertySidebar = () => {
         ))} */}
       </div>
 
+
       <div >
         <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
           <Home className="w-5 h-5 mr-2 text-blue-500" />
@@ -206,7 +207,8 @@ const PropertySidebar = () => {
           <PropertyCard key={property.id} property={property} />
         ))}
       </div>
-    </div>
+      
+</div>
   );
 };
 

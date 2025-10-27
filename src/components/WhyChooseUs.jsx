@@ -138,56 +138,61 @@ export default function WhyChooseUs() {
             Don't just take our word for it - hear from the families we've helped find their perfect home
           </p>
         </div>
-        <div className="relative grid md:grid-cols-3 gap-8 mb-16">
-          {loading && (
-            <div className="absolute inset-0 flex justify-center items-center bg-white/70 z-20">
-              <div className="flex flex-col items-center">
-                <div className="w-12 h-12 border-4 border-t-blue-500 border-b-blue-500 border-gray-200 rounded-full animate-spin"></div>
-                <p className="mt-4 text-gray-600 font-medium">Loading Testimonials...</p>
-              </div>
-            </div>
-          )}
+     {/* Testimonials */}  
+<div className="relative grid md:grid-cols-3 gap-8 mb-16">
+  {loading && (
+    <div className="absolute inset-0 flex justify-center items-center bg-white/70 z-20">
+      <div className="flex flex-col items-center">
+        <div className="w-12 h-12 border-4 border-t-blue-500 border-b-blue-500 border-gray-200 rounded-full animate-spin"></div>
+        <p className="mt-4 text-gray-600 font-medium">Loading Testimonials...</p>
+      </div>
+    </div>
+  )}
 
-          {testimonials.map((testimonial) => (
-            <div
-              key={testimonial._id}
-              className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl border border-gray-100 relative"
-            >
-              {/* Stars */}
-              <div className="flex mb-4">
-                {[...Array(testimonial.rating)].map((_, i) => (
-                  <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
-                ))}
-              </div>
-
-              {/* Content */}
-              <p className="text-gray-700 mb-4 italic">"{testimonial.discription}"</p>
-
-              {/* Author */}
-              {/* Author */}
-              <div className="flex items-center gap-3 border-t pt-4">
-                {testimonial.profileImage ? (
-                  <img
-                    src={testimonial.profileImage}
-                    alt={testimonial.title}
-                    className="w-12 h-12 rounded-full object-cover border border-gray-200"
-                  />
-                ) : (
-                  <div className="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center text-gray-500 border border-gray-200">
-                    <span>?</span> {/* Placeholder if no image */}
-                  </div>
-                )}
-                <div className="flex flex-col">
-                  <span className="font-semibold text-gray-900">{testimonial.title}</span>
-                  {testimonial.role && (
-                    <span className="text-sm text-gray-500">{testimonial.role}</span>
-                  )}
-                </div>
-              </div>
-
-            </div>
+  {testimonials
+    .filter((t) => t.isActive) // ✅ yahi important line hai
+    .map((testimonial) => (
+      <div
+        key={testimonial._id}
+        className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl border border-gray-100 relative"
+      >
+        {/* Stars */}
+        <div className="flex mb-4">
+          {[...Array(testimonial.rating)].map((_, i) => (
+            <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
           ))}
         </div>
+
+        {/* Content */}
+        <p className="text-gray-700 mb-4 italic">
+          "{testimonial.discription}"
+        </p>
+
+        {/* Author */}
+        <div className="flex items-center gap-3 border-t pt-4">
+          {testimonial.profileImage ? (
+            <img
+              src={testimonial.profileImage}
+              alt={testimonial.title}
+              className="w-12 h-12 rounded-full object-cover border border-gray-200"
+            />
+          ) : (
+            <div className="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center text-gray-500 border border-gray-200">
+              <span>?</span>
+            </div>
+          )}
+          <div className="flex flex-col">
+            <span className="font-semibold text-gray-900">
+              {testimonial.title}
+            </span>
+            {testimonial.role && (
+              <span className="text-sm text-gray-500">{testimonial.role}</span>
+            )}
+          </div>
+        </div>
+      </div>
+    ))}
+</div>
 
 
       </div>

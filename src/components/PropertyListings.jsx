@@ -2,18 +2,15 @@
 /* eslint-disable no-unused-vars */
 import React, { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { SearchOutlined, CloseCircleFilled } from "@ant-design/icons";
+
 import {
   MapPin,
   User,
   Home,
-  Car,
-  Building2,
-  Zap,
-  Droplet,
-  Wrench,
 } from "lucide-react";
 import { Pagination, Input } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
+
 
 import PropertySidebar from "./PropertySidebar";
 import { getRequest } from "../Helpers";
@@ -103,9 +100,8 @@ const PropertyCard = ({ property, onClick }) => {
                 className="flex items-center gap-2 text-xs sm:text-sm text-gray-600"
               >
                 <MapPin className="w-4 h-4 text-red-500" />
-                <span className="font-medium capitalize">
-                  {place.name}
-                </span> - <span>{place.distance}</span>
+                <span className="font-medium capitalize">{place.name}</span> -{" "}
+                <span>{place.distance}</span>
               </div>
             ))}
           </div>
@@ -126,7 +122,8 @@ const PropertyCard = ({ property, onClick }) => {
 const PropertyListings = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { search, propertyType, setPropertyType } = useContext(PropertyContext);
+  const { search, setSearch, propertyType, setPropertyType } =
+    useContext(PropertyContext);
 
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(4);
@@ -165,7 +162,6 @@ const PropertyListings = () => {
       .finally(() => setLoading(false));
   }, [page, limit, search, sortBy, isPagination, propertyType]);
 
-  // Local filtering
   const filteredProperties = properties.filter(
     (p) =>
       p.name?.toLowerCase().includes(localSearch.toLowerCase()) ||
@@ -178,83 +174,109 @@ const PropertyListings = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 md:px-8 lg:px-10 xl:px-16">
-      <div className="max-w-[1440px] w-full mx-auto px-4 sm:px-6 md:px-8 flex flex-col lg:flex-row gap-6 lg:gap-8 justify-between">
-        {/* Main Content */}
-        <div className="w-full lg:w-[128%] flex flex-col">
-          {/* Search */}
+    <>
+      {/* 🔹 Loader Overlay */}
+      {loading && (
+        <div className="fixed inset-0 flex flex-col justify-center items-center bg-white/80 backdrop-blur-sm z-50">
+          <div className="w-16 h-16 border-4 border-t-blue-500 border-b-blue-500 border-gray-200 rounded-full animate-spin"></div>
+          <p className="mt-4 text-gray-700 font-semibold text-lg">
+            Loading Properties...
+          </p>
+        </div>
+      )}
 
-          {!loading && (
-            <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+      {/* 🔹 Page Layout */}
+      <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 md:px-8 lg:px-10 xl:px-16">
+        <div className="max-w-[1440px] w-full mx-auto px-4 sm:px-6 md:px-8 flex flex-col lg:flex-row gap-6 lg:gap-8 justify-between">
+          {/* Main Content */}
+          <div className="w-full lg:w-[128%] flex flex-col">
+            {/* Search */}
+            <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 relative w-full sm:w-auto">
               <Input
                 placeholder="Search properties..."
                 prefix={<SearchOutlined className="text-gray-500" />}
-                value={localSearch}
-                onChange={(e) => setLocalSearch(e.target.value)}
+                suffix={
+                  search && (
+                    <CloseCircleFilled
+                      onClick={() => {
+                        setSearch("");
+                        setPage(1);
+                      }}
+                      className="text-gray-400 hover:text-gray-600 cursor-pointer"
+                    />
+                  )
+                }
+                value={search}
+                onChange={(e) => {
+                  setPage(1);
+                  setSearch(e.target.value);
+                }}
                 className="!bg-white shadow-md rounded-lg !border-gray-300 
-             focus:!border-gray-400 focus:!ring-0 focus:!outline-none 
-             hover:!border-gray-400 w-full sm:w-auto"
+     focus:!border-gray-400 focus:!ring-0 focus:!outline-none 
+     hover:!border-gray-400 w-full sm:w-auto"
                 size="large"
               />
             </div>
-          )}
-          {/* Property Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-6">
-            {filteredProperties.map((property) => (
-              <PropertyCard
-                key={property._id}
-                property={property}
-                onClick={() => handleClick(property?._id)}
-              />
-            ))}
 
-            {!loading && filteredProperties.length === 0 && (
-              <div className="text-center py-16">
-                <div className="text-6xl mb-4">🏠</div>
-                <h3 className="text-2xl font-bold text-gray-800 mb-2">
-                  No Properties Found
-                </h3>
-                <p className="text-gray-600">
-                  Try adjusting your search or filter criteria
-                </p>
+
+            {/* Property Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-6">
+              {filteredProperties.map((property) => (
+                <PropertyCard
+                  key={property._id}
+                  property={property}
+                  onClick={() => handleClick(property?._id)}
+                />
+              ))}
+
+              {!loading && filteredProperties.length === 0 && (
+                <div className="text-center py-16">
+                  <div className="text-6xl mb-4">🏠</div>
+                  <h3 className="text-2xl font-bold text-gray-800 mb-2">
+                    No Properties Found
+                  </h3>
+                  <p className="text-gray-600">
+                    Try adjusting your search or filter criteria
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Pagination */}
+            {!loading && filteredProperties.length > 0 && (
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-3 rounded-xl shadow-sm border border-gray-100 mt-6">
+                <div className="text-gray-600 text-sm sm:text-base">
+                  Showing{" "}
+                  <span className="font-semibold text-blue-600">
+                    {(page - 1) * limit + 1}
+                  </span>{" "}
+                  to{" "}
+                  <span className="font-semibold text-blue-600">
+                    {Math.min(page * limit, total)}
+                  </span>{" "}
+                  of{" "}
+                  <span className="font-semibold text-blue-600">{total}</span>{" "}
+                  results
+                </div>
+
+                <Pagination
+                  current={page}
+                  pageSize={limit}
+                  total={total}
+                  onChange={(newPage) => setPage(newPage)}
+                  showSizeChanger={false}
+                />
               </div>
             )}
           </div>
 
-          {/* Pagination */}
-          {!loading && filteredProperties.length > 0 && (
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-3 rounded-xl shadow-sm border border-gray-100 mt-6">
-              <div className="text-gray-600 text-sm sm:text-base">
-                Showing{" "}
-                <span className="font-semibold text-blue-600">
-                  {(page - 1) * limit + 1}
-                </span>{" "}
-                to{" "}
-                <span className="font-semibold text-blue-600">
-                  {Math.min(page * limit, total)}
-                </span>{" "}
-                of <span className="font-semibold text-blue-600">{total}</span>{" "}
-                results
-              </div>
-
-              <Pagination
-                current={page}
-                pageSize={limit}
-                total={total}
-                onChange={(newPage) => setPage(newPage)}
-                showSizeChanger={false}
-              />
-            </div>
-          )}
+          {/* Sidebar */}
+          <div className="w-full lg:w-[50%] xl:w-[50%] px-4 flex flex-col lg:flex-row gap-8 justify-between overflow-y-auto lg:max-h-[125vh]">
+            <PropertySidebar />
+          </div>
         </div>
-
-        {/* Sidebar */}
-        <div className=" w-full lg:w-[50%] xl:w-[50%] 2xl:w-[50%] lg:w-[50%] px-4 flex flex-col lg:flex-row gap-8 justify-between overflow-y-auto lg:max-h-[125vh]">   
-          <PropertySidebar />
-        </div> 
-       
       </div>
-    </div>
+    </>
   );
 };
 

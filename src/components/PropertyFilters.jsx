@@ -87,16 +87,16 @@ export default function PropertyFilters({
           <Slider
             range
             min={250}
-            max={100000}
+            max={50000}
             step={50}
-            value={[filters.minSqft || 250, filters.maxSqft || 100000]}
+            value={[filters.minSqft || 250, filters.maxSqft || 50000]}
             onChange={(val) =>
               setFilters({ ...filters, minSqft: val[0], maxSqft: val[1] })
             }
           />
           <div className="flex justify-between text-xs text-gray-500">
             <span>{filters.minSqft || 250} sqft</span>
-            <span>{filters.maxSqft || 100000} sqft</span>
+            <span>{filters.maxSqft || 50000} sqft</span>
           </div>
         </div>
 

@@ -69,8 +69,8 @@ const Footer = () => {
                 <Link to="/" className="block text-gray-400 hover:text-white transition-colors text-sm sm:text-base">
                   Home
                 </Link>
-                <Link to="/" className="block text-gray-400 hover:text-white transition-colors text-sm sm:text-base">
-                  Categories
+                <Link to="/about" className="block text-gray-400 hover:text-white transition-colors text-sm sm:text-base">
+                  About Us
                 </Link>
                 <Link to="/contact" className="block text-gray-400 hover:text-white transition-colors text-sm sm:text-base">
                   Contact
@@ -79,21 +79,29 @@ const Footer = () => {
             </div>
 
             {/* Categories */}
-            <div className="md:text-left">
+            <div className="text-left">
               <h3 className="text-lg font-semibold mb-4">Categories</h3>
-              <div className="flex  flex-wrap gap-1">
+              <div
+                className="
+      grid 
+      grid-cols-1        
+      sm:grid-cols-2    
+      lg:grid-cols-2 gap-x-8 gap-y-2
+      gap-x-8 gap-y-2
+    "
+              >
                 {categories?.length > 0 ? (
                   categories.map((cat, index) => (
                     <div
                       key={index}
-                      className="text-gray-400  hover:text-white  cursor-pointer px-2 py-1 text-sm transition-colors"
+                      className="text-gray-400 hover:text-white cursor-pointer text-sm transition-colors"
                       onClick={() => handleCategoryClick(cat.name)}
                     >
                       {cat.name}
                     </div>
                   ))
                 ) : (
-                  <p className="text-gray-500 text-sm">Loading...</p>
+                  <p className="text-gray-500 text-sm">No categories found</p>
                 )}
               </div>
             </div>

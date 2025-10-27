@@ -1,8 +1,12 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import axios from "axios";
+import { PropertyContext } from "../context/PropertyContext";
 
 const Locationform = ({ value, onSelect }) => {
   const [searchTerm, setSearchTerm] = useState(value || "");
+
+  const { search, setSearch, setUpdateStatus, propertyType, setPropertyType } = useContext(PropertyContext);
+  
   console.log("searchTerm", searchTerm);
 
   const [places, setPlaces] = useState([]);
@@ -23,6 +27,7 @@ const Locationform = ({ value, onSelect }) => {
   const handleSearch = async (e) => {
     const val = e.target.value;
     setSearchTerm(val);
+    setSearch(val)
     setDetailsVisible(true);
     if (val.trim().length < 1) {
       setPlaces([]);

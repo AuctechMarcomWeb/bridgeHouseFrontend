@@ -6,7 +6,7 @@ import Locationform from "./Locationform";
 import { PropertyContext } from "../context/PropertyContext.jsx";
 
 const SearchBar = () => {
-  const [selectedLocation, setSelectedLocation] = useState("Select State");
+  const [selectedLocation, setSelectedLocation] = useState("");
   console.log("selectedLocation", selectedLocation);
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -21,10 +21,10 @@ const SearchBar = () => {
   const { search, setSearch, setUpdateStatus, propertyType, setPropertyType } = useContext(PropertyContext);
 
   //  Load states
-  useEffect(() => {
-    const allStates = State.getStatesOfCountry("IN");
-    setStates(allStates);
-  }, []);
+  // useEffect(() => {
+  //   const allStates = State.getStatesOfCountry("IN");
+  //   setStates(allStates);
+  // }, []);
 
   //  Dropdown outside click
   useEffect(() => {
@@ -38,37 +38,39 @@ const SearchBar = () => {
   }, []);
 
   //  When new state is selected → reset search
-  const handleLocationSelect = (stateName) => {
-    setSelectedLocation(stateName);
-    setSearchQuery("");
-    setIsDropdownOpen(false);
-  };
+
 
   //  Just redirect
   const handleSearch = () => {
-    console.log("Current propertyType:", propertyType); // 🔍 Debug
+    console.log("Current propertyType:======================", propertyType); // 🔍 Debug
+
+    console.log("selectedLocation",selectedLocation);
+    
 
 
 
-    if (
-      (!selectedLocation || selectedLocation === "Select State") &&
-      (!searchQuery || searchQuery.trim() === "")
-    ) {
-      alert("Please enter a state, an address");
-      return;
-    }
-
+ 
     let searchValue = "";
 
-    if (searchQuery && searchQuery.trim() !== "") {
-      searchValue = searchQuery.trim();
-    } else if (selectedLocation && selectedLocation !== "Select State") {
-      searchValue = selectedLocation;
+
+    if(selectedLocation == ""){
+console.log("dfgfdg");
+
+    }else{
+
+      
+          if (searchQuery && searchQuery.trim() !== "") {
+            searchValue = searchQuery.trim();
+          } else if (selectedLocation ) {
+            searchValue = selectedLocation;
+          }
+      
+          setSearch(searchValue); // Update context
+          setPropertyType(propertyType);
+          setSearch(searchValue)
     }
 
-    setSearch(searchValue); // Update context
-    setPropertyType(propertyType);
-    setSearch(searchValue)
+
 
     setUpdateStatus((prev) => !prev); // Trigger update
 

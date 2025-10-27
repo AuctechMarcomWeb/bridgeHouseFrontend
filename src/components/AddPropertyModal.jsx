@@ -758,7 +758,7 @@ const handleChangeImage = (e) => {
                 <div>
                   <label className="form-label fw-bold">Area(sqft) *</label>
                   <input
-                    type="number"
+                    type="text"
                     className="w-full p-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                     name="area"
                     data-nested="propertyDetails"
@@ -766,6 +766,7 @@ const handleChangeImage = (e) => {
                     onChange={handleChange}
                     placeholder="Enter area (e.g., 1200 sqft)"
                     required
+                    readOnly
                   />
                 </div>
 
@@ -796,6 +797,7 @@ const handleChangeImage = (e) => {
                         }}
                         placeholder="Enter number of bedrooms"
                         required={isFieldRequired("bedrooms")}
+                        min={1}
                       />
                     </div>
 
@@ -820,6 +822,7 @@ const handleChangeImage = (e) => {
                         }}
                         placeholder="Enter number of bathrooms"
                         required
+                        min={1}
                       />
                     </div>
 
@@ -847,6 +850,7 @@ const handleChangeImage = (e) => {
                         }}
                         placeholder="Enter number of floors"
                         required={isFieldRequired("floors")}
+                        min={1}
                       />
                     </div>
                   </>

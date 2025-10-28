@@ -25,7 +25,7 @@ const AddPropertyModal = ({
   const [services, setServices] = useState([]);
   const [facilites, setFacilites] = useState([]);
   const [documents, setDocuments] = useState([]);
-  const [files, setFiles] = useState([]);
+  const [uploadingImages, setUploadingImages] = useState([]);
   // const [errors,setErrors]=useState("")
 
   const [formData, setFormData] = useState(
@@ -244,26 +244,33 @@ const AddPropertyModal = ({
     const files = Array.from(e.target.files);
     if (files.length === 0) return;
 
-    files.forEach((file) => {
-      fileUpload({ url: "upload/uploadImage", cred: { file } })
-        .then((res) => {
-          const uploadedUrl = res?.data?.data?.imageUrl;
-          if (uploadedUrl) {
-            setFormData((prev) => ({
-              ...prev,
-              gallery: [...(prev.gallery || []), uploadedUrl],
-            }));
-          }
-        })
-        .catch((error) => {
-          console.error("Image upload failed:", error);
-        });
-    });
+    setGalleryLoading(true); // ✅ Start loader
 
-    // Reset file input so user can re-upload same files
-    if (galleryInputRefs.current[0]) {
-      galleryInputRefs.current[0].value = "";
-    }
+    Promise.all(
+      files.map((file) =>
+        fileUpload({ url: "upload/uploadImage", cred: { file } })
+          .then((res) => res?.data?.data?.imageUrl)
+          .catch((error) => {
+            console.error("Image upload failed:", error);
+            return null;
+          })
+      )
+    )
+      .then((uploadedUrls) => {
+        const validUrls = uploadedUrls.filter((url) => !!url);
+        if (validUrls.length > 0) {
+          setFormData((prev) => ({
+            ...prev,
+            gallery: [...(prev.gallery || []), ...validUrls],
+          }));
+        }
+      })
+      .finally(() => {
+        setGalleryLoading(false); // ✅ Stop loader
+        if (galleryInputRefs.current[0]) {
+          galleryInputRefs.current[0].value = "";
+        }
+      });
   };
 
 
@@ -474,25 +481,47 @@ const AddPropertyModal = ({
     const file = e.target.files[0];
     if (!file) return;
 
-    // Upload to server
+    // Show loader
+    setFormData((prev) => {
+      const updatedDocs = [...prev.documents];
+      updatedDocs[index] = { ...updatedDocs[index], loading: true };
+      return { ...prev, documents: updatedDocs };
+    });
+
     fileUpload({
       url: `upload/uploadImage`,
       cred: { file },
     })
       .then((res) => {
         const uploadedUrl = res.data?.data?.imageUrl;
-        const updatedDocuments = [...formData.documents];
-        updatedDocuments[index].image = uploadedUrl;
+        const updatedDocs = [...formData.documents];
+        updatedDocs[index] = {
+          ...updatedDocs[index],
+          image: uploadedUrl,
+          loading: false,
+        };
 
         setFormData((prev) => ({
           ...prev,
-          documents: updatedDocuments,
+          documents: updatedDocs,
         }));
       })
       .catch((error) => {
         console.error("Document image upload failed:", error);
+        // Stop loader on error
+        setFormData((prev) => {
+          const updatedDocs = [...prev.documents];
+          updatedDocs[index] = { ...updatedDocs[index], loading: false };
+          return { ...prev, documents: updatedDocs };
+        });
+      })
+      .finally(() => {
+        if (documentInputRefs.current[index]) {
+          documentInputRefs.current[index].value = "";
+        }
       });
   };
+
 
   const removeDocumentImage = (index) => {
     const updatedDocuments = [...formData.documents];
@@ -884,10 +913,17 @@ const AddPropertyModal = ({
                         data-nested="propertyDetails"
                         value={formData?.propertyDetails?.builtYear || ""}
                         disabled={formData?.propertyType === "Plot"}
-                        onChange={handleChange}
+
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          if (value.length <= 4) {
+                            handleChange(e);
+                          }
+                        }}
                         placeholder="Enter year built  above (1900)"
                         required
                         min={1900}
+
                       />
                     </div>
                   </>
@@ -986,10 +1022,11 @@ const AddPropertyModal = ({
                 </>
               )}
               {/* Property Images Upload */}
-              <div>
+
+              <div className="relative">
                 <label className="form-label fw-bold">Property Images *</label>
 
-                {/* Native file input */}
+                {/* File Input */}
                 <input
                   type="file"
                   accept="image/*"
@@ -998,46 +1035,59 @@ const AddPropertyModal = ({
                   ref={(el) => (galleryInputRefs.current[0] = el)}
                   onChange={handleChangeImage}
                   required={!(formData?.gallery?.length > 0)}
+                  disabled={galleryLoading}
                 />
 
-                {/* Gallery Preview */}
-                {formData?.gallery?.length > 0 && (
-                  <div className="flex gap-2 flex-wrap mt-2">
-                    {formData.gallery.map((item, index) => (
-                      <div key={index} className="relative inline-block">
-                        <img
-                          src={item}
-                          alt={`gallery-${index}`}
-                          className="w-16 h-16 object-cover rounded"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setFormData((prev) => {
-                              const newGallery = prev.gallery.filter(
-                                (_, i) => i !== index
-                              );
-
-                              // Reset input only if last image removed
-                              if (
-                                newGallery.length === 0 &&
-                                galleryInputRefs.current
-                              ) {
-                                galleryInputRefs.current.value = "";
-                              }
-
-                              return { ...prev, gallery: newGallery };
-                            });
-                          }}
-                          className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center cursor-pointer"
+                {/* Image Preview + Loader Grid */}
+                {(formData?.gallery?.length > 0 || galleryLoading) && (
+                  <div className="mt-2">
+                    <div className="flex flex-wrap gap-2">
+                      {/* Uploaded Images */}
+                      {formData.gallery?.map((item, index) => (
+                        <div
+                          key={`uploaded-${index}`}
+                          className="relative bg-gray-100 border border-gray-300 overflow-hidden rounded-md"
+                          style={{ width: "70px", height: "70px" }}
                         >
-                          ✕
-                        </button>
-                      </div>
-                    ))}
+                          <img
+                            src={item}
+                            alt={`gallery-${index}`}
+                            className="w-full h-full object-cover"
+                          />
+
+                          {/* Delete Button */}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setFormData((prev) => ({
+                                ...prev,
+                                gallery: prev.gallery.filter((_, i) => i !== index),
+                              }));
+                              if (galleryInputRefs.current[0])
+                                galleryInputRefs.current[0].value = "";
+                            }}
+                            className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center cursor-pointer shadow-md"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+
+                      {/* Upload Loader (Animated Circle) */}
+                      {galleryLoading && (
+                        <div
+                          className="flex items-center justify-center bg-gray-100 border border-gray-300 rounded-md"
+                          style={{ width: "70px", height: "70px" }}
+                        >
+                          <div className="w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
+
+
             </div>
 
             <hr className="m-0 p-0 my-3" />
@@ -1146,8 +1196,10 @@ const AddPropertyModal = ({
                   </div>
 
                   {/* Document Image Upload */}
-                  <div>
-                    <label className="form-label">Document Image *</label>
+                  <div className="relative">
+                    <label className="form-label fw-bold">Document Image *</label>
+
+                    {/* File Input */}
                     <input
                       type="file"
                       accept="image/*"
@@ -1155,25 +1207,45 @@ const AddPropertyModal = ({
                       onChange={(e) => handleDocumentImageChange(e, index)}
                       required
                       ref={(el) => (documentInputRefs.current[index] = el)}
+                      disabled={doc?.loading} // ✅ Disable while uploading
                     />
-                  </div>
 
-                  {/* Image Preview with Remove */}
-                  <div>
-                    {doc?.image && (
-                      <div className="relative inline-block mt-2">
-                        <img
-                          src={doc.image}
-                          alt={`doc-${index}`}
-                          className="w-16 h-16 object-cover rounded"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => removeDocumentImage(index)}
-                          className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center cursor-pointer"
-                        >
-                          ✕
-                        </button>
+                    {/* Image Preview + Loader */}
+                    {(doc?.image || doc?.loading) && (
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {/* Uploaded Image Preview */}
+                        {doc?.image && (
+                          <div
+                            className="relative bg-gray-100 border border-gray-300 overflow-hidden rounded-md"
+                            style={{ width: "70px", height: "70px" }}
+                          >
+                            <img
+                              src={doc.image}
+                              alt={`doc-${index}`}
+                              className="w-full h-full object-cover"
+                            />
+
+                            {/* Delete Button */}
+                            <button
+                              type="button"
+                              onClick={() => removeDocumentImage(index)}
+                              className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center cursor-pointer shadow-md"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        )}
+
+                        {/* Loader Spinner */}
+                        {doc?.loading && (
+                          <div
+                            className="flex flex-col items-center justify-center bg-gray-100 border border-gray-300 rounded-md"
+                            style={{ width: "70px", height: "70px" }}
+                          >
+                            <div className="w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
@@ -1222,8 +1294,8 @@ const AddPropertyModal = ({
               type="submit"
               disabled={loading}
               className={`px-4 py-2 rounded text-white transition-all ${loading
-                  ? "bg-[#004f8a] cursor-not-allowed"
-                  : "bg-[#004f8a] hover:bg-[#004f8a]"
+                ? "bg-[#004f8a] cursor-not-allowed"
+                : "bg-[#004f8a] hover:bg-[#004f8a]"
                 }`}
             >
               {loading

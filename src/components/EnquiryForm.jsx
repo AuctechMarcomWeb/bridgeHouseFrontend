@@ -1,6 +1,6 @@
 /* EnquiryForm.jsx */
 import React, { useState } from "react";
-import { Phone } from "lucide-react";
+import { Loader2 } from "lucide-react"; // 🔄 spinner icon
 import { postRequest } from "../Helpers";
 import toast from "react-hot-toast";
 
@@ -12,7 +12,7 @@ const EnquiryForm = ({ propertyId }) => {
     message: "",
     property: propertyId,
   });
-  console.log("formData", formData);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -20,10 +20,10 @@ const EnquiryForm = ({ propertyId }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setLoading(true);
     postRequest({ url: `enquiry`, cred: formData })
       .then((res) => {
-        console.log("Enquiry Form", res?.data);
-        toast.success(res?.data?.message);
+        toast.success(res?.data?.message || "Enquiry sent successfully!");
         setFormData({
           name: "",
           email: "",
@@ -33,76 +33,85 @@ const EnquiryForm = ({ propertyId }) => {
         });
       })
       .catch((err) => {
-        console.log("error", err);
-        toast.error(err?.response?.data?.message);
+        toast.error(err?.response?.data?.message || "Something went wrong!");
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
   return (
-    <>
-      <div></div>
-      <div className="bg- rounded-2xl shadow-lg p-6 top-4">
-        <h3 className="text-xl font-bold text-gray-800 mb-6">Enquiry</h3>
+    <div className="bg-white cursor-pointer  rounded-2xl shadow-lg p-6 top-4">
+      <h3 className="text-xl font-bold text-gray-800 mb-6">Enquiry</h3>
 
-        <div className="flex gap-2 mb-6">
-          <button
-            type="button"
-       className="flex-1 bg-[#004f8a]  bg-clip-text text-transparent py-3 px-4 rounded-xl font-bold  flex items-center justify-center gap-2"
->
-            {/* <Phone className="w-4 h-4" /> */}
-            Get In Touch With Us
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            name="name"
-            value={formData?.name}
-            onChange={handleChange}
-            placeholder="Your Name"
-            className="w-full text-sm p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            required
-          />
-          <input
-            name="email"
-            type="email"
-            value={formData?.email}
-            onChange={handleChange}
-            placeholder="Your Email"
-            className="w-full text-sm p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            required
-          />
-          <input
-            name="phone"
-            type="tel"
-            value={formData?.phone}
-            onChange={handleChange}
-            placeholder="Your Phone Number"
-            className="w-full text-sm p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            required
-            pattern="\d{10}"
-            minLength={10}
-            maxLength={10}
-          />
-          <textarea
-            name="message"
-            rows="4"
-            value={formData?.message}
-            onChange={handleChange}
-            placeholder="Your Message"
-            className="w-full text-sm p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-            required
-
-          />
-          <button
-            type="submit"
-            className="w-full bg-[#004f8a] text-white py-4 rounded-xl font-bold hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5"
-          >
-            Send Message
-          </button>
-        </form>
+      <div className="flex gap-2 mb-6">
+        <button
+          type="button"
+          className="flex-1 bg-[#004f8a] bg-clip-text text-transparent py-3 px-4 rounded-xl font-bold flex items-center justify-center gap-2"
+        >
+          Get In Touch With Us
+        </button>
       </div>
-    </>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <input
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
+          placeholder="Your Name"
+          className="w-full text-sm p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          required
+        />
+        <input
+          name="email"
+          type="email"
+          value={formData.email}
+          onChange={handleChange}
+          placeholder="Your Email"
+          className="w-full text-sm p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          required
+        />
+        <input
+          name="phone"
+          type="tel"
+          value={formData.phone}
+          onChange={handleChange}
+          placeholder="Your Phone Number"
+          className="w-full text-sm p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          required
+          pattern="\d{10}"
+          minLength={10}
+          maxLength={10}
+        />
+        <textarea
+          name="message"
+          rows="4"
+          value={formData.message}
+          onChange={handleChange}
+          placeholder="Your Message"
+          className="w-full text-sm p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+          required
+        />
+
+        {/* ✅ Button with loading spinner */}
+        <button
+          type="submit"
+          disabled={loading}
+          className={`w-full bg-[#004f8a] text-white py-4 rounded-xl font-bold cursor-pointer  transition-all duration-300 transform hover:-translate-y-0.5 flex items-center justify-center gap-2 ${
+            loading ? "opacity-70 cursor-not-allowed" : "hover:shadow-lg"
+          }`}
+        >
+          {loading ? (
+            <>
+              <Loader2 className="animate-spin w-5 h-5" />
+              Sending...
+            </>
+          ) : (
+            "Send Message"
+          )}
+        </button>
+      </form>
+    </div>
   );
 };
 

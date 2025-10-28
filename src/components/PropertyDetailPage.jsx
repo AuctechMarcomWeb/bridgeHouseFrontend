@@ -149,20 +149,32 @@ export default function PropertyDetailPage() {
     "Spacious Interior",
   ];
 
-  const calculateMonthlyPayment = () => {
-    const principal = totalAmount - downPayment;
-    const monthlyRate = interestRate / 100 / 12;
-    const numberOfPayments = loanTerm * 12;
+const calculateMonthlyPayment = () => {
+  const propertyPrice = properties?.actualPrice || 0;
+  const principal = propertyPrice - (downPayment || 0);
+  const monthlyRate = interestRate ? interestRate / 100 / 12 : 0;
+  const numberOfPayments = loanTerm ? loanTerm * 12 : 0;
 
-    if (monthlyRate === 0) return (principal / numberOfPayments).toFixed(2);
+  // 🛑 Prevent calculation when any main field is empty or invalid
+  if (
+    !propertyPrice ||
+    !loanTerm ||
+    !principal ||
+    principal <= 0 ||
+    interestRate <= 0
+  ) {
+    return 0;
+  }
 
-    const monthlyPayment =
-      (principal *
-        (monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments))) /
-      (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
+  // ✅ Standard EMI Formula
+  const monthlyPayment =
+    (principal *
+      monthlyRate *
+      Math.pow(1 + monthlyRate, numberOfPayments)) /
+    (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
 
-    return monthlyPayment.toFixed(2);
-  };
+  return isFinite(monthlyPayment) ? monthlyPayment.toFixed(2) : 0;
+};
 
   if (loading) {
     return (
@@ -651,62 +663,80 @@ export default function PropertyDetailPage() {
             </div>
 
             {/* Mortgage Calculator */}
-            <div className="bg-white rounded-2xl shadow-lg p-6">
+            <div className="bg-white rounded-2xl shadow-lg p-6 cursor-pointer">
               <h3 className="text-xl font-bold text-gray-800 mb-6">
                 Mortgage Calculator
               </h3>
 
               <div className="space-y-4">
+                {/* Total Amount (Read-Only) */}
                 <div>
                   <label className="block text-sm font-medium text-gray-500 mb-2">
                     Total Amount (₹)
                   </label>
                   <input
                     type="number"
-                    value={properties?.actualPrice || "N/A"}
-                    onChange={(e) => setTotalAmount(Number(e.target.value))}
-                    className="w-full p-3 text-sm text-gray-700 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    value={properties?.actualPrice || 0}
+                    readOnly
+                    className="w-full p-3 text-sm text-gray-700 border border-gray-200 rounded-xl bg-gray-100 cursor-not-allowed focus:ring-0 focus:border-gray-200"
                   />
                 </div>
 
+                {/* Down Payment */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Down Payment (₹)
                   </label>
                   <input
                     type="number"
-                    value={downPayment}
-                    onChange={(e) => setDownPayment(Number(e.target.value))}
+                    value={downPayment === 0 ? "" : downPayment}
+                    onChange={(e) =>
+                      setDownPayment(e.target.value === "" ? 0 : Number(e.target.value))
+                    }
                     className="w-full p-3 text-sm text-gray-700 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    min={0}
                   />
                 </div>
 
+                {/* Loan Term */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Loan Term (Years)
                   </label>
                   <input
                     type="number"
-                    value={loanTerm}
-                    onChange={(e) => setLoanTerm(Number(e.target.value))}
+                    value={loanTerm === 0 ? "" : loanTerm}
+                    onChange={(e) =>
+                      setLoanTerm(e.target.value === "" ? 0 : Number(e.target.value))
+                    }
                     className="w-full p-3 text-sm text-gray-700 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                        min={0}
                   />
+              
                 </div>
 
+                {/* Interest Rate */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Interest Rate (%)
                   </label>
                   <input
                     type="number"
-                    value={interestRate}
-                    onChange={(e) => setInterestRate(Number(e.target.value))}
+                    value={interestRate === 0 ? "" : interestRate}
+                    onChange={(e) =>
+                      setInterestRate(e.target.value === "" ? 0 : Number(e.target.value))
+                      
+                    }
                     className="w-full p-3 text-sm text-gray-700 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    min={0}
                   />
                 </div>
 
+
+
+                {/* Monthly Payment Display */}
                 <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-200">
-                  <div className="text-sm  font-medium text-gray-700 mb-1">
+                  <div className="text-sm font-medium text-gray-700 mb-1">
                     Monthly Payment
                   </div>
                   <div className="text-xl font-bold text-blue-600">
@@ -715,6 +745,8 @@ export default function PropertyDetailPage() {
                 </div>
               </div>
             </div>
+
+
           </div>
         </div>
       </div>

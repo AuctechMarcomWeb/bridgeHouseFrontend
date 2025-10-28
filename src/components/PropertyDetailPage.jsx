@@ -149,32 +149,32 @@ export default function PropertyDetailPage() {
     "Spacious Interior",
   ];
 
-const calculateMonthlyPayment = () => {
-  const propertyPrice = properties?.actualPrice || 0;
-  const principal = propertyPrice - (downPayment || 0);
-  const monthlyRate = interestRate ? interestRate / 100 / 12 : 0;
-  const numberOfPayments = loanTerm ? loanTerm * 12 : 0;
+  const calculateMonthlyPayment = () => {
+    const propertyPrice = properties?.actualPrice || 0;
+    const principal = propertyPrice - (downPayment || 0);
+    const monthlyRate = interestRate ? interestRate / 100 / 12 : 0;
+    const numberOfPayments = loanTerm ? loanTerm * 12 : 0;
 
-  // 🛑 Prevent calculation when any main field is empty or invalid
-  if (
-    !propertyPrice ||
-    !loanTerm ||
-    !principal ||
-    principal <= 0 ||
-    interestRate <= 0
-  ) {
-    return 0;
-  }
+    // 🛑 Prevent calculation when any main field is empty or invalid
+    if (
+      !propertyPrice ||
+      !loanTerm ||
+      !principal ||
+      principal <= 0 ||
+      interestRate <= 0
+    ) {
+      return 0;
+    }
 
-  // ✅ Standard EMI Formula
-  const monthlyPayment =
-    (principal *
-      monthlyRate *
-      Math.pow(1 + monthlyRate, numberOfPayments)) /
-    (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
+    // ✅ Standard EMI Formula
+    const monthlyPayment =
+      (principal *
+        monthlyRate *
+        Math.pow(1 + monthlyRate, numberOfPayments)) /
+      (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
 
-  return isFinite(monthlyPayment) ? monthlyPayment.toFixed(2) : 0;
-};
+    return isFinite(monthlyPayment) ? monthlyPayment.toFixed(2) : 0;
+  };
 
   if (loading) {
     return (
@@ -245,6 +245,11 @@ const calculateMonthlyPayment = () => {
             </span>
           )}
 
+          {properties?.isVerified && (
+            <span className="text-white space-5 px-0 py-1 rounded-full text-sm flex items-center gap-1">
+              <img width="30" height="30" src="https://img.icons8.com/color/48/verified-account--v1.png" alt="verified-account" />
+            </span>
+          )}
         </div>
 
         <div className="flex flex-col xl:flex-row gap-8">
@@ -261,14 +266,18 @@ const calculateMonthlyPayment = () => {
                 />
                 {/* Top-right overlay: Camera + Verified */}
                 <div className="absolute top-4 right-4 flex items-center gap-2 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
-                  {properties?.isVerified && (
-                    <img width="20" height="20" src="https://img.icons8.com/color/48/verified-account--v1.png" alt="verified-account" />
-                  )}
+              
                   <div className="flex items-center gap-1">
                     <Camera className="w-4 h-4" />
                     {selectedImage + 1} / {images.length}
                   </div>
                 </div>
+                {/* Bottom-left propertyType button */}
+                <span
+                  className="absolute bottom-4 left-4 flex items-center gap-1 bg-gradient-to-r from-blue-900 to-blue-900 text-white px-3 py-1 rounded-full hover:bg-black/70 transition-colors">
+                  {properties?.propertyType}
+
+                </span>
 
                 {/* Bottom-right Share button */}
                 <button
@@ -710,9 +719,9 @@ const calculateMonthlyPayment = () => {
                       setLoanTerm(e.target.value === "" ? 0 : Number(e.target.value))
                     }
                     className="w-full p-3 text-sm text-gray-700 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                        min={0}
+                    min={0}
                   />
-              
+
                 </div>
 
                 {/* Interest Rate */}
@@ -725,7 +734,7 @@ const calculateMonthlyPayment = () => {
                     value={interestRate === 0 ? "" : interestRate}
                     onChange={(e) =>
                       setInterestRate(e.target.value === "" ? 0 : Number(e.target.value))
-                      
+
                     }
                     className="w-full p-3 text-sm text-gray-700 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     min={0}

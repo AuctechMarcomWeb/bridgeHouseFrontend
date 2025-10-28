@@ -1,9 +1,10 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { Slider } from "antd";
 import { ChevronDown, Search, SlidersHorizontal } from "lucide-react";
 import { getRequest } from "../Helpers";
+import { PropertyContext } from "../context/PropertyContext";
 
 export default function PropertyFilters({
   filters,
@@ -22,6 +23,9 @@ export default function PropertyFilters({
     propertyType: true,
     bhk: true,
   });
+  const { search, setSearch, propertyType, setPropertyType } =
+    useContext(PropertyContext);
+
 
   const toggleDropdown = (dropdown) => {
     setOpenDropdowns((prev) => ({
@@ -73,8 +77,12 @@ export default function PropertyFilters({
           <input
             type="text"
             placeholder="Search properties..."
-            value={filters.search}
-            onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+
+            value={filters.search || ""}
+            onChange={(e) => {
+              setFilters({ ...filters, search: e.target.value });
+            }}
+
             className="w-full pl-11 pr-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 hover:bg-white transition-all"
           />
         </div>
@@ -233,13 +241,13 @@ export default function PropertyFilters({
         <div className="flex flex-col gap-2">
           <button
             onClick={handleApplyFilters}
-            className="w-full bg-[#004f8a] text-white py-2 rounded-xl font-semibold hover:bg-[#004f8a] transition-all"
+            className="w-full bg-[#004f8a] cursor-pointer text-white py-2 rounded-xl font-semibold hover:bg-[#004f8a] transition-all"
           >
             Apply Filters
           </button>
           <button
             onClick={handleResetFilters}
-            className="w-full bg-[#004f8a] text-white py-2 rounded-xl font-semibold hover:bg-[#004f8a] transition-all"
+            className="w-full bg-[#004f8a] cursor-pointer text-white py-2 rounded-xl font-semibold hover:bg-[#004f8a] transition-all"
           >
             Reset All Filters
           </button>

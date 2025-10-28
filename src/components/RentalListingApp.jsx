@@ -80,8 +80,10 @@ export default function RentalListingApp() {
 
   const handleApplyFilters = () => {
     setSearch(filters.search);
-    setAppliedFilters(filters);
+    setAppliedFilters({...filters});
     setPage(1);
+ 
+
   };
 
   const handleResetFilters = () => {
@@ -137,15 +139,15 @@ export default function RentalListingApp() {
                 <Spin size="large" tip="Loading properties..." />
               </div>
             ) : listings.length === 0 ? (
-                     <div className="text-center py-16">
-                  <div className="text-6xl mb-4">🏠</div>
-                  <h3 className="text-2xl font-bold text-gray-800 mb-2">
-                    No Properties Found
-                  </h3>
-                  <p className="text-gray-600">
-                    Try adjusting your search or filter criteria
-                  </p>
-                </div>
+              <div className="text-center py-16">
+                <div className="text-6xl mb-4">🏠</div>
+                <h3 className="text-2xl font-bold text-gray-800 mb-2">
+                  No Properties Found
+                </h3>
+                <p className="text-gray-600">
+                  Try adjusting your search or filter criteria
+                </p>
+              </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {listings.map((listing) => (
@@ -157,7 +159,7 @@ export default function RentalListingApp() {
                     {/* Image */}
                     <div className="relative aspect-[4/3] overflow-hidden">
                       {Array.isArray(listing?.gallery) &&
-                      listing.gallery.length > 0 ? (
+                        listing.gallery.length > 0 ? (
                         <img
                           src={listing.gallery[0]}
                           alt="property"
@@ -213,13 +215,13 @@ export default function RentalListingApp() {
                         <div className="flex items-center justify-between mb-2">
                           <h3 className="font-semibold text-gray-800 group-hover:text-blue-600 truncate">
                             {listing?.name}
-                            <br/> <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
-                          {listing?.propertyType}
-                        </span>
+                            <br /> <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
+                              {listing?.propertyType}
+                            </span>
                           </h3>
-                         
+
                         </div>
-                        
+
                         <div className="text-gray-600 text-sm mb-2 flex items-start">
                           <MapPin
                             className="w-4 h-4 mr-1 mt-0.5 text-gray-400 flex-shrink-0"
@@ -286,14 +288,14 @@ export default function RentalListingApp() {
                   onChange={(newPage) => setPage(newPage)}
                   showSizeChanger={false}
                   showLessItems
-                  // itemRender={(pageNum, type, originalElement) => {
-                  //   if (type === "prev" || type === "next")
-                  //     return originalElement;
-                  //   if (typeof pageNum === "number") {
-                  //     return <span>{pageNum}</span>; // hides dots
-                  //   }
-                  //   return null;
-                  // }}
+                // itemRender={(pageNum, type, originalElement) => {
+                //   if (type === "prev" || type === "next")
+                //     return originalElement;
+                //   if (typeof pageNum === "number") {
+                //     return <span>{pageNum}</span>; // hides dots
+                //   }
+                //   return null;
+                // }}
                 />
               </div>
             )}

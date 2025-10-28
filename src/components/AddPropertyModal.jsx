@@ -1130,7 +1130,7 @@ const AddPropertyModal = ({
                   </div>
 
                   {/* Remove Button */}
-                  {formData?.nearby?.length > 1 && (
+                  {formData?.nearby?.length > 0 && (
                     <div className="col-span-2 flex justify-end">
                       <button
                         type="button"
@@ -1251,7 +1251,7 @@ const AddPropertyModal = ({
                   </div>
 
                   {/* Remove Document Button */}
-                  {formData?.documents?.length > 1 && (
+                  {formData?.documents?.length > 0 && (
                     <div className="col-span-2 flex justify-end">
                       <button
                         type="button"

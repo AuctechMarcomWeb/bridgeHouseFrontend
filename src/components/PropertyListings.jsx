@@ -190,8 +190,9 @@ const PropertyListings = () => {
         <div className="max-w-[1440px] w-full mx-auto px-4 sm:px-6 md:px-8 flex flex-col lg:flex-row gap-6 lg:gap-8 justify-between">
           {/* Main Content */}
           <div className="w-full lg:w-[128%] flex flex-col">
-            {/* Search */}
-            <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 relative w-full sm:w-auto">
+
+            <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4 relative w-full sm:w-auto">
+              {/* Search Input */}
               <Input
                 placeholder="Search properties..."
                 prefix={<SearchOutlined className="text-gray-500" />}
@@ -212,10 +213,22 @@ const PropertyListings = () => {
                   setSearch(e.target.value);
                 }}
                 className="!bg-white shadow-md rounded-lg !border-gray-300 
-     focus:!border-gray-400 focus:!ring-0 focus:!outline-none 
-     hover:!border-gray-400 w-full sm:w-auto"
+      focus:!border-gray-400 focus:!ring-0 focus:!outline-none 
+      hover:!border-gray-400 w-full sm:w-[300px]"
                 size="large"
               />
+
+              {/* Clear Filters Button */}
+              <button
+                onClick={() => {
+                  setSearch("");
+                  setPropertyType("");
+                  setPage(1);
+                }}
+                className="bg-[#004f8a] text-white px-5 py-2 rounded-lg font-semibold shadow-md hover:bg-[#003b6a] transition-all duration-200"
+              >
+                Clear
+              </button>
             </div>
 
 

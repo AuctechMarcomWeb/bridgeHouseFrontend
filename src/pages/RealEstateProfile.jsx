@@ -34,7 +34,7 @@ import {
   IndianRupee,
   Search,
   Filter,
-  FilterIcon,
+  FilterIcon,Heart
 } from "lucide-react";
 
 import Swal from "sweetalert2";
@@ -670,9 +670,9 @@ export default function RealEstateProfile() {
                       </div>
 
                       {/* Wishlist Heart - TOP RIGHT */}
-                      <button className="absolute top-4 right-4 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-white transition-all">
+                      {/* <button className="absolute top-4 right-4 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-white transition-all">
                         <Heart className="w-5 h-5 text-gray-600 hover:text-red-500" />
-                      </button>
+                      </button> */}
                     </div>
 
                     <div className="p-4">
@@ -742,7 +742,7 @@ export default function RealEstateProfile() {
                             setSelectedProperty(property);
                             setIsDetailsOpen(true);
                           }}
-                          className="flex-1 py-2.5 text-sm font-medium bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-200"
+                          className="flex-1 py-2.5 text-sm font-medium bg-[#004f8a] text-white rounded-lg hover:bg-green-700 transition-all duration-200"
                         >
                           View Details
                         </button>

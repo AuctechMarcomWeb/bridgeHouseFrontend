@@ -1094,7 +1094,7 @@ const AddPropertyModal = ({
 
             {/* Nearby */}
             <div className="col-span-2">
-              <label className="form-label font-bold">Nearby</label>
+              <label className="form-label font-bold">Nearby Location</label>
 
               {formData?.nearby?.map((facility, index) => (
                 <div
@@ -1168,12 +1168,12 @@ const AddPropertyModal = ({
                 >
                   {/* Document Name */}
                   <div>
-                    <label className="form-label">Document Name *</label>
+                    <label className="form-label">Document Name</label>
                     <select
                       name={`documentName_${index}`}
                       value={doc?.name}
                       onChange={(e) => handleDocumentChange(e, index)}
-                      required
+           
                       className="w-full p-2 border border-gray-300 rounded-l focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                     >
                       <option value="">Select Document</option>
@@ -1183,7 +1183,7 @@ const AddPropertyModal = ({
 
                   {/* Document Number */}
                   <div>
-                    <label className="form-label">Document Number *</label>
+                    <label className="form-label">Document Number</label>
                     <input
                       type="text"
                       name={`documentNumber_${index}`}
@@ -1191,13 +1191,13 @@ const AddPropertyModal = ({
                       onChange={(e) => handleDocumentChange(e, index)}
                       className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none transition-all"
                       placeholder="Enter document number"
-                      required
+                
                     />
                   </div>
 
                   {/* Document Image Upload */}
                   <div className="relative">
-                    <label className="form-label fw-bold">Document Image *</label>
+                    <label className="form-label fw-bold">Document Image</label>
 
                     {/* File Input */}
                     <input
@@ -1205,7 +1205,7 @@ const AddPropertyModal = ({
                       accept="image/*"
                       className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none transition-all"
                       onChange={(e) => handleDocumentImageChange(e, index)}
-                      required
+              
                       ref={(el) => (documentInputRefs.current[index] = el)}
                       disabled={doc?.loading} // ✅ Disable while uploading
                     />

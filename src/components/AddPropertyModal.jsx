@@ -302,84 +302,6 @@ const AddPropertyModal = ({
     return true; // default required
   };
 
-  //  Validate form
-  // const validateForm = () => {
-  //   let newErrors = {};
-
-  //   if (!formData.name.trim()) newErrors.name = "Property name is required";
-  //   if (!formData.address.trim()) newErrors.address = "Address is required";
-  //   if (!formData.propertyType.trim())
-  //     newErrors.propertyType = "Property type is required";
-  //   if (!formData.actualPrice || formData.actualPrice <= 0)
-  //     newErrors.actualPrice = "Valid actual price is required";
-  //   if (!formData.sellingPrice || formData.sellingPrice <= 0)
-  //     newErrors.sellingPrice = "Valid selling price is required";
-  //   if (!formData.description.trim())
-  //     newErrors.description = "Description is required";
-  //   if (!formData.propertyCode.trim())
-  //     newErrors.propertyCode = "Property code is required";
-
-  //   //  Plot logic: Agar plot hai to skip detailed fields
-  //   if (formData.propertyType !== "Plot") {
-  //     if (!formData.propertyDetails.area) newErrors.area = "Area is required";
-  //     if (!formData.propertyDetails.bedrooms)
-  //       newErrors.bedrooms = "Bedrooms required";
-  //     if (!formData.propertyDetails.bathrooms)
-  //       newErrors.bathrooms = "Bathrooms required";
-  //     if (!formData.propertyDetails.floors)
-  //       newErrors.floors = "Floors required";
-  //     if (!formData.propertyDetails.builtYear)
-  //       newErrors.builtYear = "Built year required";
-  //     if (!formData.bhk) newErrors.bhk = "BHK is required";
-  //     if (!formData.facilities?.length)
-  //       newErrors.facilities = "Select at least 1 facility";
-  //     if (!formData.services?.length)
-  //       newErrors.services = "Select at least 1 service";
-  //   }
-
-  //   // Validation
-  //   const validateForm = () => {
-  //     let newErrors = {};
-  //     if (!formData.name.trim()) newErrors.name = "Property name is required";
-  //     if (!formData.address.trim()) newErrors.address = "Address is required";
-  //     if (!formData.propertyType.trim())
-  //       newErrors.propertyType = "Property type is required";
-  //     if (!formData.actualPrice || formData.actualPrice <= 0)
-  //       newErrors.actualPrice = "Valid actual price required";
-  //     if (!formData.sellingPrice || formData.sellingPrice <= 0)
-  //       newErrors.sellingPrice = "Valid selling price required";
-  //     if (!formData.description.trim())
-  //       newErrors.description = "Description is required";
-  //     if (!formData.propertyCode.trim())
-  //       newErrors.propertyCode = "Property code is required";
-
-  //     // Conditional Validation
-  //     if (
-  //       formData.propertyType === "Apartment" ||
-  //       formData.propertyType === "Residential"
-  //     ) {
-  //       if (!formData.propertyDetails.bedrooms)
-  //         newErrors.bedrooms = "Bedrooms required";
-  //       if (!formData.propertyDetails.bathrooms)
-  //         newErrors.bathrooms = "Bathrooms required";
-  //       if (!formData.propertyDetails.floors)
-  //         newErrors.floors = "Floors required";
-  //       if (!formData.propertyDetails.builtYear)
-  //         newErrors.builtYear = "Built year required";
-  //       if (!formData.bhk) newErrors.bhk = "BHK is required";
-  //       if (!formData.facilities?.length)
-  //         newErrors.facilities = "Select at least 1 facility";
-  //       if (!formData.services?.length)
-  //         newErrors.services = "Select at least 1 service";
-  //     }
-
-  //     setErrors(newErrors);
-  //     return Object.keys(newErrors).length === 0;
-  //   };
-
-  //   setErrors(newErrors);
-  //   return Object.keys(newErrors).length === 0;
-  // };
   const validateForm = () => {
     let newErrors = {};
     const details = formData.propertyDetails || {};
@@ -416,10 +338,7 @@ const AddPropertyModal = ({
 
       if (isFieldRequired("bhk") && !formData.bhk)
         newErrors.bhk = "BHK is required";
-      // if (isFieldRequired("facilities") && !formData.facilities?.length)
-      //   newErrors.facilities = "Select at least 1 facility";
-      // if (isFieldRequired("services") && !formData.services?.length)
-      //   newErrors.services = "Select at least 1 service";
+
     }
 
     setErrors(newErrors);
@@ -477,14 +396,59 @@ const AddPropertyModal = ({
     }));
   };
 
+
+  //   const file = e.target.files[0];
+  //   if (!file) return;
+
+  //   // Show loader
+  //   setFormData((prev) => {
+  //     const updatedDocs = [...prev.documents];
+  //     updatedDocs[index] = { ...updatedDocs[index], loading: true };
+  //     return { ...prev, documents: updatedDocs };
+  //   });
+
+  //   fileUpload({
+  //     url: `upload/uploadImage`,
+  //     cred: { file },
+  //   })
+  //     .then((res) => {
+  //       const uploadedUrl = res.data?.data?.imageUrl;
+  //       const updatedDocs = [...formData.documents];
+  //       updatedDocs[index] = {
+  //         ...updatedDocs[index],
+  //         image: uploadedUrl,
+  //         loading: false,
+  //       };
+
+  //       setFormData((prev) => ({
+  //         ...prev,
+  //         documents: updatedDocs,
+  //       }));
+  //     })
+  //     .catch((error) => {
+  //       console.error("Document image upload failed:", error);
+  //       // Stop loader on error
+  //       setFormData((prev) => {
+  //         const updatedDocs = [...prev.documents];
+  //         updatedDocs[index] = { ...updatedDocs[index], loading: false };
+  //         return { ...prev, documents: updatedDocs };
+  //       });
+  //     })
+  //     .finally(() => {
+  //       if (documentInputRefs.current[index]) {
+  //         documentInputRefs.current[index].value = "";
+  //       }
+  //     });
+  // };
   const handleDocumentImageChange = (e, index) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Show loader
+    // Start loader
     setFormData((prev) => {
-      const updatedDocs = [...prev.documents];
-      updatedDocs[index] = { ...updatedDocs[index], loading: true };
+      const updatedDocs = prev.documents.map((doc, i) =>
+        i === index ? { ...doc, loading: true } : doc
+      );
       return { ...prev, documents: updatedDocs };
     });
 
@@ -494,24 +458,21 @@ const AddPropertyModal = ({
     })
       .then((res) => {
         const uploadedUrl = res.data?.data?.imageUrl;
-        const updatedDocs = [...formData.documents];
-        updatedDocs[index] = {
-          ...updatedDocs[index],
-          image: uploadedUrl,
-          loading: false,
-        };
-
-        setFormData((prev) => ({
-          ...prev,
-          documents: updatedDocs,
-        }));
+        setFormData((prev) => {
+          const updatedDocs = prev.documents.map((doc, i) =>
+            i === index
+              ? { ...doc, image: uploadedUrl, loading: false }
+              : doc
+          );
+          return { ...prev, documents: updatedDocs };
+        });
       })
       .catch((error) => {
         console.error("Document image upload failed:", error);
-        // Stop loader on error
         setFormData((prev) => {
-          const updatedDocs = [...prev.documents];
-          updatedDocs[index] = { ...updatedDocs[index], loading: false };
+          const updatedDocs = prev.documents.map((doc, i) =>
+            i === index ? { ...doc, loading: false } : doc
+          );
           return { ...prev, documents: updatedDocs };
         });
       })
@@ -594,6 +555,10 @@ const AddPropertyModal = ({
         setLoading(false);
       });
   };
+
+  const isAnyDocumentUploading = formData?.documents?.some(doc => doc?.loading);
+  const isUploading = galleryLoading || isAnyDocumentUploading;
+
   return (
     <Modal
       title={modalData ? `Edit Property` : `Add Property`}
@@ -736,8 +701,11 @@ const AddPropertyModal = ({
 
             <hr className="m-0 p-0 my-3" />
 
+
+
             <div className="mb-6">
-              <label className="form-label fw-bold">Property Details</label>
+              <label className="form-label fw-bold">
+                Property Details</label>
 
               <div className="grid grid-cols-2 gap-4 mt-2">
                 {/* Dimensions */}
@@ -930,6 +898,9 @@ const AddPropertyModal = ({
                 )}
               </div>
             </div>
+
+
+
 
             <hr className="m-0 p-0 my-3" />
 
@@ -1279,12 +1250,12 @@ const AddPropertyModal = ({
           </div>
 
           {/* Buttons */}
-          <div className="flex justify-end gap-2 pt-4">
+          <div className="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-3 pt-4 w-full">
             {/* Cancel Button */}
             <button
               type="button"
               onClick={handleCancel}
-              className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-all"
+              className="w-full sm:w-auto px-4 py-3 mb-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition-all duration-200 font-medium text-sm"
             >
               Cancel
             </button>
@@ -1292,19 +1263,23 @@ const AddPropertyModal = ({
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={loading}
-              className={`px-4 py-2 rounded text-white transition-all ${loading
-                ? "bg-[#004f8a] cursor-not-allowed"
-                : "bg-[#004f8a] hover:bg-[#004f8a]"
+              disabled={loading || isUploading}
+              className={`w-full sm:w-auto px-4 py-3 mb-2 rounded-lg text-white font-medium text-sm transition-all duration-200
+      ${loading || isUploading
+                  ? "bg-[#004f8a] opacity-50 cursor-not-allowed"
+                  : "bg-[#004f8a] hover:bg-[#0066b2]"
                 }`}
             >
               {loading
                 ? "Saving..."
-                : modalData
-                  ? "Update Property"
-                  : "Create Property"}
+                : isUploading
+                  ? "Please wait, uploading images..."
+                  : modalData
+                    ? "Update Property"
+                    : "Create Property"}
             </button>
           </div>
+
         </form>
       </div>
     </Modal>

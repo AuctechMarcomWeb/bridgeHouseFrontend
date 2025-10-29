@@ -145,6 +145,8 @@ const AddPropertyModal = ({
   const [addedBy, setAddBy] = useState(null);
   const galleryInputRefs = React.useRef([]);
   const documentInputRefs = React.useRef([]);
+  const [measurementUnit, setMeasurementUnit] = useState("sqft");
+
 
   React.useEffect(() => {
     if (user?._id) {
@@ -291,16 +293,20 @@ const AddPropertyModal = ({
     }
   }, [modalData]);
 
-  const isFieldRequired = (field) => {
-    if (formData.propertyType === "Commercial") {
-      if (field === "bhk" || field === "bedrooms") return false;
-    }
-    if (formData.propertyType === "Apartment") {
-      if (field === "floors" || field === "length" || field === "width")
-        return false;
-    }
-    return true; // default required
-  };
+const isFieldRequired = (field) => {
+  const type = formData.propertyType?.toLowerCase();
+
+  if (type === "commercial") {
+    if (["bhk", "bedrooms"].includes(field)) return false;
+  }
+
+  if (type === "apartment") {
+    if (["floors", "length", "width", "area"].includes(field)) return false; // 👈 added area
+  }
+
+  return true;
+};
+
 
   const validateForm = () => {
     let newErrors = {};
@@ -559,6 +565,190 @@ const AddPropertyModal = ({
   const isAnyDocumentUploading = formData?.documents?.some(doc => doc?.loading);
   const isUploading = galleryLoading || isAnyDocumentUploading;
 
+  // units measurent
+  // useEffect(() => {
+  //   if (!formData?.propertyDetails) return;
+
+  //   const conversionRates = {
+  //     length: {
+  //       ft: { m: 0.3048, yd: 1 / 3 },
+  //       m: { ft: 3.28084, yd: 1.09361 },
+  //       yd: { ft: 3, m: 0.9144 },
+  //     },
+  //     area: {
+  //       sqft: { sqm: 0.092903, sqyd: 0.1111, acre: 1 / 43560, hectare: 1 / 107639 },
+  //       sqm: { sqft: 10.7639, sqyd: 1.19599, acre: 1 / 4046.86, hectare: 1 / 10000 },
+  //       sqyd: { sqft: 9, sqm: 0.836127, acre: 1 / 4840, hectare: 1 / 11960 },
+  //       acre: { sqft: 43560, sqm: 4046.86, sqyd: 4840, hectare: 0.404686 },
+  //       hectare: { sqft: 107639, sqm: 10000, sqyd: 11960, acre: 2.47105 },
+  //     },
+  //   };
+
+  //   setFormData((prev) => {
+  //     const oldUnit = prev?.measurementUnit || "ft";
+  //     const len = parseFloat(prev.propertyDetails.length) || 0;
+  //     const wid = parseFloat(prev.propertyDetails.width) || 0;
+  //     const area = parseFloat(prev.propertyDetails.area) || 0;
+
+  //     // If switching to or from acre/hectare, reset all
+  //     if (
+  //       ["acre", "hectare"].includes(oldUnit) ||
+  //       ["acre", "hectare"].includes(measurementUnit)
+  //     ) {
+  //       return {
+  //         ...prev,
+  //         measurementUnit,
+  //         propertyDetails: { ...prev.propertyDetails, length: "", width: "", area: "" },
+  //       };
+  //     }
+
+  //     // Convert length/width (linear) and area (square)
+  //     return {
+  //       ...prev,
+  //       measurementUnit,
+  //       propertyDetails: {
+  //         ...prev.propertyDetails,
+  //         length: len
+  //           ? (len * (conversionRates.length[oldUnit]?.[measurementUnit] || 1)).toFixed(2)
+  //           : "",
+  //         width: wid
+  //           ? (wid * (conversionRates.length[oldUnit]?.[measurementUnit] || 1)).toFixed(2)
+  //           : "",
+  //         area: area
+  //           ? (area *
+  //             (conversionRates.area[
+  //               oldUnit === "ft"
+  //                 ? "sqft"
+  //                 : oldUnit === "m"
+  //                   ? "sqm"
+  //                   : oldUnit === "yd"
+  //                     ? "sqyd"
+  //                     : oldUnit
+  //             ]?.[
+  //               measurementUnit === "ft"
+  //                 ? "sqft"
+  //                 : measurementUnit === "m"
+  //                   ? "sqm"
+  //                   : measurementUnit === "yd"
+  //                     ? "sqyd"
+  //                     : measurementUnit
+  //             ] || 1)
+  //           ).toFixed(2)
+  //           : "",
+  //       },
+  //     };
+  //   });
+  // }, [measurementUnit]);
+
+  useEffect(() => {
+    if (!formData?.propertyDetails) return;
+
+    const conversionRates = {
+      length: {
+        ft: { m: 0.3048, yd: 1 / 3 },
+        m: { ft: 3.28084, yd: 1.09361 },
+        yd: { ft: 3, m: 0.9144 },
+      },
+      area: {
+        sqft: { sqm: 0.092903, sqyd: 0.1111, acre: 1 / 43560, hectare: 1 / 107639 },
+        sqm: { sqft: 10.7639, sqyd: 1.19599, acre: 1 / 4046.86, hectare: 1 / 10000 },
+        sqyd: { sqft: 9, sqm: 0.836127, acre: 1 / 4840, hectare: 1 / 11960 },
+        acre: { sqft: 43560, sqm: 4046.86, sqyd: 4840, hectare: 0.404686 },
+        hectare: { sqft: 107639, sqm: 10000, sqyd: 11960, acre: 2.47105 },
+      },
+    };
+
+    // 🧩 Helper to clean decimals like .00
+    const formatNumber = (num) => {
+      if (!num) return "";
+      const rounded = parseFloat(num.toFixed(2));
+      return Number.isInteger(rounded) ? rounded.toString() : rounded.toFixed(2);
+    };
+
+    setFormData((prev) => {
+      const oldUnit = prev?.measurementUnit || "ft";
+      const len = parseFloat(prev.propertyDetails.length) || 0;
+      const wid = parseFloat(prev.propertyDetails.width) || 0;
+      const area = parseFloat(prev.propertyDetails.area) || 0;
+
+      // If switching to or from acre/hectare, reset all
+      if (
+        ["acre", "hectare"].includes(oldUnit) ||
+        ["acre", "hectare"].includes(measurementUnit)
+      ) {
+        return {
+          ...prev,
+          measurementUnit,
+          propertyDetails: { ...prev.propertyDetails, length: "", width: "", area: "" },
+        };
+      }
+
+      // Convert length/width (linear) and area (square)
+      return {
+        ...prev,
+        measurementUnit,
+        propertyDetails: {
+          ...prev.propertyDetails,
+          length: len
+            ? formatNumber(len * (conversionRates.length[oldUnit]?.[measurementUnit] || 1))
+            : "",
+          width: wid
+            ? formatNumber(wid * (conversionRates.length[oldUnit]?.[measurementUnit] || 1))
+            : "",
+          area: area
+            ? formatNumber(
+              area *
+              (conversionRates.area[
+                oldUnit === "ft"
+                  ? "sqft"
+                  : oldUnit === "m"
+                    ? "sqm"
+                    : oldUnit === "yd"
+                      ? "sqyd"
+                      : oldUnit
+              ]?.[
+                measurementUnit === "ft"
+                  ? "sqft"
+                  : measurementUnit === "m"
+                    ? "sqm"
+                    : measurementUnit === "yd"
+                      ? "sqyd"
+                      : measurementUnit
+              ] || 1)
+            )
+            : "",
+        },
+      };
+    });
+  }, [measurementUnit]);
+
+
+  useEffect(() => {
+    if (["acre", "hectare"].includes(measurementUnit)) return;
+
+    const len = parseFloat(formData?.propertyDetails?.length);
+    const wid = parseFloat(formData?.propertyDetails?.width);
+
+    if (!len || !wid) return;
+
+    const newArea = len * wid;
+
+    const formatNumber = (num) => {
+      if (!num) return "";
+      const rounded = parseFloat(num.toFixed(2));
+      return Number.isInteger(rounded) ? rounded.toString() : rounded.toFixed(2);
+    };
+
+    setFormData((prev) => ({
+      ...prev,
+      propertyDetails: {
+        ...prev.propertyDetails,
+        area: formatNumber(newArea),
+      },
+    }));
+  }, [formData?.propertyDetails?.length, formData?.propertyDetails?.width, measurementUnit]);
+
+
   return (
     <Modal
       title={modalData ? `Edit Property` : `Add Property`}
@@ -709,61 +899,117 @@ const AddPropertyModal = ({
 
               <div className="grid grid-cols-2 gap-4 mt-2">
                 {/* Dimensions */}
-                <div>
+
+                {/* Unit Selector */}
+                <div className="">
+                  <label className="form-label fw-bold">Measurement Unit
+
+                  </label>
+                  <select
+                    className="w-full p-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                    value={measurementUnit}
+                    onChange={(e) => setMeasurementUnit(e.target.value)}
+
+                  >
+
+                    <option value="sqft">Square Feet</option>
+                    <option value="sqm">Square Meters</option>
+                    <option value="sqyd">Square Yards</option>
+                    <option value="acre">Acres</option>
+                    <option value="hectare">Hectares</option>
+                  </select>
+                </div>
+
+                {/* Length & Width — only for linear units */}
+                {!["acre", "hectare"].includes(measurementUnit) && (
                   <div className="grid grid-cols-2 gap-4">
-                    {/* Length */}
                     <div>
                       <label className="form-label fw-bold">
-                        Length (ft)
-                        {isFieldRequired("length") ? ` *` : "(Optional)"}
+
+                        Length {isFieldRequired("length") ? ` *` : "(Optional)"}(
+                        {measurementUnit === "sqm"
+                          ? "m"
+                          : measurementUnit === "sqyd"
+                            ? "yd"
+                            : "ft"}
+                        )
                       </label>
+
                       <input
                         type="number"
-                        className="w-full p-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                        className="w-full p-2 border border-gray-300 rounded-xl  focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                         name="length"
+
                         data-nested="propertyDetails"
                         value={formData?.propertyDetails?.length || ""}
                         onChange={handleChange}
                         placeholder="Enter Length"
                         required={isFieldRequired("length")}
+                    
                         min={1}
                       />
                     </div>
 
-                    {/* Width */}
                     <div>
                       <label className="form-label fw-bold">
-                        Width (ft)
-                        {isFieldRequired("width") ? ` *` : "(Optional)"}
+                        {/* if apartment its optional */}
+                        Width     {isFieldRequired("width") ? ` *` : "(Optional)"}(
+                        {measurementUnit === "sqm"
+                          ? "m"
+                          : measurementUnit === "sqyd"
+                            ? "yd"
+                            : "ft"}
+                        )
                       </label>
                       <input
                         type="number"
-                        className="w-full p-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                        className="w-full p-2 border border-gray-300 rounded-xl  focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                         name="width"
+
                         data-nested="propertyDetails"
+
                         value={formData?.propertyDetails?.width || ""}
                         onChange={handleChange}
                         placeholder="Enter Width"
-                        required={isFieldRequired("width")}
+                            required={isFieldRequired("width")}
                         min={1}
                       />
                     </div>
                   </div>
-                </div>
+                )}
 
-                {/* Area */}
-                <div>
-                  <label className="form-label fw-bold">Area (sqft) *</label>
+                {/* Area Field */}
+                <div >
+                  <label className="form-label fw-bold">
+                    Area (
+                    {measurementUnit === "sqm"
+                      ? "m²"
+                      : measurementUnit === "sqyd"
+                        ? "sq.yd"
+                        : measurementUnit === "acre"
+                          ? "acres"
+                          : measurementUnit === "hectare"
+                            ? "hectares"
+                            : "sq.ft"}
+                    )
+                  </label>
+
                   <input
                     type="text"
-                    className="w-full p-2 border border-gray-300 bg-gray-100 rounded-xl outline-none focus:ring-0 focus:border-gray-300 transition-all text-gray-700"
+                    className={`w-full p-2 border border-gray-300 rounded-xl outline-none ${["acre", "hectare"].includes(measurementUnit)
+                      ? ""
+                      : "bg-gray-100 text-gray-700"
+                      }`}
                     name="area"
                     data-nested="propertyDetails"
                     value={formData?.propertyDetails?.area || ""}
                     onChange={handleChange}
-                    placeholder="Enter area (e.g., 1200 sqft)"
-
-                    readOnly
+                    readOnly={!["acre", "hectare"].includes(measurementUnit)} // only editable if acre/hectare
+                    placeholder={
+                      ["acre", "hectare"].includes(measurementUnit)
+                        ? `Enter area in ${measurementUnit}`
+                        : "Auto-calculated"
+                    }
                   />
                 </div>
 

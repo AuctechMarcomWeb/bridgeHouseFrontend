@@ -81,6 +81,7 @@ export default function PropertyFilters({
             value={filters.search || ""}
             onChange={(e) => {
               setFilters({ ...filters, search: e.target.value });
+                handleApplyFilters();
             }}
 
             className="w-full pl-11 pr-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 hover:bg-white transition-all"

@@ -3,6 +3,7 @@
 import { useContext, useEffect, useState } from "react";
 import { Modal, Button } from "antd";
 import { Pagination } from "antd";
+import Contact from "./Contact";
 
 import {
   User,
@@ -34,7 +35,7 @@ import {
   IndianRupee,
   Search,
   Filter,
-  FilterIcon,Heart
+  FilterIcon, Heart
 } from "lucide-react";
 
 import Swal from "sweetalert2";
@@ -60,6 +61,7 @@ export default function RealEstateProfile() {
   const [update, setUpdate] = useState(false);
   const [upgradeModal, setUpgradeModal] = useState(false);
   const [page, setPage] = useState(1);
+  const [buyerPro, setBuyerPro] = useState([])
   const limit = 3; // har page me 3 items
 
   //Redirect if not logged in
@@ -232,7 +234,7 @@ export default function RealEstateProfile() {
                     <span className="text-blue-100">{userProfile?.phone}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <MapPin size={25} className="text-blue-200" />
+                    <MapPin size={40} className="text-blue-200" />
                     <span className="text-blue-100">
                       {userProfile?.address}
                     </span>
@@ -600,36 +602,39 @@ export default function RealEstateProfile() {
           </div>
         )}
 
+
+
+
+
+
         {/* Buyer Section - Show Available Properties */}
         {user?.accountType === "Buyer" && (
           <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
             {/* Search and Filter Header */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-              <div>
-                <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">
-                  Available Properties
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-10 bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-2xl shadow-sm">
+              {/* Left Section */}
+              <div className="flex flex-col gap-3">
+                <h2 className="text-2xl md:text-3xl font-extrabold text-gray-800">
+                  Find Your Dream Property 🏡
                 </h2>
-                <p className="text-gray-600 text-sm">
-                  Discover your dream home
+                <p className="text-gray-600 text-sm md:text-base max-w-md leading-relaxed">
+                  Explore the best properties near you — Buy, Sell, or Rent with ease.
+                  Start your search today!
                 </p>
-              </div>
 
-              {/* Search Bar */}
-              <div className="flex gap-4 w-full sm:w-auto">
-                {/* <div className="relative flex-1 sm:w-80">
-                  <input
-                    type="text"
-                    placeholder="Search properties by location, type..."
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    // Add your search logic here
-                  />
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                </div> */}
+                <button
+                  onClick={() => navigate("/")}
+                  className="mt-2 w-fit py-2.5 px-5 text-sm font-semibold bg-[#004f8a] text-white rounded-full 
+      shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 ease-in-out"
+                >
+                  🔍 Explore Properties
+                </button>
               </div>
             </div>
 
             {/* Available Properties Grid */}
-            {properties.length === 0 ? (
+
+            {/* {properties.length === 0 ? (
               <div className="text-center py-16 bg-gray-50 rounded-xl">
                 <Home size={64} className="text-gray-400 mx-auto mb-6" />
                 <p className="text-gray-600 text-xl font-medium mb-2">
@@ -641,7 +646,7 @@ export default function RealEstateProfile() {
               </div>
             ) : (
               <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
-                {properties.map((property) => (
+                {buyerPro.map((property) => (
                   <div
                     key={property?.id}
                     className="group bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-2xl hover:border-green-200 transition-all duration-300 transform hover:-translate-y-1"
@@ -670,10 +675,10 @@ export default function RealEstateProfile() {
                       </div>
 
                       {/* Wishlist Heart - TOP RIGHT */}
-                      {/* <button className="absolute top-4 right-4 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-white transition-all">
+            {/* <button className="absolute top-4 right-4 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-white transition-all">
                         <Heart className="w-5 h-5 text-gray-600 hover:text-red-500" />
                       </button> */}
-                    </div>
+            {/* </div>
 
                     <div className="p-4">
                       <div className="flex justify-between items-start mb-2">
@@ -688,15 +693,15 @@ export default function RealEstateProfile() {
                         >
                           {property?.status}
                         </span>
-                      </div>
+                      </div> */}
 
-                      <div className="flex items-center gap-2 text-gray-600 mb-3">
+            {/* <div className="flex items-center gap-2 text-gray-600 mb-3">
                         <MapPin size={16} className="text-gray-400" />
                         <span className="text-sm">{property?.address}</span>
-                      </div>
+                      </div> */}
 
-                      {/* Property Details */}
-                      <div className="space-y-2 mb-4">
+            {/* Property Details */}
+            {/* <div className="space-y-2 mb-4">
                         <div className="flex flex-wrap items-center bg-gray-50 rounded-xl p-3 gap-3">
                           <div className="flex items-center gap-1 text-sm text-gray-600">
                             <LucideRuler className="w-4 h-4 text-green-500" />
@@ -709,8 +714,8 @@ export default function RealEstateProfile() {
                             <span className="font-medium">
                               {property?.propertyDetails?.bedrooms ?? "—"} Beds
                             </span>
-                          </div>
-                          <div className="flex items-center gap-1 text-sm text-gray-600">
+                          </div> */}
+            {/* <div className="flex items-center gap-1 text-sm text-gray-600">
                             <Bath className="w-4 h-4 text-green-500" />
                             <span className="font-medium">
                               {property?.propertyDetails?.bathrooms ?? "—"}{" "}
@@ -718,41 +723,38 @@ export default function RealEstateProfile() {
                             </span>
                           </div>
                         </div>
-                      </div>
+                      </div> */}
 
-                      <div className="flex items-center justify-between mb-4">
-                        {/* Price */}
-                        <h3 className="text-xl font-bold text-green-600">
+            {/* <div className="flex items-center justify-between mb-4"> */}
+            {/* Price */}
+            {/* <h3 className="text-xl font-bold text-green-600">
                           <IndianRupee
                             size={20}
                             className="inline-block mr-1"
                           />
                           {property?.actualPrice}
-                        </h3>
-                        {/* Property Type */}
-                        <span className="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full font-medium">
+                        </h3> */}
+            {/* Property Type */}
+            {/* <span className="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full font-medium">
                           {property?.propertyType}
                         </span>
-                      </div>
+                      </div> */}
 
-                      {/* Buyer Action Buttons */}
-                      <div className="flex gap-3">
+            {/* Buyer Action Buttons */}
+            {/* <div className="flex gap-3">
                         <button
                           onClick={() => {
                             setSelectedProperty(property);
                             setIsDetailsOpen(true);
                           }}
-                          className="flex-1 py-2.5 text-sm font-medium bg-[#004f8a] text-white rounded-lg hover:bg-green-700 transition-all duration-200"
+                          className="flex-1 py-2.5 text-sm font-medium bg-[#004f8a] text-white rounded-lg hover:bg-[#004f8a]  transition-all duration-200"
                         >
                           View Details
                         </button>
                         <button
-                          onClick={() => {
-                            // Add contact seller logic here
-                            console.log(
-                              "Contact seller for property:",
-                              property._id
-                            );
+                          onClick={() => { */}
+            {/* // Add contact seller logic here */}
+            {/* navigate('/contact')
                           }}
                           className="flex-1 py-2.5 text-sm font-medium bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all duration-200"
                         >
@@ -760,10 +762,10 @@ export default function RealEstateProfile() {
                         </button>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
+            //       </div> */}
+            {/* //     ))} */}
+            {/* //   </div> */}
+            {/* // )}  */}
           </div>
         )}
 

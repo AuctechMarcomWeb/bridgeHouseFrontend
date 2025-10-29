@@ -266,7 +266,7 @@ export default function PropertyDetailPage() {
                 />
                 {/* Top-right overlay: Camera + Verified */}
                 <div className="absolute top-4 right-4 flex items-center gap-2 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
-              
+
                   <div className="flex items-center gap-1">
                     <Camera className="w-4 h-4" />
                     {selectedImage + 1} / {images.length}
@@ -366,18 +366,20 @@ export default function PropertyDetailPage() {
                   </div>
 
                   {/* Bedrooms */}
-                  <div className="group p-3 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl hover:shadow-md transition-all duration-300 hover:-translate-y-1">
-                    <div className="flex items-center gap-3">
-                      <div className="w-6 h-6 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center text-white shadow-md">
-                        <Bed className="w-4 h-4" />
+                  {properties?.propertyType !== "Plot" && (
+                    <div className="group p-3 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl hover:shadow-md transition-all duration-300 hover:-translate-y-1">
+                      <div className="flex items-center gap-3">
+                        <div className="w-6 h-6 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center text-white shadow-md">
+                          <Bed className="w-4 h-4" />
+                        </div>
+                        <span className="text-gray-600 text-base font-medium">
+                          {properties?.propertyDetails?.bedrooms ?? "—"} Bedrooms
+                        </span>
                       </div>
-                      <span className="text-gray-600 text-base font-medium">
-                        {properties?.propertyDetails?.bedrooms ?? "—"} Bedrooms
-                      </span>
                     </div>
-                  </div>
-
+                  )}
                   {/* Bathrooms */}
+                  {properties?.propertyType!=="Plot" &&(
                   <div className="group p-3 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl hover:shadow-md transition-all duration-300 hover:-translate-y-1">
                     <div className="flex items-center gap-3">
                       <div className="w-6 h-6 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center text-white shadow-md">
@@ -389,8 +391,10 @@ export default function PropertyDetailPage() {
                       </span>
                     </div>
                   </div>
+                  )}
 
                   {/* Floors */}
+                      {properties?.propertyType !== "Plot" && (
                   <div className="group p-3 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl hover:shadow-md transition-all duration-300 hover:-translate-y-1">
                     <div className="flex items-center gap-3">
                       <div className="w-6 h-6 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center text-white shadow-md">
@@ -401,7 +405,7 @@ export default function PropertyDetailPage() {
                       </span>
                     </div>
                   </div>
-
+                      )}
                   {/* Facing */}
                   <div className="group p-3 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl hover:shadow-md transition-all duration-300 hover:-translate-y-1">
                     <div className="flex items-center gap-3">
@@ -415,6 +419,7 @@ export default function PropertyDetailPage() {
                   </div>
 
                   {/* Built Year */}
+                    {properties?.propertyType !== "Plot" && (
                   <div className="group p-3 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl hover:shadow-md transition-all duration-300 hover:-translate-y-1">
                     <div className="flex items-center gap-3">
                       <div className="w-6 h-6 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center text-white shadow-md">
@@ -425,6 +430,7 @@ export default function PropertyDetailPage() {
                       </span>
                     </div>
                   </div>
+                    )}
                 </div>
               )}
             </div>

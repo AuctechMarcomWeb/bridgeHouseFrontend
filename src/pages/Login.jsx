@@ -20,6 +20,9 @@ import useCookie from "../Hooks/cookie";
 import AddressForm from "../components/Addressform";
 import toast from "react-hot-toast";
 import { ProfileContext } from "../context/ProfileContext";
+import BridgeHousePolicy from './policy'
+
+
 
 export default function Login() {
   const { setCookie } = useCookie();
@@ -179,6 +182,12 @@ export default function Login() {
   // --- Step 3: Signup/Login Submit ---
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+
+    if (!formData?.accountType) {
+      setError("accountType");
+      return;
+    }
+
     setLoading(true);
     try {
       console.log("userId", userId);
@@ -307,11 +316,10 @@ export default function Login() {
                       setPhone(e.target.value);
                       if (error) setError("");
                     }}
-                    className={`mt-1 block w-full rounded-lg border px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 ${
-                      error
-                        ? "border-red-500 focus:ring-red-500"
-                        : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                    }`}
+                    className={`mt-1 block w-full rounded-lg border px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 ${error
+                      ? "border-red-500 focus:ring-red-500"
+                      : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                      }`}
                     placeholder="Enter mobile number"
                     inputMode="numeric"
                     maxLength={10}
@@ -572,9 +580,8 @@ export default function Login() {
                 {/* Account Type */}
                 {isNewUser && (
                   <div className="mb-4">
-                    <p className="mb-2 text-gray-700 font-medium">
-                      Account Type *
-                    </p>
+                    <p className="mb-2 text-gray-700 font-medium">Account Type *</p>
+
                     <div className="flex gap-6">
                       {["Buyer", "Seller"].map((type) => (
                         <label
@@ -586,7 +593,10 @@ export default function Login() {
                             name="accountType"
                             value={type}
                             checked={formData?.accountType === type}
-                            onChange={handleInputChange}
+                            onChange={(e) => {
+                              handleInputChange(e);
+                              setError(""); // error hatane ke liye
+                            }}
                             className="hidden"
                           />
                           <div className="w-5 h-5 border border-gray-300 rounded-full flex items-center justify-center">
@@ -598,8 +608,14 @@ export default function Login() {
                         </label>
                       ))}
                     </div>
+
+                    {/* Error message only for accountType */}
+                    {error === "accountType" && (
+                      <p className="text-red-500 text-sm mt-2">Please select an account type.</p>
+                    )}
                   </div>
                 )}
+
 
                 {/* Address */}
                 {isNewUser && (
@@ -629,24 +645,25 @@ export default function Login() {
                       className="mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                       required
                     />
+
                     <label
                       htmlFor="terms"
                       className="text-sm text-gray-600 leading-relaxed"
                     >
                       I agree to the{" "}
-                      <button
-                        type="button"
+                      <Link
+                        to="/policy"
                         className="text-blue-600 hover:text-blue-700 font-medium"
                       >
                         Terms of Service
-                      </button>{" "}
+                      </Link>{" "}
                       and{" "}
-                      <button
-                        type="button"
+                      <Link
+                        to="/policy"
                         className="text-blue-600 hover:text-blue-700 font-medium"
                       >
                         Privacy Policy
-                      </button>
+                      </Link>
                     </label>
                   </div>
                 )}

@@ -17,6 +17,7 @@ import EnquiryPage from "./pages/EnquiryPage";
 import { Toaster } from "react-hot-toast";
 import PaymentHistory from "./pages/paymentHistory";
 import PageNotFound from "./pages/PageNotFound";
+import BridgeHousePolicy from "./pages/policy";
 // import Signup from "./components/Signup";
 
 function App() {
@@ -44,6 +45,7 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/profile" element={<RealEstateProfile />} />
           <Route path="/enquiry" element={<EnquiryPage />} />
+          <Route path ="/policy" element={<BridgeHousePolicy/>}/>
             <Route path="/paymentHistory" element={<PaymentHistory />} />
           <Route
             path="/terms-and-conditions"

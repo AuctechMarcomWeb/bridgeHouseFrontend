@@ -134,6 +134,7 @@ const Footer = () => {
             <p>
               &copy; 2025 Bridge House. All rights reserved. Made by{" "}
               <span className="text-blue-400">Auctech MarCom</span>
+              
             </p>
           </div>
         </div>
